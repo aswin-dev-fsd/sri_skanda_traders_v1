@@ -7,9 +7,17 @@ import { business, isPlaceholder, whatsappMessage } from '@/config/site';
  * @returns A `https://wa.me/...` URL.
  */
 export function whatsappUrl(topic: string): string {
-  const text = encodeURIComponent(whatsappMessage.replace('{topic}', topic));
+  return whatsappLink(whatsappMessage.replace('{topic}', topic));
+}
+
+/**
+ * WhatsApp link that opens a chat with any message filled in.
+ * @param text Message text.
+ * @returns A wa.me URL (contact picker while the number is a placeholder).
+ */
+export function whatsappLink(text: string): string {
   const number = isPlaceholder(business.whatsapp) ? '' : business.whatsapp.replace(/\D/g, '');
-  return `https://wa.me/${number}?text=${text}`;
+  return `https://wa.me/${number}?text=${encodeURIComponent(text)}`;
 }
 
 /**

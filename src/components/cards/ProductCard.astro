@@ -20,10 +20,12 @@ interface Props {
   image?: ImageMetadata;
   /** Shows the "Authorised Dealer" tag (Johnson, JSW). */
   authorised?: boolean;
+  /** Stand-in thumbnail colour for My Selection until photos arrive. */
+  swatch?: string;
 }
 
-const { id, href, brand, name, code, spec, image, authorised = false } = Astro.props;
-const item: SelectionItem = { id, kind: 'product', name, brand, code, href };
+const { id, href, brand, name, code, spec, image, authorised = false, swatch } = Astro.props;
+const item: SelectionItem = { id, kind: 'product', name, brand, code, href, swatch };
 ---
 
 <article class="product-card">

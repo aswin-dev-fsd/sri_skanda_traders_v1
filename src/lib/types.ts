@@ -10,4 +10,17 @@ export interface SelectionItem {
   size?: string;
   finish?: string;
   href: string;
+  /** CSS colour for the thumbnail until photos arrive. */
+  swatch?: string;
+  /** Thumbnail image URL, once photos exist. */
+  thumb?: string;
+}
+
+/** A saved item plus what the customer adds on the My Selection page. */
+export interface SavedItem extends SelectionItem {
+  /** Space slug the customer assigns, e.g. "living-room". */
+  room?: string;
+  /** Approximate area in sq ft. */
+  approxArea?: number;
+  savedAt: number;
 }

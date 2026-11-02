@@ -1,0 +1,272 @@
+---
+// Enquiry drawer (brief Prompt 00-D), opened by every "Enquire" button. There is no backend:
+// "Send enquiry" opens WhatsApp with the details filled in, and the customer presses send.
+// Email is the secondary route. See DECISIONS.md → Enquiries.
+import Drawer from '@/components/drawers/Drawer.astro';
+import Button from '@/components/ui/Button.astro';
+import ChoiceChips from '@/components/ui/ChoiceChips.astro';
+import Field from '@/components/ui/Field.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { business, isPlaceholder } from '@/config/site';
+import { interests, roles } from '@/lib/enquiry';
+
+const hasEmail = !isPlaceholder(business.email);
+---
+
+<Drawer
+  id="enquiry"
+  title="Tell us what you need"
+  sub="Our team will get back to you within a few hours during showroom timings."
+>
+  <form class="form" novalidate data-enquiry-form>
+    <div class="about" data-enquiry-about hidden>
+      <span class="about-thumb" data-about-thumb></span>
+      <p class="small">
+        <span class="muted">You're asking about:</span>
+        <strong data-about-text></strong>
+      </p>
+    </div>
+
+    <Field label="Name" name="name" id="enq-name" required autocomplete="name" data-autofocus />
+    <Field label="Phone" name="phone" id="enq-phone" type="tel" prefix="+91" required autocomplete="tel-national" inputmode="tel" />
+    <Field label="Area / Location" name="area" id="enq-area" autocomplete="address-level2" />
+    <ChoiceChips legend="I am a" name="role" options={roles} />
+    <ChoiceChips legend="Interested in" name="interests" options={interests} multiple />
+    <Field label="Message (optional)" name="message" id="enq-message" multiline />
+
+    <label class="attach" data-enquiry-attach hidden>
+      <input type="checkbox" name="attach" checked />
+      <span>Attach my saved items (<span data-attach-count>0</span>)</span>
+    </label>
+
+    <div class="submit">
+      <Button type="submit" block icon="whatsapp">Send enquiry</Button>
+      <p class="small muted">Opens WhatsApp with your details filled in. Just press send.</p>
+      {hasEmail && (
+        <Button variant="text" type="button" data-enquiry-email>
+          Or send it by email
+        </Button>
+      )}
+    </div>
+  </form>
+
+  <div class="success" data-enquiry-success hidden tabindex="-1">
+    <span class="success-icon"><Icon name="whatsapp" size={36} /></span>
+    <h3 data-success-title>Thank you.</h3>
+    <p class="muted" data-success-text></p>
+    <Button variant="secondary" data-drawer-close>Keep browsing</Button>
+  </div>
+</Drawer>
+
+<style>
+  .form {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .about {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border: var(--border);
+    border-radius: var(--radius-card);
+    background: var(--surface);
+  }
+
+  .about[hidden] {
+    display: none;
+  }
+
+  .about-thumb {
+    flex: none;
+    width: 48px;
+    height: 48px;
+    border: var(--border);
+    border-radius: 0 10px 0 0;
+    background-color: var(--beige);
+    background-size: cover;
+  }
+
+  .about strong {
+    display: block;
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  .attach {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: var(--touch-min);
+    color: var(--green);
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .attach[hidden] {
+    display: none;
+  }
+
+  .attach input {
+    width: 22px;
+    height: 22px;
+    accent-color: var(--green);
+  }
+
+  .submit {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .success {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+    padding: var(--space-6) var(--space-2);
+    text-align: center;
+  }
+
+  .success[hidden] {
+    display: none;
+  }
+
+  .success:focus {
+    outline: none;
+  }
+
+  .success-icon {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    border: 1.5px solid var(--gold);
+    border-radius: 50%;
+    color: var(--green);
+  }
+</style>
+
+<script>
+  import { buildEnquiryMessage, emailLink, validateEnquiry, whatsappLink, type Enquiry } from '@/lib/enquiry';
+  import type { SelectionItem } from '@/lib/types';
+  import { $selection } from '@/stores/selection';
+  import { openDrawer } from '@/scripts/drawer';
+
+  /** What an "Enquire" button passes when it opens the drawer. */
+  interface OpenDetail {
+    about?: SelectionItem;
+    /** Pre-select an "Interested in" chip. */
+    interest?: string;
+    /** Tick "Attach my saved items" (from "Send as one enquiry"). */
+    attach?: boolean;
+    opener?: HTMLElement;
+  }
+
+  const form = document.querySelector<HTMLFormElement>('[data-enquiry-form]');
+  const success = document.querySelector<HTMLElement>('[data-enquiry-success]');
+  const aboutBox = document.querySelector<HTMLElement>('[data-enquiry-about]');
+  const attachRow = document.querySelector<HTMLElement>('[data-enquiry-attach]');
+  const attachBox = attachRow?.querySelector<HTMLInputElement>('input');
+  let about: SelectionItem | undefined;
+
+  $selection.subscribe((items) => {
+    if (attachRow) attachRow.hidden = items.length === 0;
+    const count = document.querySelector('[data-attach-count]');
+    if (count) count.textContent = String(items.length);
+  });
+
+  function setError(id: string, message?: string) {
+    const field = document.getElementById(id)?.closest<HTMLElement>('[data-field]');
+    const error = document.getElementById(`${id}-error`);
+    field?.toggleAttribute('data-invalid', !!message);
+    document.getElementById(id)?.setAttribute('aria-invalid', String(!!message));
+    if (error) error.textContent = message ?? '';
+  }
+
+  /** Reads the form, shows any errors, and returns the enquiry when valid. */
+  function readForm(): Enquiry | null {
+    if (!form) return null;
+    const data = new FormData(form);
+    const enquiry: Enquiry = {
+      name: String(data.get('name') ?? ''),
+      phone: String(data.get('phone') ?? ''),
+      area: String(data.get('area') ?? ''),
+      role: (data.get('role') as string | null) ?? undefined,
+      interests: data.getAll('interests').map(String),
+      message: String(data.get('message') ?? ''),
+      about,
+      items: attachBox?.checked && !attachRow?.hidden ? $selection.get() : undefined,
+    };
+    const errors = validateEnquiry(enquiry);
+    setError('enq-name', errors.name);
+    setError('enq-phone', errors.phone);
+    if (errors.name || errors.phone) {
+      document.getElementById(errors.name ? 'enq-name' : 'enq-phone')?.focus();
+      return null;
+    }
+    return enquiry;
+  }
+
+  function showSuccess(enquiry: Enquiry, channel: 'whatsapp' | 'email') {
+    if (!form || !success) return;
+    const first = enquiry.name.trim().split(/\s+/)[0];
+    success.querySelector('[data-success-title]')!.textContent = `Thank you, ${first}.`;
+    success.querySelector('[data-success-text]')!.textContent =
+      channel === 'whatsapp'
+        ? `WhatsApp is open with your enquiry. Press send there, and we'll call you soon on +91 ${enquiry.phone.replace(/\D/g, '').slice(-10)}.`
+        : `Your email app is open with your enquiry. Press send there, and we'll get back to you soon.`;
+    form.hidden = true;
+    success.hidden = false;
+    success.focus();
+  }
+
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const enquiry = readForm();
+    if (!enquiry) return;
+    window.open(whatsappLink(buildEnquiryMessage(enquiry)), '_blank', 'noopener');
+    showSuccess(enquiry, 'whatsapp');
+  });
+
+  form?.querySelector('[data-enquiry-email]')?.addEventListener('click', () => {
+    const enquiry = readForm();
+    const link = enquiry && emailLink(buildEnquiryMessage(enquiry));
+    if (!enquiry || !link) return;
+    window.location.href = link;
+    showSuccess(enquiry, 'email');
+  });
+
+  // Clear an error as soon as the customer fixes the field.
+  form?.addEventListener('input', (event) => {
+    const input = event.target as HTMLInputElement;
+    if (input.id === 'enq-name' || input.id === 'enq-phone') setError(input.id);
+  });
+
+  document.addEventListener('enquiry:open', (event) => {
+    const detail = (event as CustomEvent<OpenDetail>).detail ?? {};
+    if (!form || !success) return;
+    // A fresh start each time, keeping what the customer already typed.
+    form.hidden = false;
+    success.hidden = true;
+    about = detail.about;
+    if (aboutBox) {
+      aboutBox.hidden = !about;
+      const text = aboutBox.querySelector('[data-about-text]');
+      if (text && about) text.textContent = [about.name, about.colour, about.code].filter(Boolean).join(', ');
+      const thumb = aboutBox.querySelector<HTMLElement>('[data-about-thumb]');
+      if (thumb) {
+        thumb.style.backgroundImage = about?.thumb ? `url("${about.thumb}")` : '';
+        thumb.style.backgroundColor = about?.swatch ?? '';
+      }
+    }
+    if (detail.interest) {
+      form.querySelectorAll<HTMLInputElement>('input[name="interests"]').forEach((box) => {
+        if (box.value === detail.interest) box.checked = true;
+      });
+    }
+    if (attachBox) attachBox.checked = detail.attach ?? attachBox.checked;
+    openDrawer('enquiry', detail.opener);
+  });
+</script>

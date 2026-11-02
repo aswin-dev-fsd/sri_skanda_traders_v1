@@ -53,7 +53,7 @@ const count = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : 
 const meta = [count(colours, 'colour', 'colours'), count(finishes, 'finish', 'finishes'), count(sizes, 'size', 'sizes')].join(
   ' · ',
 );
-const item: SelectionItem = { id, kind: 'collection', name, brand, href };
+const item: SelectionItem = { id, kind: 'collection', name, brand, href, swatch: dots[0] };
 const loading = eager ? 'eager' : 'lazy';
 ---
 

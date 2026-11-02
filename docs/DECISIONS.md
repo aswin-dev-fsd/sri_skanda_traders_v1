@@ -100,20 +100,24 @@ The brief also asks for things the mockup lacks: tile reveal, Trust Frame drawin
 
 ## Task order
 
-| # | Task |
-|---|---|
-| 1 | Project setup: Astro, TypeScript, fonts, design tokens, `site.ts` |
-| 2 | Shared shell: header (with mega menu), footer, floating WhatsApp button |
-| 3 | Shared components: buttons, chips, cards, toast, Trust Frame |
-| 4 | Catalogue schema plus placeholder data |
-| 5 | My Selection store and drawer, enquiry drawer |
-| 6 | Home page, section by section |
-| 7 | Products listing with filters |
-| 8 | Collection page, plus the bathware variant |
-| 9 | 3D Visualizer page |
-| 10 | My Selection page, plus the print view |
-| 11 | Contact page |
-| 12 | About page |
-| 13 | Gallery page |
-| 14 | Search, Showroom mode |
-| 15 | Tests, accessibility and Lighthouse pass |
+Status is updated in the same commit that finishes each task (the commit hash is added in the next one).
+
+| # | Task | Status |
+|---|---|---|
+| 1 | Project setup: Astro, TypeScript, fonts, design tokens, `site.ts` | ✅ Done · `f98eb63` |
+| 2 | Shared shell: header (with mega menu), footer, floating WhatsApp button | ✅ Done · `83f0927` |
+| 3 | Shared components: buttons, chips, cards, toast, Trust Frame | ✅ Done · `c30673b` |
+| 4 | Catalogue schema plus placeholder data | ✅ Done · `7ba9260` |
+| 5 | My Selection store and drawer, enquiry drawer | ✅ Done |
+| 6 | Home page, section by section | 🔨 In progress |
+| 7 | Products listing with filters | ⬜ To do |
+| 8 | Collection page, plus the bathware variant | ⬜ To do |
+| 9 | 3D Visualizer page | ⬜ To do |
+| 10 | My Selection page, plus the print view | ⬜ To do |
+| 11 | Contact page | ⬜ To do |
+| 12 | About page | ⬜ To do |
+| 13 | Gallery page | ⬜ To do |
+| 14 | Search, Showroom mode | ⬜ To do |
+| 15 | Tests, accessibility and Lighthouse pass | ⬜ To do |
+
+Unplanned: `5ded719` fix(deploy), launch check made opt-in for Vercel.

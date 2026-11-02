@@ -1,0 +1,162 @@
+---
+// Drawer shell: slides in from the right on desktop (1200px+), up from the bottom on tablets
+// and phones (brief Prompt 00-D/E). Behaviour lives in src/scripts/drawer.ts.
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props {
+  /** Id used by openDrawer(). */
+  id: string;
+  title: string;
+  /** Line under the title. */
+  sub?: string;
+}
+
+const { id, title, sub } = Astro.props;
+const titleId = `drawer-${id}-title`;
+---
+
+<div class="drawer" data-drawer={id} inert>
+  <div class="backdrop" data-drawer-backdrop></div>
+  <section class="panel" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+    <span class="handle" aria-hidden="true"></span>
+    <header class="head">
+      <div class="head-text">
+        <h2 id={titleId} class="title">{title}</h2>
+        {sub && <p class="small muted">{sub}</p>}
+      </div>
+      <button type="button" class="close" aria-label="Close" data-drawer-close>
+        <Icon name="close" size={24} />
+      </button>
+    </header>
+    <div class="body">
+      <slot />
+    </div>
+    {
+      Astro.slots.has('footer') && (
+        <footer class="foot">
+          <slot name="footer" />
+        </footer>
+      )
+    }
+  </section>
+</div>
+
+<style>
+  .drawer {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    visibility: hidden;
+    transition: visibility 0s linear var(--dur-ui-slow);
+  }
+
+  .drawer[data-open] {
+    visibility: visible;
+    transition: none;
+  }
+
+  .backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(14, 47, 40, 0.45);
+    opacity: 0;
+    transition: opacity var(--dur-ui-slow) var(--ease);
+  }
+
+  [data-open] .backdrop {
+    opacity: 1;
+  }
+
+  /* Tablet and phone: bottom sheet. */
+  .panel {
+    position: absolute;
+    inset: auto 0 0;
+    display: flex;
+    flex-direction: column;
+    max-height: 92dvh;
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    background: var(--ivory);
+    box-shadow: 0 -12px 40px rgba(14, 47, 40, 0.2);
+    transform: translateY(100%);
+    transition: transform 400ms var(--ease);
+  }
+
+  [data-open] .panel {
+    transform: none;
+  }
+
+  .handle {
+    align-self: center;
+    width: 44px;
+    height: 4px;
+    margin-top: 10px;
+    border-radius: 2px;
+    background: var(--beige);
+  }
+
+  /* Desktop: side panel from the right. */
+  @media (min-width: 1200px) {
+    .panel {
+      inset: 0 0 0 auto;
+      width: min(480px, 100vw);
+      max-height: none;
+      border-radius: var(--radius-card) 0 0 var(--radius-card);
+      box-shadow: -12px 0 40px rgba(14, 47, 40, 0.18);
+      transform: translateX(100%);
+    }
+
+    .handle {
+      display: none;
+    }
+  }
+
+  .head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-3) var(--space-2);
+    border-bottom: var(--border);
+  }
+
+  .head-text {
+    display: grid;
+    gap: 6px;
+  }
+
+  .title {
+    font-size: var(--fs-h3);
+  }
+
+  .close {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: var(--touch-min);
+    height: var(--touch-min);
+    margin: -8px -8px 0 0;
+    border: 0;
+    border-radius: var(--radius-button);
+    background: transparent;
+    color: var(--green);
+  }
+
+  .close:hover {
+    background: rgba(18, 59, 50, 0.06);
+  }
+
+  .body {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: var(--space-3);
+  }
+
+  .foot {
+    display: grid;
+    gap: 12px;
+    padding: var(--space-2) var(--space-3) calc(var(--space-3) + env(safe-area-inset-bottom));
+    border-top: var(--border);
+    background: var(--ivory);
+  }
+</style>

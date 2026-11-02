@@ -1,0 +1,92 @@
+---
+// A form question answered with chips: real radio (single) or checkbox (multi) inputs styled as
+// the brief's chips, so they submit with the form and work with the keyboard.
+interface Props {
+  legend: string;
+  name: string;
+  options: readonly string[];
+  multiple?: boolean;
+  /** Pre-selected values. */
+  selected?: string[];
+  class?: string;
+}
+
+const { legend, name, options, multiple = false, selected = [], class: className } = Astro.props;
+---
+
+<fieldset class:list={['choice', className]}>
+  <legend class="choice-legend">{legend}</legend>
+  <div class="choice-options">
+    {
+      options.map((option) => (
+        <label class="choice-chip">
+          <input type={multiple ? 'checkbox' : 'radio'} name={name} value={option} checked={selected.includes(option)} />
+          <span>{option}</span>
+        </label>
+      ))
+    }
+  </div>
+</fieldset>
+
+<style>
+  .choice {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .choice-legend {
+    margin-bottom: 8px;
+    padding: 0;
+    font-size: var(--fs-small);
+    font-weight: 500;
+    color: var(--green);
+  }
+
+  .choice-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .choice-chip {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .choice-chip input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .choice-chip span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 18px;
+    border-radius: var(--radius-chip);
+    background: var(--beige);
+    color: var(--green);
+    font-size: 15px;
+    font-weight: 500;
+    transition:
+      background var(--dur-ui) var(--ease),
+      color var(--dur-ui) var(--ease);
+  }
+
+  .choice-chip:hover span {
+    background: color-mix(in srgb, var(--beige), var(--green) 6%);
+  }
+
+  .choice-chip input:checked + span {
+    background: var(--green);
+    color: var(--on-green);
+  }
+
+  .choice-chip input:focus-visible + span {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+  }
+</style>

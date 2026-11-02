@@ -22,7 +22,7 @@ Work one task at a time, in the order listed in `DECISIONS.md`.
 1. **Read** the decisions and the brief sections the task touches.
 2. **Build** the task. Match the brief's copy, labels, colours and sizes exactly; keep `[SQUARE BRACKET]` placeholders as visible placeholders.
 3. **Check** it: `npm run build` passes, and the page works at mobile (360), tablet (1024 landscape) and desktop widths.
-4. **Log** it: add an entry to today's changelog (see below).
+4. **Log** it: add an entry to today's changelog (see below), and set the task's row in the `DECISIONS.md` task table to ✅ Done (add the previous task's commit hash if it is missing).
 5. **Stop** and hand the task to the user for review. Start the next task only after the user approves.
 
 ## Rules

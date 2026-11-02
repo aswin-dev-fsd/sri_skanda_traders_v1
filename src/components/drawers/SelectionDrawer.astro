@@ -1,0 +1,184 @@
+---
+// My Selection drawer (brief Prompt 00-E), opened from the header star. The list is rendered
+// in the browser from the selection store (src/stores/selection.ts).
+import Drawer from '@/components/drawers/Drawer.astro';
+import Button from '@/components/ui/Button.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { routes } from '@/config/site';
+---
+
+<Drawer id="selection" title="My Selection">
+  <p class="count small muted" data-selection-summary></p>
+
+  <ul class="list" data-selection-list></ul>
+
+  <div class="empty" data-selection-empty hidden>
+    <Icon name="star" size={40} class="empty-star" />
+    <p>Nothing saved yet. Tap the ☆ on any tile to keep it here.</p>
+  </div>
+
+  <template data-selection-row>
+    <li class="row">
+      <a class="thumb" data-thumb></a>
+      <div class="info">
+        <a class="name" data-name></a>
+        <p class="meta small muted tabular" data-meta></p>
+      </div>
+      <button type="button" class="remove" data-remove>
+        <Icon name="close" size={20} />
+      </button>
+    </li>
+  </template>
+
+  <Fragment slot="footer">
+    <div class="actions" data-selection-actions>
+      <Button variant="secondary" href={routes.mySelection}>View full list</Button>
+      <Button data-enquire-selection>Send as one enquiry</Button>
+    </div>
+  </Fragment>
+</Drawer>
+
+<style>
+  .count {
+    margin-bottom: var(--space-2);
+  }
+
+  .list {
+    display: grid;
+    gap: 12px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 64px 1fr auto;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 12px;
+    border: var(--border);
+    border-radius: var(--radius-card);
+    background: var(--surface);
+  }
+
+  .thumb {
+    display: block;
+    width: 64px;
+    height: 64px;
+    border: var(--border);
+    border-radius: 0 12px 0 0;
+    background-color: var(--beige);
+    background-size: cover;
+    background-position: center;
+  }
+
+  .info {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .name {
+    color: var(--green);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .name:hover {
+    text-decoration: underline;
+  }
+
+  .meta {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: none;
+  }
+
+  .remove {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--muted);
+  }
+
+  .remove:hover {
+    background: rgba(18, 59, 50, 0.06);
+    color: var(--green);
+  }
+
+  .empty {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+    padding: var(--space-6) var(--space-2);
+    text-align: center;
+    color: var(--muted);
+  }
+
+  .empty[hidden] {
+    display: none;
+  }
+
+  .empty :global(.empty-star) {
+    color: var(--beige);
+  }
+
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .actions :global(.btn) {
+    padding-inline: 12px;
+  }
+
+  .actions[hidden] {
+    display: none;
+  }
+</style>
+
+<script>
+  import { $selection, removeItem, restoreItem } from '@/stores/selection';
+  import { showToast } from '@/scripts/toast';
+
+  const list = document.querySelector<HTMLUListElement>('[data-selection-list]');
+  const empty = document.querySelector<HTMLElement>('[data-selection-empty]');
+  const summary = document.querySelector<HTMLElement>('[data-selection-summary]');
+  const actions = document.querySelector<HTMLElement>('[data-selection-actions]');
+  const rowTemplate = document.querySelector<HTMLTemplateElement>('[data-selection-row]');
+
+  $selection.subscribe((items) => {
+    if (!list || !rowTemplate) return;
+    list.replaceChildren(
+      ...items.map((item) => {
+        const row = rowTemplate.content.firstElementChild!.cloneNode(true) as HTMLElement;
+        const thumb = row.querySelector<HTMLAnchorElement>('[data-thumb]')!;
+        thumb.href = item.href;
+        thumb.tabIndex = -1;
+        thumb.setAttribute('aria-hidden', 'true');
+        if (item.thumb) thumb.style.backgroundImage = `url("${item.thumb}")`;
+        else if (item.swatch) thumb.style.backgroundColor = item.swatch;
+        const name = row.querySelector<HTMLAnchorElement>('[data-name]')!;
+        name.href = item.href;
+        name.textContent = item.colour ? `${item.name} · ${item.colour}` : item.name;
+        row.querySelector('[data-meta]')!.textContent = [item.code, item.size, item.brand].filter(Boolean).join(' · ');
+        const remove = row.querySelector<HTMLButtonElement>('[data-remove]')!;
+        remove.setAttribute('aria-label', `Remove ${name.textContent}`);
+        remove.addEventListener('click', () => {
+          const removed = removeItem(item.id);
+          if (removed) showToast(`Removed ${removed.name}`, { label: 'Undo', onClick: () => restoreItem(removed) });
+        });
+        return row;
+      }),
+    );
+    if (empty) empty.hidden = items.length > 0;
+    if (actions) actions.hidden = items.length === 0;
+    if (summary) summary.textContent = items.length ? `${items.length} saved ${items.length === 1 ? 'item' : 'items'}` : '';
+  });
+</script>
