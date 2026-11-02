@@ -1,8 +1,9 @@
 // Launch guard: lists placeholder business details in src/config/site.ts and
 // references to temporary images (src/assets/_temp/) anywhere in src/.
 //
-// Strict (exits 1 when anything is found) with `--strict` or on a Vercel production
-// deploy (VERCEL_ENV=production). Otherwise it only prints a warning.
+// Strict (exits 1 when anything is found) with `--strict` or when the environment variable
+// LAUNCH_CHECK=strict is set (add it to Vercel's Production environment at launch).
+// Otherwise it only prints a warning, so pre-launch deploys still build.
 
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -11,7 +12,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const srcDir = path.join(root, 'src');
 const tempDir = path.join(srcDir, 'assets', '_temp');
-const strict = process.argv.includes('--strict') || process.env.VERCEL_ENV === 'production';
+const strict = process.argv.includes('--strict') || process.env.LAUNCH_CHECK === 'strict';
 
 const PLACEHOLDER = /^\[.+\]$/;
 const SCANNED = new Set(['.astro', '.ts', '.js', '.mjs', '.css', '.md', '.mdx', '.yaml', '.yml', '.json']);
@@ -62,4 +63,4 @@ if (strict) {
   console.error(`Launch check FAILED. Replace these before launch:\n${report}`);
   process.exit(1);
 }
-console.warn(`Launch check (warning only, not a production build):\n${report}`);
+console.warn(`Launch check (warning only; set LAUNCH_CHECK=strict to fail):\n${report}`);

@@ -30,7 +30,7 @@ When a decision changes, edit it here and note the change in that day's changelo
 | Images | Stored in the repo and optimised by Astro at build time. |
 | Temporary images | AI-generated stand-ins for the Home hero "Try a floor" (one living room, 3 floor variants), the Home before/after slider, and 2–3 demo collections. Everything else uses grey labelled boxes, e.g. `[PHOTO: living room, light floor]`. The developer writes the prompts, the user generates the images. All temporary images live in `src/assets/_temp/`. |
 | Business details | Phone, WhatsApp number, email, address, hours and map link are placeholders in `src/config/site.ts`. |
-| Launch guard | `scripts/check-launch.mjs` lists every `[PLACEHOLDER]` value in `src/config/site.ts` and every `_temp/` reference in `src/`. `npm run build` only warns; `npm run build:launch` and Vercel production deploys (`VERCEL_ENV=production`) fail. Vercel preview deploys still build. |
+| Launch guard | `scripts/check-launch.mjs` lists every `[PLACEHOLDER]` value in `src/config/site.ts` and every `_temp/` reference in `src/`. `npm run build` only warns. It fails with `npm run build:launch`, or when `LAUNCH_CHECK=strict` is set (add it to Vercel's Production environment at launch; see `DEPLOYMENT.md`). Changed 2026-11-02: it originally failed every Vercel production deploy, which blocked pre-launch deploys from `main`. |
 | Feature flags | One place: `src/config/site.ts`. |
 
 ## Features
@@ -58,6 +58,10 @@ All routes live in `routes` in `src/config/site.ts`.
 | Granite / Adhesives | `/granite`, `/adhesives` |
 | Tile collection / product detail | `/collection/[slug]`, `/product/[slug]` |
 | Other pages | `/visualizer`, `/my-selection`, `/gallery`, `/about`, `/contact`, `/privacy`, `/terms` |
+
+## Internal pages
+
+`/styleguide` shows every token and shared component for review. It is `noindex` and not linked from the menus.
 
 ## Logo
 

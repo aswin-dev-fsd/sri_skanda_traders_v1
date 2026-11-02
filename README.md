@@ -18,6 +18,7 @@ npm run build:launch  # launch build: fails while placeholders or temporary imag
 Business details (phone, WhatsApp, address, hours) and feature flags live in `src/config/site.ts`. Design tokens live in `src/styles/tokens.css`.
 
 - Decisions and task order: [`docs/DECISIONS.md`](docs/DECISIONS.md)
+- Deploying to Vercel: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)
 - All documentation: [`docs/README.md`](docs/README.md)
 - Changelogs: [`docs/changelogs/`](docs/changelogs/)
 - Rules for AI coding agents: [`AGENTS.md`](AGENTS.md)
