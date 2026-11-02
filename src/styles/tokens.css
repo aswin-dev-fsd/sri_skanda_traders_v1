@@ -1,0 +1,71 @@
+/*
+ * Design tokens from the brief (Prompt 00). Use only these values.
+ * Breakpoints cannot be custom properties; use these in media queries:
+ *   mobile 360–767 · tablet 768–1199 (showroom target 1024–1280 landscape) · desktop 1200+
+ */
+
+:root {
+  /* Colour */
+  --green: #123b32; /* Royal Forest Green: header, headings, primary buttons, footer */
+  --ivory: #f8f6ef; /* Warm Ivory: page background */
+  --gold: #d4af37; /* Champagne Gold: accents only. As text, only on green. */
+  --charcoal: #2e3a35; /* Deep Charcoal Green: body text */
+  --beige: #e7e2d6; /* Stone Beige: borders, dividers, chips */
+
+  /* Allowed tints */
+  --surface: #fffdf8; /* card surface */
+  --muted: #5b655f; /* muted text on ivory */
+  --muted-on-green: #c9d3cc;
+  --green-hover: #0e2f28;
+  --gold-hover: #c29e2c;
+  --on-green: #f8f6ef;
+
+  /* Type */
+  --font: 'Poppins', Arial, sans-serif;
+  --fs-display: clamp(2.25rem, 1.4rem + 3.4vw, 4rem); /* 36 → 64px */
+  --fs-h2: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem); /* 28 → 40px */
+  --fs-h3: clamp(1.25rem, 1.15rem + 0.45vw, 1.5rem); /* 20 → 24px */
+  --fs-body-lg: clamp(1.0625rem, 1.04rem + 0.1vw, 1.125rem); /* 17 → 18px */
+  --fs-body: 1rem;
+  --fs-small: 0.875rem;
+  --fs-eyebrow: clamp(0.75rem, 0.73rem + 0.1vw, 0.8125rem); /* 12 → 13px */
+  --fs-button: 1rem;
+  --measure: 66ch; /* paragraph width 60–68 characters */
+
+  /* Spacing (8px scale) */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-6: 48px;
+  --space-8: 64px;
+  --space-12: 96px;
+  --space-16: 128px;
+  --section-y: 64px; /* 88px tablet, 128px desktop: set in global.css */
+
+  /* Layout */
+  --content-max: 1320px;
+  --gutter: 24px;
+  --page-x: 20px; /* 32px from tablet up: set in global.css */
+  --header-h: 88px;
+  --header-h-compact: 68px;
+
+  /* Shape */
+  --radius-card: 20px;
+  --radius-image: 16px;
+  --radius-button: 12px;
+  --radius-input: 12px;
+  --radius-chip: 999px;
+  --border: 1px solid var(--beige);
+  --shadow-lift: 0 12px 32px rgba(18, 59, 50, 0.1);
+  --touch-min: 48px;
+
+  /* Motion */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-ui: 200ms;
+  --dur-ui-slow: 300ms;
+  --dur-reveal: 600ms;
+  --dur-reveal-slow: 900ms;
+  --rise-distance: 16px;
+  --stagger: 60ms;
+}

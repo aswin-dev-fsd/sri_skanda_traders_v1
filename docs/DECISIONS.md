@@ -30,7 +30,7 @@ When a decision changes, edit it here and note the change in that day's changelo
 | Images | Stored in the repo and optimised by Astro at build time. |
 | Temporary images | AI-generated stand-ins for the Home hero "Try a floor" (one living room, 3 floor variants), the Home before/after slider, and 2–3 demo collections. Everything else uses grey labelled boxes, e.g. `[PHOTO: living room, light floor]`. The developer writes the prompts, the user generates the images. All temporary images live in `src/assets/_temp/`. |
 | Business details | Phone, WhatsApp number, email, address, hours and map link are placeholders in `src/config/site.ts`. |
-| Launch guard | The production build fails if any `_temp` image or placeholder business detail is still in use. |
+| Launch guard | `scripts/check-launch.mjs` lists every `[PLACEHOLDER]` value in `src/config/site.ts` and every `_temp/` reference in `src/`. `npm run build` only warns; `npm run build:launch` and Vercel production deploys (`VERCEL_ENV=production`) fail. Vercel preview deploys still build. |
 | Feature flags | One place: `src/config/site.ts`. |
 
 ## Features
