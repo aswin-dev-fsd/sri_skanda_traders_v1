@@ -45,6 +45,24 @@ When a decision changes, edit it here and note the change in that day's changelo
 | Showroom mode | Built as the brief specifies (Prompt 00, section K). Off unless the URL has `?mode=showroom`. The tablet model is unknown, so test at 1024–1280 landscape in browser emulation. |
 | Pages | All 8 pages are built before launch, Gallery included. Reviews and projects stay as labelled placeholders until the client supplies real ones (the brief forbids invented reviews). |
 
+## URLs
+
+All routes live in `routes` in `src/config/site.ts`.
+
+| Page | URL |
+|---|---|
+| Products (all listings) | `/products` |
+| Tiles | `/tiles`, `/tiles/floor`, `/tiles/wall`, `/tiles/vitrified` |
+| Tiles by space | `/tiles/living-room`, `/tiles/bedroom`, `/tiles/kitchen`, `/tiles/bathroom`, `/tiles/parking`, `/tiles/elevation`, `/tiles/outdoor` |
+| Bathware | `/bathware`, `/bathware/sanitary-ware`, `/bathware/faucets`, `/bathware/accessories` |
+| Granite / Adhesives | `/granite`, `/adhesives` |
+| Tile collection / product detail | `/collection/[slug]`, `/product/[slug]` |
+| Other pages | `/visualizer`, `/my-selection`, `/gallery`, `/about`, `/contact`, `/privacy`, `/terms` |
+
+## Logo
+
+Until the client sends SVGs, the header and footer use the approved ivory/gold logo PNG taken from the reference mockup (`src/assets/brand/logo-on-green.png`).
+
 ## Reference Home mockup
 
 [`Website prompts/Sri Skanda Home Mockup – Home page ( reference ).html`](Website%20prompts/Sri%20Skanda%20Home%20Mockup%20–%20Home%20page%20(%20reference%20).html) is a visual reference only. Its code is a bundled design-tool export and is not reused. What it establishes:

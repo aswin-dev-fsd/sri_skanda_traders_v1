@@ -1,0 +1,27 @@
+---
+// Approved ivory/gold logo for green backgrounds, taken from the reference Home mockup.
+// TODO: swap for the client's SVG once supplied.
+import { Image } from 'astro:assets';
+import logo from '@/assets/brand/logo-on-green.png';
+import { business } from '@/config/site';
+
+interface Props {
+  /** Rendered height in px. */
+  height: number;
+  /** Decorative copies (the footer watermark) pass an empty alt. */
+  decorative?: boolean;
+  class?: string;
+  loading?: 'eager' | 'lazy';
+}
+
+const { height, decorative = false, class: className, loading = 'lazy' } = Astro.props;
+---
+
+<Image
+  src={logo}
+  alt={decorative ? '' : `${business.name} — ${business.tagline}`}
+  height={height}
+  densities={[1, 2]}
+  class={className}
+  loading={loading}
+/>

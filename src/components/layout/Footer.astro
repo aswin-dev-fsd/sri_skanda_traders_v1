@@ -1,0 +1,259 @@
+---
+// Site footer (brief Prompt 00-B): grout-line strip, four columns, social icons,
+// bottom bar and a faint logo watermark.
+import Icon, { type IconName } from '@/components/ui/Icon.astro';
+import Logo from '@/components/layout/Logo.astro';
+import { business, footerMenu, routes } from '@/config/site';
+import { hrefOrHash, whatsappUrl } from '@/lib/links';
+
+const socials: { label: string; icon: IconName; href: string }[] = [
+  { label: 'Instagram', icon: 'instagram', href: hrefOrHash(business.social.instagram) },
+  { label: 'WhatsApp', icon: 'whatsapp', href: whatsappUrl('your products') },
+  { label: 'Facebook', icon: 'facebook', href: hrefOrHash(business.social.facebook) },
+  { label: 'YouTube', icon: 'youtube', href: hrefOrHash(business.social.youtube) },
+];
+---
+
+<footer class="site-footer on-green">
+  <div class="grout" aria-hidden="true"></div>
+  <Logo height={420} decorative class="watermark" />
+
+  <div class="cols container">
+    <div class="col brand">
+      <Logo height={110} class="footer-logo" />
+      <p class="small muted">
+        Tiles, granite and bathware from trusted brands, with honest advice and service that feels like family.
+      </p>
+      <ul class="socials">
+        {
+          socials.map((s) => (
+            <li>
+              <a
+                href={s.href}
+                class="social"
+                aria-label={s.label}
+                target={s.href === '#' ? undefined : '_blank'}
+                rel={s.href === '#' ? undefined : 'noopener'}
+              >
+                <Icon name={s.icon} size={22} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <nav class="col" aria-labelledby="footer-products">
+      <p class="col-title" id="footer-products">Products</p>
+      <ul>
+        {
+          footerMenu.products.map((link) => (
+            <li>
+              <a href={link.href} class="footer-link">
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <nav class="col" aria-labelledby="footer-explore">
+      <p class="col-title" id="footer-explore">Explore</p>
+      <ul>
+        {
+          footerMenu.explore.map((link) => (
+            <li>
+              <a href={link.href} class="footer-link">
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="col visit">
+      <p class="col-title">Visit us</p>
+      <address>
+        <span>{business.address}, {business.location}</span>
+        <span>{business.hours}</span>
+        <span class="tabular">{business.phone}</span>
+        <span>{business.email}</span>
+      </address>
+      <a href={hrefOrHash(business.mapsUrl)} class="footer-link directions">
+        Get directions <Icon name="arrow-right" size={18} class="arrow" />
+      </a>
+    </div>
+  </div>
+
+  <div class="bottom container small">
+    <span>© 2026 {business.name} · {business.tagline}</span>
+    <span class="legal">
+      <a href={routes.privacy} class="footer-link">Privacy</a>
+      <span aria-hidden="true">·</span>
+      <a href={routes.terms} class="footer-link">Terms</a>
+    </span>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    position: relative;
+    overflow: hidden;
+    color: var(--muted-on-green);
+  }
+
+  .grout {
+    height: var(--space-6);
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-size: 48px 48px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.35);
+  }
+
+  .site-footer :global(.watermark) {
+    position: absolute;
+    right: -60px;
+    bottom: -80px;
+    width: 420px;
+    height: auto;
+    opacity: 0.04;
+    pointer-events: none;
+  }
+
+  .cols {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    padding-block: var(--space-8) var(--space-6);
+  }
+
+  @media (min-width: 768px) {
+    .cols {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .cols {
+      grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+    }
+  }
+
+  .col {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+  }
+
+  .col ul {
+    display: grid;
+    gap: 4px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .brand :global(.footer-logo) {
+    width: auto;
+    height: 110px;
+  }
+
+  .brand p {
+    max-width: 34ch;
+    font-size: 15px;
+  }
+
+  .col-title {
+    font-size: var(--fs-eyebrow);
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .footer-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 36px;
+    color: var(--on-green);
+    font-size: 15px;
+    text-decoration: none;
+    transition: color var(--dur-ui) var(--ease);
+  }
+
+  .footer-link:hover {
+    color: var(--gold);
+  }
+
+  .footer-link :global(.arrow) {
+    transition: transform var(--dur-ui) var(--ease);
+  }
+
+  .footer-link:hover :global(.arrow) {
+    transform: translateX(4px);
+  }
+
+  address {
+    display: grid;
+    gap: 6px;
+    font-style: normal;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .directions {
+    font-weight: 600;
+  }
+
+  .socials {
+    display: flex !important;
+    gap: var(--space-1) !important;
+  }
+
+  .social {
+    display: grid;
+    place-items: center;
+    width: var(--touch-min);
+    height: var(--touch-min);
+    border: 1px solid rgba(248, 246, 239, 0.2);
+    border-radius: var(--radius-chip);
+    color: var(--gold);
+    transition: border-color var(--dur-ui) var(--ease);
+  }
+
+  .social:hover {
+    border-color: var(--gold);
+  }
+
+  .bottom {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    /* Bottom padding keeps the links clear of the floating WhatsApp button. */
+    padding-block: 20px 96px;
+    border-top: 1px solid rgba(248, 246, 239, 0.12);
+  }
+
+  @media (min-width: 768px) {
+    .bottom {
+      padding-bottom: 28px;
+      padding-right: calc(var(--page-x) + 80px);
+    }
+  }
+
+  .legal {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .legal .footer-link {
+    font-size: var(--fs-small);
+  }
+</style>

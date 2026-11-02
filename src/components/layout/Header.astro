@@ -1,0 +1,863 @@
+---
+// Site header (brief Prompt 00-A): solid green, 88px shrinking to 68px after 80px of scroll,
+// Products mega menu, search bar, My Selection star, Enquire Now, and a full-screen menu below 1200px.
+import Icon from '@/components/ui/Icon.astro';
+import Logo from '@/components/layout/Logo.astro';
+import { features, nav, productMenu, productPaths, routes } from '@/config/site';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) =>
+  href === routes.products ? productPaths.some((p) => path === p || path.startsWith(`${p}/`)) : path === href;
+const items = nav.filter((item) => features.visualizer || item.href !== routes.visualizer);
+const [tilesGroup, spaceGroup, bathwareGroup, moreGroup] = productMenu;
+---
+
+<header class="site-header" data-header>
+  <div class="bar container">
+    <a class="logo" href={routes.home} aria-label="Sri Skanda Traders home">
+      <Logo height={64} loading="eager" class="logo-img" />
+    </a>
+
+    <nav class="main-nav" aria-label="Main">
+      <ul>
+        {
+          items.map((item) =>
+            item.href === routes.products ? (
+              <li>
+                <button
+                  type="button"
+                  class:list={['nav-link', 'nav-trigger', { active: isActive(item.href) }]}
+                  aria-expanded="false"
+                  aria-controls="mega-menu"
+                  data-mega-trigger
+                >
+                  {item.label}
+                  <Icon name="chevron-down" size={16} class="chevron" />
+                </button>
+              </li>
+            ) : (
+              <li>
+                <a
+                  href={item.href}
+                  class:list={['nav-link', { active: isActive(item.href) }]}
+                  aria-current={isActive(item.href) ? 'page' : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ),
+          )
+        }
+      </ul>
+    </nav>
+
+    <div class="actions">
+      {
+        features.search && (
+          <button
+            type="button"
+            class="icon-btn search-btn"
+            aria-label="Search"
+            aria-expanded="false"
+            aria-controls="search-panel"
+            data-search-trigger
+          >
+            <Icon name="search" size={22} />
+          </button>
+        )
+      }
+      <a class="selection-btn" href={routes.mySelection} data-selection-open>
+        <Icon name="star" size={20} filled class="selection-star" />
+        <span class="selection-count tabular" data-selection-count>0</span>
+        <span class="visually-hidden">saved items in My Selection</span>
+      </a>
+      <a class="enquire-btn" href={routes.contact} data-enquire>Enquire Now</a>
+      <button
+        type="button"
+        class="icon-btn menu-btn"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        data-menu-open
+      >
+        <Icon name="menu" size={26} />
+      </button>
+    </div>
+  </div>
+
+  <div id="mega-menu" class="mega" data-mega inert>
+    <div class="mega-inner container">
+      {
+        [[tilesGroup], [spaceGroup], [bathwareGroup, moreGroup]].map((column) => (
+          <div class="mega-col">
+            {column.map((group) => (
+              <div class="mega-group">
+                <p class="mega-title">{group.title}</p>
+                <ul>
+                  {group.links.map((link) => (
+                    <li>
+                      <a href={link.href} class="mega-link">
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        ))
+      }
+      {
+        features.visualizer && (
+          <a class="mega-feature" href={routes.visualizer}>
+            <span class="mega-feature-img" aria-hidden="true">
+              [PHOTO: living room with a light floor]
+            </span>
+            <span class="mega-feature-link">
+              Try tiles in 3D <Icon name="arrow-right" size={18} class="arrow" />
+            </span>
+          </a>
+        )
+      }
+    </div>
+  </div>
+
+  {
+    features.search && (
+      <div id="search-panel" class="search-panel" data-search-panel inert>
+        <form class="search-form container" role="search" action={routes.products} data-search-form>
+          <Icon name="search" size={22} class="search-icon" />
+          <label class="visually-hidden" for="site-search">
+            Search collections, categories or product codes
+          </label>
+          <input
+            id="site-search"
+            class="search-input"
+            type="search"
+            name="q"
+            placeholder="Search collections, categories or product codes"
+            autocomplete="off"
+            data-search-input
+          />
+          <button type="button" class="icon-btn" aria-label="Close search" data-search-close>
+            <Icon name="close" size={22} />
+          </button>
+        </form>
+      </div>
+    )
+  }
+</header>
+<div class="header-spacer" aria-hidden="true"></div>
+
+<div id="mobile-menu" class="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu" data-menu inert>
+  <div class="mobile-top container">
+    <a class="logo" href={routes.home} aria-label="Sri Skanda Traders home">
+      <Logo height={52} class="logo-img" />
+    </a>
+    <button type="button" class="icon-btn" aria-label="Close menu" data-menu-close>
+      <Icon name="close" size={26} />
+    </button>
+  </div>
+
+  <div class="mobile-body container">
+    {
+      features.search && (
+        <form class="mobile-search" role="search" action={routes.products}>
+          <label class="visually-hidden" for="mobile-search">
+            Search collections, categories or product codes
+          </label>
+          <Icon name="search" size={20} class="search-icon" />
+          <input id="mobile-search" type="search" name="q" placeholder="Search tiles, codes…" autocomplete="off" />
+        </form>
+      )
+    }
+
+    <ul class="mobile-list">
+      {
+        items.map((item) =>
+          item.href === routes.products ? (
+            <li>
+              <button
+                type="button"
+                class:list={['mobile-row', { active: isActive(item.href) }]}
+                aria-expanded="false"
+                aria-controls="mobile-products"
+                data-accordion
+              >
+                {item.label}
+                <Icon name="chevron-down" size={22} class="chevron" />
+              </button>
+              <div id="mobile-products" class="mobile-sub" hidden>
+                {productMenu.map((group) => (
+                  <div class="mobile-group">
+                    <p class="mega-title">{group.title}</p>
+                    <ul>
+                      {group.links.map((link) => (
+                        <li>
+                          <a href={link.href} class="mobile-sub-link">
+                            {link.label}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </li>
+          ) : (
+            <li>
+              <a
+                href={item.href}
+                class:list={['mobile-row', { active: isActive(item.href) }]}
+                aria-current={isActive(item.href) ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ),
+        )
+      }
+      <li>
+        <a href={routes.mySelection} class="mobile-row" data-selection-open>
+          My Selection
+          <span class="mobile-count tabular">
+            <Icon name="star" size={18} filled class="selection-star" />
+            <span data-selection-count>0</span>
+          </span>
+        </a>
+      </li>
+    </ul>
+
+    <a class="enquire-btn mobile-enquire" href={routes.contact} data-enquire>Enquire Now</a>
+  </div>
+</div>
+
+<style>
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    background: var(--green);
+    color: var(--on-green);
+    transition: box-shadow var(--dur-ui-slow) var(--ease);
+  }
+
+  .site-header[data-scrolled] {
+    box-shadow: 0 2px 16px rgba(14, 47, 40, 0.18);
+  }
+
+  .header-spacer {
+    height: var(--header-h);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: var(--header-h);
+    transition: height var(--dur-ui-slow) var(--ease);
+  }
+
+  [data-scrolled] .bar {
+    height: var(--header-h-compact);
+  }
+
+  .logo {
+    flex: none;
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+  }
+
+  .logo :global(.logo-img) {
+    width: auto;
+    height: 64px;
+    transform-origin: left center;
+    transition: transform var(--dur-ui-slow) var(--ease);
+  }
+
+  [data-scrolled] .logo :global(.logo-img) {
+    transform: scale(0.78);
+  }
+
+  /* Main nav */
+  .main-nav {
+    display: none;
+    flex: 1;
+  }
+
+  .main-nav ul {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  .nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: var(--touch-min);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--on-green);
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color var(--dur-ui) var(--ease);
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 6px;
+    height: 2px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-ui) var(--ease);
+  }
+
+  .nav-link:hover {
+    color: var(--gold);
+  }
+
+  .nav-link.active::after,
+  .nav-trigger[aria-expanded='true']::after {
+    transform: scaleX(1);
+  }
+
+  .nav-link :global(.chevron) {
+    transition: transform var(--dur-ui) var(--ease);
+  }
+
+  .nav-trigger[aria-expanded='true'] :global(.chevron) {
+    transform: rotate(180deg);
+  }
+
+  /* Right-hand actions */
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+  }
+
+  .icon-btn {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: var(--touch-min);
+    height: var(--touch-min);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-button);
+    background: transparent;
+    color: inherit;
+    transition: background var(--dur-ui) var(--ease);
+  }
+
+  .icon-btn:hover {
+    background: rgba(248, 246, 239, 0.08);
+  }
+
+  .search-btn {
+    display: none;
+  }
+
+  .selection-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 44px;
+    padding: 0 14px 0 10px;
+    border: 1px solid rgba(248, 246, 239, 0.25);
+    border-radius: var(--radius-chip);
+    color: var(--on-green);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    text-decoration: none;
+    transition: border-color var(--dur-ui) var(--ease);
+  }
+
+  .selection-btn:hover {
+    border-color: var(--gold);
+  }
+
+  :global(.selection-star) {
+    color: var(--gold);
+  }
+
+  .enquire-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--touch-min);
+    padding: 0 12px;
+    border-radius: var(--radius-button);
+    background: var(--gold);
+    color: var(--green);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: background var(--dur-ui) var(--ease);
+  }
+
+  .enquire-btn:hover {
+    background: var(--gold-hover);
+    color: var(--green);
+  }
+
+  @media (min-width: 768px) {
+    .bar {
+      gap: var(--space-4);
+    }
+
+    .actions {
+      gap: var(--space-1);
+    }
+
+    .enquire-btn {
+      padding: 0 22px;
+      font-size: 15px;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .main-nav,
+    .search-btn {
+      display: block;
+    }
+
+    .actions {
+      gap: 12px;
+    }
+
+    .menu-btn {
+      display: none;
+    }
+  }
+
+  /* Mega menu */
+  .mega,
+  .search-panel {
+    position: absolute;
+    inset: 100% 0 auto;
+    background: var(--ivory);
+    color: var(--charcoal);
+    border-bottom: var(--border);
+    box-shadow: var(--shadow-lift);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition:
+      opacity var(--dur-ui) var(--ease),
+      transform var(--dur-ui) var(--ease),
+      visibility 0s linear var(--dur-ui);
+  }
+
+  .mega[data-open],
+  .search-panel[data-open] {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition:
+      opacity var(--dur-ui) var(--ease),
+      transform var(--dur-ui) var(--ease);
+  }
+
+  .mega-inner {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.3fr);
+    gap: var(--space-4);
+    padding-block: var(--space-6);
+  }
+
+  .mega-col {
+    display: grid;
+    align-content: start;
+    gap: var(--space-4);
+  }
+
+  .mega-title {
+    margin-bottom: 12px;
+    font-size: var(--fs-eyebrow);
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .mega-group ul,
+  .mobile-group ul {
+    display: grid;
+    gap: 4px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .mega-link {
+    display: inline-block;
+    padding-block: 6px;
+    color: var(--green);
+    font-weight: 500;
+    text-decoration: none;
+    background-image: linear-gradient(var(--green), var(--green));
+    background-size: 0 1.5px;
+    background-repeat: no-repeat;
+    background-position: 0 85%;
+    transition: background-size var(--dur-ui) var(--ease);
+  }
+
+  .mega-link:hover {
+    background-size: 100% 1.5px;
+  }
+
+  .mega-feature {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+    color: var(--green);
+    text-decoration: none;
+  }
+
+  .mega-feature-img {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 10;
+    padding: var(--space-2);
+    border: var(--border);
+    border-radius: var(--radius-image);
+    background: var(--beige);
+    color: var(--muted);
+    font-size: var(--fs-small);
+    text-align: center;
+  }
+
+  .mega-feature-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+  }
+
+  .mega-feature :global(.arrow) {
+    transition: transform var(--dur-ui) var(--ease);
+  }
+
+  .mega-feature:hover :global(.arrow) {
+    transform: translateX(4px);
+  }
+
+  /* Search bar */
+  .search-form {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-block: var(--space-2);
+  }
+
+  .search-form :global(.search-icon) {
+    flex: none;
+    color: var(--green);
+  }
+
+  .search-input {
+    flex: 1;
+    height: 52px;
+    padding: 0 var(--space-2);
+    border: var(--border);
+    border-radius: var(--radius-input);
+    background: var(--surface);
+    font-size: var(--fs-body);
+  }
+
+  .search-input:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 0;
+  }
+
+  .search-form .icon-btn {
+    color: var(--green);
+  }
+
+  .search-form .icon-btn:hover {
+    background: rgba(18, 59, 50, 0.06);
+  }
+
+  /* Full-screen menu (below 1200px) */
+  .mobile-menu {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    background: var(--green);
+    color: var(--on-green);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--dur-ui-slow) var(--ease),
+      visibility 0s linear var(--dur-ui-slow);
+  }
+
+  .mobile-menu[data-open] {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity var(--dur-ui-slow) var(--ease);
+  }
+
+  .mobile-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--header-h);
+  }
+
+  .mobile-top :global(.logo-img) {
+    width: auto;
+    height: 52px;
+  }
+
+  .mobile-body {
+    display: grid;
+    gap: var(--space-3);
+    padding-bottom: var(--space-6);
+  }
+
+  .mobile-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 56px;
+    padding: 0 var(--space-2);
+    border: 1px solid rgba(248, 246, 239, 0.25);
+    border-radius: var(--radius-input);
+  }
+
+  .mobile-search input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    border: 0;
+    background: transparent;
+    color: var(--on-green);
+    font-size: var(--fs-body);
+  }
+
+  .mobile-search input::placeholder {
+    color: var(--muted-on-green);
+  }
+
+  .mobile-search input:focus {
+    outline: none;
+  }
+
+  .mobile-search:focus-within {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
+
+  .mobile-list {
+    padding: 0;
+    list-style: none;
+  }
+
+  .mobile-list > li {
+    border-bottom: 1px solid rgba(248, 246, 239, 0.12);
+  }
+
+  .mobile-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 56px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--on-green);
+    font-size: 18px;
+    font-weight: 500;
+    text-align: left;
+    text-decoration: none;
+  }
+
+  .mobile-row.active {
+    color: var(--gold);
+  }
+
+  .mobile-row :global(.chevron) {
+    transition: transform var(--dur-ui) var(--ease);
+  }
+
+  .mobile-row[aria-expanded='true'] :global(.chevron) {
+    transform: rotate(180deg);
+  }
+
+  .mobile-sub {
+    display: grid;
+    gap: var(--space-3);
+    padding: 4px 0 var(--space-3);
+  }
+
+  .mobile-group .mega-title {
+    margin-bottom: 4px;
+    color: var(--gold);
+  }
+
+  .mobile-sub-link {
+    display: flex;
+    align-items: center;
+    min-height: var(--touch-min);
+    color: var(--muted-on-green);
+    text-decoration: none;
+  }
+
+  .mobile-sub-link:hover {
+    color: var(--on-green);
+  }
+
+  .mobile-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--fs-small);
+  }
+
+  .mobile-enquire {
+    height: 56px;
+    font-size: var(--fs-button);
+  }
+</style>
+
+<script>
+  const root = document.documentElement;
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const megaTrigger = document.querySelector<HTMLButtonElement>('[data-mega-trigger]');
+  const mega = document.querySelector<HTMLElement>('[data-mega]');
+  const searchTrigger = document.querySelector<HTMLButtonElement>('[data-search-trigger]');
+  const searchPanel = document.querySelector<HTMLElement>('[data-search-panel]');
+  const searchInput = document.querySelector<HTMLInputElement>('[data-search-input]');
+  const menu = document.querySelector<HTMLElement>('[data-menu]');
+  const menuOpen = document.querySelector<HTMLButtonElement>('[data-menu-open]');
+
+  /** Shows or hides a dropdown panel and keeps its trigger in sync. */
+  function setPanel(panel: HTMLElement | null, trigger: HTMLButtonElement | null, open: boolean) {
+    if (!panel) return;
+    panel.toggleAttribute('data-open', open);
+    panel.inert = !open;
+    trigger?.setAttribute('aria-expanded', String(open));
+  }
+
+  const isOpen = (panel: HTMLElement | null) => !!panel?.hasAttribute('data-open');
+
+  // Shrink after 80px of scroll.
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      header?.toggleAttribute('data-scrolled', window.scrollY > 80);
+      ticking = false;
+    });
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // Products mega menu.
+  megaTrigger?.addEventListener('click', () => {
+    setPanel(searchPanel, searchTrigger, false);
+    setPanel(mega, megaTrigger, !isOpen(mega));
+  });
+
+  // Search bar.
+  searchTrigger?.addEventListener('click', () => {
+    setPanel(mega, megaTrigger, false);
+    const open = !isOpen(searchPanel);
+    setPanel(searchPanel, searchTrigger, open);
+    if (open) searchInput?.focus();
+  });
+  document.querySelector('[data-search-close]')?.addEventListener('click', () => {
+    setPanel(searchPanel, searchTrigger, false);
+    searchTrigger?.focus();
+  });
+
+  // Close dropdowns on outside click.
+  document.addEventListener('click', (event) => {
+    if (!header?.contains(event.target as Node)) {
+      setPanel(mega, megaTrigger, false);
+      setPanel(searchPanel, searchTrigger, false);
+    }
+  });
+
+  // Full-screen menu.
+  function setMenu(open: boolean) {
+    if (!menu) return;
+    menu.toggleAttribute('data-open', open);
+    menu.inert = !open;
+    menuOpen?.setAttribute('aria-expanded', String(open));
+    root.style.overflow = open ? 'hidden' : '';
+    if (open) {
+      root.dataset.overlay = 'menu';
+      menu.querySelector<HTMLElement>('[data-menu-close]')?.focus();
+    } else {
+      delete root.dataset.overlay;
+      menuOpen?.focus();
+    }
+  }
+  menuOpen?.addEventListener('click', () => setMenu(true));
+  menu?.querySelector('[data-menu-close]')?.addEventListener('click', () => setMenu(false));
+
+  // Keep keyboard focus inside the open menu.
+  menu?.addEventListener('keydown', (event) => {
+    if (event.key !== 'Tab') return;
+    const focusable = [...menu.querySelectorAll<HTMLElement>('a[href], button, input')].filter(
+      (el) => el.offsetParent !== null,
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last?.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first?.focus();
+    }
+  });
+
+  // Products accordion inside the menu.
+  menu?.querySelectorAll<HTMLButtonElement>('[data-accordion]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const panel = document.getElementById(button.getAttribute('aria-controls') ?? '');
+      const open = button.getAttribute('aria-expanded') !== 'true';
+      button.setAttribute('aria-expanded', String(open));
+      if (panel) panel.hidden = !open;
+    });
+  });
+
+  // Esc closes whatever is open, returning focus to its trigger.
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    if (isOpen(menu)) return setMenu(false);
+    if (isOpen(mega)) {
+      setPanel(mega, megaTrigger, false);
+      megaTrigger?.focus();
+    }
+    if (isOpen(searchPanel)) {
+      setPanel(searchPanel, searchTrigger, false);
+      searchTrigger?.focus();
+    }
+  });
+
+  // The menu belongs to small screens only.
+  window.matchMedia('(min-width: 1200px)').addEventListener('change', (event) => {
+    if (event.matches && isOpen(menu)) setMenu(false);
+  });
+</script>

@@ -4,6 +4,9 @@ import '@fontsource/poppins/500.css';
 import '@fontsource/poppins/600.css';
 import '@fontsource/poppins/700.css';
 import '@/styles/global.css';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import WhatsAppButton from '@/components/layout/WhatsAppButton.astro';
 import { business } from '@/config/site';
 
 interface Props {
@@ -11,10 +14,13 @@ interface Props {
   title?: string;
   /** Meta description, unique per page. */
   description: string;
+  /** Topic for the floating WhatsApp message. Defaults to the page title. */
+  whatsappTopic?: string;
 }
 
-const { title, description } = Astro.props;
+const { title, description, whatsappTopic } = Astro.props;
 const fullTitle = title ? `${title} | ${business.name}` : `${business.name} | ${business.categories}`;
+const topic = whatsappTopic ?? title ?? 'your tiles and bathware';
 ---
 
 <!doctype html>
@@ -28,6 +34,31 @@ const fullTitle = title ? `${title} | ${business.name}` : `${business.name} | ${
     <meta name="generator" content={Astro.generator} />
   </head>
   <body>
-    <slot />
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <WhatsAppButton topic={topic} />
   </body>
 </html>
+
+<style>
+  .skip-link {
+    position: fixed;
+    top: var(--space-1);
+    left: var(--space-1);
+    z-index: 100;
+    padding: 12px var(--space-2);
+    border-radius: var(--radius-button);
+    background: var(--gold);
+    color: var(--green);
+    font-weight: 600;
+    transform: translateY(-200%);
+  }
+
+  .skip-link:focus {
+    transform: none;
+  }
+</style>

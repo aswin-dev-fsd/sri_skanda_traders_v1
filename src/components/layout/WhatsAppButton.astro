@@ -1,0 +1,58 @@
+---
+// Floating WhatsApp button (brief Prompt 00-C). Hidden while a drawer or the menu is open
+// (`data-overlay` on <html>) and in showroom mode (`data-mode="showroom"`).
+import Icon from '@/components/ui/Icon.astro';
+import { whatsappUrl } from '@/lib/links';
+
+interface Props {
+  /** Page or collection name for the pre-filled message. */
+  topic: string;
+}
+
+const { topic } = Astro.props;
+---
+
+<a class="wa-float" href={whatsappUrl(topic)} target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">
+  <Icon name="whatsapp" size={28} />
+</a>
+
+<style>
+  .wa-float {
+    position: fixed;
+    right: var(--space-3);
+    bottom: var(--space-3);
+    z-index: 40;
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    background: var(--green);
+    color: var(--on-green);
+    box-shadow: 0 8px 24px rgba(14, 47, 40, 0.3);
+    transition:
+      transform var(--dur-ui-slow) var(--ease),
+      opacity var(--dur-ui) var(--ease),
+      background var(--dur-ui) var(--ease);
+  }
+
+  .wa-float:hover {
+    background: var(--green-hover);
+    transform: translateY(-2px);
+  }
+
+  .wa-float:focus-visible {
+    outline-color: var(--gold);
+  }
+
+  :global(:root[data-overlay]) .wa-float {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(8px);
+  }
+
+  :global(:root[data-mode='showroom']) .wa-float {
+    display: none;
+  }
+</style>
