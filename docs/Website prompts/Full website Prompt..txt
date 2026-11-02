@@ -1,0 +1,1082 @@
+================================================================================
+SRI SKANDA TRADERS — WEBSITE DESIGN PROMPTS
+Page-by-page prompts for the website design (8 pages + shared components)
+Prepared: 2 November 2026
+================================================================================
+
+HOW TO USE THIS FILE
+--------------------
+1. Paste PROMPT 00 (Design System & Shared Components) first, in every new
+   chat or tool session. Every page prompt depends on it.
+2. Then paste one page prompt at a time (PROMPT 01 to PROMPT 08).
+   Each page prompt also repeats the key rules in short, so it can run on its own.
+3. Anything in [SQUARE BRACKETS] is a placeholder. Leave it as a visible
+   placeholder. Do not invent real content for it.
+4. "HANDOFF NOTES" at the end lists open items and the content the client
+   still has to supply.
+
+FINAL SITEMAP (approved by client)
+----------------------------------
+  01  Home
+  02  Products            (listing page: Tiles / Bathware / Granite / Adhesives)
+  03  Collection          (detail page for one tile collection; bathware variant)
+  04  3D Visualizer       (existing visualizer, embedded)
+  05  My Selection        (saved shortlist, sent as one enquiry)
+  06  Gallery             (showroom, projects, reviews)
+  07  About               (separate page; also carries Brands and Services)
+  08  Contact             (visit, call, WhatsApp, enquiry form)
+
+  Main menu:   Products · 3D Visualizer · Gallery · About · Contact
+  Header right: Search · My Selection (star + count) · [Enquire Now]
+  The logo links to Home, so "Home" is not repeated in the menu.
+  There are no separate Brands, Services or Trade Partners pages.
+  Brands and Services live on the About page and as Home sections.
+  Trade enquiries (architects, builders, contractors) go through the
+  Contact form via an "I am a…" field.
+
+
+################################################################################
+PROMPT 00 — DESIGN SYSTEM & SHARED COMPONENTS  (paste this first, always)
+################################################################################
+
+You are designing the website for SRI SKANDA TRADERS, a tiles, granite and
+bathware showroom in Sulur, Coimbatore, Tamil Nadu. Brand line on the logo:
+"PEOPLE'S TRUST" and "TILES | GRANITE | BATHWARE". The business is 4 years old,
+has one showroom, sells many brands, and is the authorised dealer for Johnson
+(sanitary ware and CP fittings) and JSW (adhesives).
+
+WHO THE SITE IS FOR
+- Primary user: homeowners building or renovating a house in and around
+  Coimbatore. They are not designers. They need to feel calm, guided and
+  confident, never rushed or sold to.
+- Secondary: architects, builders and contractors (handled through the
+  Contact form, not a separate page).
+- The SAME website runs on a tablet / PC inside the showroom. Staff hand it to
+  walk-in customers so they can sit and browse instead of walking the whole
+  showroom. Every page must work perfectly on touch, with no information hidden
+  behind hover only.
+
+THE PROBLEM THE SITE SOLVES
+Customers usually visit every showroom in town, get tired, and buy at the last
+one they visit. The site lets them browse, compare, try tiles in 3D and build a
+shortlist ("My Selection") at home, so they walk into Sri Skanda already
+decided. In the showroom, staff open that shortlist and bring out real samples.
+
+BRAND PERSONALITY (use this to judge every design decision)
+- Trust, stability, tradition, timeless, quietly premium.
+- Premium, NOT luxurious. Think "a well-run family business with excellent
+  taste", not "five-star hotel". No glitter, no heavy gold, no black-and-gold
+  luxury clichés.
+- Warm and human: "service that makes customers feel like family".
+- Honest and helpful: guidance over hard selling.
+
+--------------------------------------------------------------------------
+COLOUR SYSTEM  (use ONLY these colours and the listed tints)
+--------------------------------------------------------------------------
+  Royal Forest Green   #123B32  Primary. Header, headings, primary buttons,
+                                footer, key full-width sections.
+  Warm Ivory           #F8F6EF  Main page background, product pages, canvas.
+  Champagne Gold       #D4AF37  Accent only. Thin lines, frames, active states,
+                                small icons, the filled "saved" star, the
+                                Enquire Now button on green.
+  Deep Charcoal Green  #2E3A35  Body text and secondary UI.
+  Stone Beige          #E7E2D6  Borders, dividers, chips, subtle card fills.
+
+  Allowed tints (derived from the palette, nothing else):
+  Card surface         #FFFDF8
+  Muted text on ivory  #5B655F
+  Muted text on green  #C9D3CC
+  Green hover/pressed  #0E2F28
+  Gold hover           #C29E2C
+  Ivory on green text  #F8F6EF
+
+  Colour balance on every page: 60% Ivory, 30% Green, 10% Gold + neutrals.
+  Rules:
+  - Never put gold TEXT on ivory or beige (fails contrast). Gold text is only
+    allowed on green. On ivory, gold is used for lines, frames and icons only.
+  - Body text is #2E3A35 on ivory, #F8F6EF / #C9D3CC on green.
+  - Product photos carry the colour on the page. The UI stays quiet so the
+    tiles are the hero.
+  - No gradients except very soft image overlays (green #123B32 at 0–60%) for
+    text legibility on photos. No purple, blue, neon or rainbow anything.
+
+--------------------------------------------------------------------------
+TYPOGRAPHY  (Poppins only)
+--------------------------------------------------------------------------
+  Brand guide: Poppins Bold for headings, SemiBold for subheadings, Regular
+  for body.
+
+  Role          Desktop        Mobile     Weight     Line-height  Tracking
+  Display H1    56–64px        36–40px    700        1.08         -0.02em
+  H2            40px           28–30px    700        1.15         -0.01em
+  H3            24px           20px       600        1.3          0
+  Body large    18px           17px       400        1.65         0
+  Body          16px           16px       400        1.65         0
+  Small / meta  14px           14px       400/500    1.5          0
+  Eyebrow       13px           12px       600        1.2          0.18em, UPPERCASE
+  Button        15–16px        16px       600        1            0.01em
+
+  - Eyebrows are small uppercase labels above headings, in green #123B32 on
+    ivory or gold #D4AF37 on green, preceded by a 24px gold hairline.
+  - Keep paragraph width to 60–68 characters.
+  - Never more than 3 type sizes in one section.
+  - Numbers in specs (sizes, codes) use tabular figures.
+
+--------------------------------------------------------------------------
+LAYOUT, SPACING, SHAPE
+--------------------------------------------------------------------------
+- Max content width 1320px, 12-column grid, 24px gutters, 32px side margins
+  on desktop, 20px on mobile.
+- Section spacing: 128px top/bottom desktop, 88px tablet, 64px mobile.
+- 8px spacing scale (8, 16, 24, 32, 48, 64, 96, 128).
+- Corner radius echoes the rounded corners of the logo frame:
+  cards 20px, images 16px, buttons 12px, inputs 12px, chips 999px.
+- Borders: 1px Stone Beige #E7E2D6. Shadows only on hover/lift, very soft:
+  0 12px 32px rgba(18,59,50,0.10).
+- Generous white space. Asymmetric, editorial layouts are preferred over
+  identical centred blocks.
+
+--------------------------------------------------------------------------
+SIGNATURE DESIGN TOUCHES  (these make the site feel designed, not generated)
+--------------------------------------------------------------------------
+Use these consistently. They come from the brand and from tiles themselves.
+
+1. THE TRUST FRAME
+   The logo has a gold rounded frame that opens at the bottom, where the words
+   "PEOPLE'S TRUST" sit in the gap. Re-use this as a component:
+   a 1.5px Champagne Gold rounded rectangle, offset 14–18px from an image or
+   card, with a gap in the bottom edge holding a small label (e.g. a caption,
+   a location, a collection name).
+   - Use it on: the Home hero image, the "Why Sri Skanda" photo, testimonial
+     cards, the Contact address card, project photos in the Gallery lightbox.
+   - Animation: on first view the frame line draws itself (SVG stroke, 900ms),
+     starting from both sides of the gap and meeting at the top.
+   - Use at most 1–2 per screen so it stays special.
+
+2. GROUT-LINE GRID
+   A faint tile grid (1px lines in #E7E2D6 at 40% on ivory, or #FFFFFF at 6% on
+   green, 96px squares) used as a background texture behind a few sections
+   only: Shop by Space, the Visualizer band, the 3D Visualizer loading state,
+   the top of the footer. Never behind text-heavy content.
+
+3. TILE REVEAL
+   Large images appear tile by tile: the image is masked by a 4 x 3 grid of
+   squares that fade in with a 35ms stagger (total under 700ms), like tiles
+   being laid. Use only on hero images and the first large image of a page.
+
+4. FLIP CARD (room ↔ tile)
+   Collection cards show the room photo by default. On hover (desktop) the
+   image cross-fades to the flat tile face. On touch devices, a small
+   "Room | Tile" toggle sits on the image corner instead.
+
+5. SAMPLE-CHIP SWATCHES
+   Colour options look like real showroom sample chips: square tile face,
+   20px radius corner on one side only, a thin beige border, the colour name
+   and code printed small beneath. Hover/tap lifts the chip 4px with a soft
+   shadow; the selected chip gets a 2px gold underline bar.
+
+6. FINISH SHEEN
+   Wherever a Glossy/Polished finish is shown, a slow diagonal light sweep
+   (white 0% → 18% → 0%) passes over the swatch once on view. Matt finishes
+   stay still. This lets homeowners "feel" the difference.
+
+7. SAVE TO MY SELECTION
+   The save control is a star. When tapped: the star fills gold with a small
+   pop (scale 1 → 1.25 → 1, 300ms), a small thumbnail of the item flies to the
+   header star (FLIP animation, 450ms) and the header count bumps.
+   A toast confirms: "Saved to My Selection · View".
+
+8. SECTION NUMBERING
+   Home sections carry a small index in the eyebrow ("02 — Shop by space").
+   Quietly editorial; helps the long page feel ordered.
+
+9. LOGO MARK WATERMARK
+   The peacock-and-vel mark from the logo appears ONCE per page at most, as a
+   very faint (4%) watermark in the footer. Do not scatter traditional
+   ornaments elsewhere.
+
+--------------------------------------------------------------------------
+MOTION RULES
+--------------------------------------------------------------------------
+- Semi-interactive: small, purposeful animations only.
+- Default easing cubic-bezier(0.22, 1, 0.36, 1). Durations 180–300ms for UI,
+  500–900ms for reveals.
+- Scroll reveal: fade + 16px rise, 60ms stagger for groups. Each element
+  animates once.
+- Animate only opacity and transform. No layout-shifting animations.
+- Text links: underline grows from left on hover (200ms).
+- Buttons: background darkens to hover colour; arrow icons nudge 4px right.
+- Images inside cards: scale to 1.04 over 600ms on hover.
+- No heavy parallax, no scroll-jacking, no autoplay sound, no spinning
+  loaders, no confetti, no cursor effects.
+- Respect prefers-reduced-motion: replace all motion with simple fades.
+- Must stay smooth on a mid-range Android tablet in the showroom.
+
+--------------------------------------------------------------------------
+IMAGERY & ICONS
+--------------------------------------------------------------------------
+- Real photography of rooms with tiles, the showroom, real projects and the
+  team. Natural daylight, warm neutral interiors, Indian homes (not foreign
+  villas). Until real photos arrive, use neutral room placeholders and label
+  them [PHOTO: description].
+- Tile faces are always shown flat and straight-on.
+- Icons: thin line icons (1.5px stroke), green on ivory, gold on green.
+  No filled emoji-style icons, no icons inside coloured circles everywhere.
+- No AI-looking renders, no stock "smiling people pointing at tablet" shots.
+
+--------------------------------------------------------------------------
+VOICE & COPY
+--------------------------------------------------------------------------
+- Warm, plain, confident English. Short sentences. Speak to a homeowner.
+- Use "we" and "you". Helpful, never pushy.
+- Avoid: "elevate", "exquisite", "luxury", "world-class", "unparalleled",
+  "one-stop solution", "redefine", exclamation marks.
+- Keep "People's Trust" as a recurring idea, used sparingly.
+
+--------------------------------------------------------------------------
+DO NOT (things that make a site look generic or AI-made)
+--------------------------------------------------------------------------
+- No centred-everything layouts with three identical icon cards in a row.
+- No gradient blobs, glassmorphism, neon glows or dark mode.
+- No stats counters ("2M+ customers"). No fake ratings or reviews.
+- No carousels that auto-advance faster than 6 seconds.
+- No popups on page load. No chat bots.
+- No stock headings like "Our Services", "Why Choose Us?" with a question mark.
+- Do not invent prices. The site is enquiry-only (no prices, no cart, no
+  checkout).
+
+--------------------------------------------------------------------------
+SHARED COMPONENTS  (build once, use on every page)
+--------------------------------------------------------------------------
+
+A) HEADER
+   - Height 88px at top of page, shrinks to 68px after 80px of scroll.
+   - Solid Royal Forest Green on every page, including Home (the approved
+     logo is the ivory/gold version made for green backgrounds). On scroll
+     it gains a soft shadow and shrinks.
+   - Left: logo (ivory/gold version on green).
+   - Centre/right: Products ▾ · 3D Visualizer · Gallery · About · Contact
+     (Poppins 500, 15px, ivory). Active page: 2px gold underline.
+   - Right: Search icon · My Selection star with count badge (gold) ·
+     [Enquire Now] button (gold #D4AF37 background, green #123B32 text).
+   - Products ▾ opens a MEGA MENU on ivory:
+       Column 1 TILES: Floor tiles · Wall tiles · Vitrified tiles
+       Column 2 SHOP BY SPACE: Living · Bedroom · Kitchen · Bathroom ·
+                Parking · Elevation · Outdoor
+       Column 3 BATHWARE: Sanitary ware · Faucets · Accessories
+                MORE: Granite · Adhesives
+       Column 4 a feature card: small room image + "Try tiles in 3D" link.
+     Opens with a 200ms fade + 8px drop. Closes on outside click / Esc.
+   - Search opens a full-width search bar under the header with instant
+     suggestions (collections, categories, product codes).
+   - Tablet/mobile: logo, star, Enquire Now, menu icon. Menu opens a full-
+     screen green panel with large touch targets (min 56px rows).
+
+B) FOOTER (Royal Forest Green background)
+   - Top edge: a strip of the grout-line grid texture.
+   - Column 1: logo, "People's Trust" line, 1–2 sentence description.
+   - Column 2: Products links (Floor, Wall, Vitrified, Bathware, Granite,
+     Adhesives).
+   - Column 3: Explore (3D Visualizer, My Selection, Gallery, About, Contact).
+   - Column 4: Visit us: [ADDRESS], [OPENING HOURS], [PHONE], [EMAIL],
+     Get directions link.
+   - Social icons: Instagram, WhatsApp, [Facebook], [YouTube].
+   - Bottom bar: © 2026 Sri Skanda Traders · Privacy · Terms.
+   - Faint logo-mark watermark at 4% opacity bottom-right.
+
+C) FLOATING WHATSAPP BUTTON
+   - Bottom-right, 56px circle, green #123B32 with ivory WhatsApp glyph and a
+     thin gold ring. Opens WhatsApp chat with a pre-filled message:
+     "Hi Sri Skanda Traders, I'd like to know more about [page/collection]."
+   - Hidden while the enquiry drawer or My Selection drawer is open.
+
+D) ENQUIRY DRAWER (opened by every "Enquire" / "Enquire Now" button)
+   - Slides in from the right (desktop) or up from the bottom (mobile/tablet).
+   - Title: "Tell us what you need". Sub: "Our team will get back to you
+     within a few hours during showroom timings."
+   - Fields: Name* · Phone* (+91) · Area / Location · I am a: Homeowner /
+     Architect or Designer / Builder / Contractor (chips) · Interested in
+     (multi-select chips: Floor tiles, Wall tiles, Vitrified, Granite,
+     Bathware, Adhesives) · Message (optional).
+   - If opened from a collection/product, show that item as an attached card
+     at the top ("You're asking about: [Collection, colour, code]").
+   - If My Selection has items, offer a checkbox "Attach my saved items (N)".
+   - Submit button: "Send enquiry". Secondary: "Or chat on WhatsApp".
+   - Success state: green check line-icon, "Thank you, [Name]. We'll call you
+     soon on [phone]." + button "Keep browsing".
+   - Inline validation, friendly error text, large inputs (52px height).
+
+E) MY SELECTION DRAWER (opened from the header star)
+   - Lists saved items: thumbnail, name, colour, code, size; remove (×).
+   - Buttons: "View full list" (goes to My Selection page) · "Send as one
+     enquiry".
+   - Empty state: "Nothing saved yet. Tap the ☆ on any tile to keep it here."
+
+F) BUTTONS
+   - Primary: green #123B32 bg, ivory text, 12px radius, 52px height,
+     hover #0E2F28, arrow icon nudges right.
+   - Accent (on green backgrounds only): gold #D4AF37 bg, green text, hover
+     #C29E2C.
+   - Secondary: 1.5px green border, green text, transparent bg; hover fills
+     with green at 6%.
+   - Text link: green, SemiBold, animated underline.
+   - Minimum touch target 48 x 48px.
+
+G) COLLECTION CARD (tiles)
+   - 4:5 image (room photo) with FLIP CARD behaviour (room ↔ tile face).
+   - Star (save) top-right on the image, 44px hit area.
+   - Below: brand (eyebrow, muted), collection name (H3), meta line
+     "6 colours · 2 finishes · 3 sizes", tiny row of up to 5 colour dots.
+   - Actions row: "View" text link + "Enquire" small secondary button.
+   - Whole card is clickable to the Collection page.
+
+H) PRODUCT CARD (bathware, granite, adhesives)
+   - Square image on #FFFDF8 with product centred, brand, name, code,
+     one key spec (e.g. "Wall-hung · 520 × 360 mm"). Star + Enquire.
+
+I) CHIPS, FILTERS, FORMS
+   - Filter chips: beige #E7E2D6 bg, green text; selected = green bg, ivory
+     text, with a small × to remove.
+   - Inputs: ivory #FFFDF8 bg, 1px beige border, green 2px focus ring.
+   - Breadcrumbs: small, muted, "/" separators.
+
+J) TOAST
+   - Bottom-centre, green bg, ivory text, auto-hides after 3s.
+
+K) SHOWROOM MODE (for the in-store tablet)
+   - Turned on with a URL parameter (?mode=showroom).
+   - Shows a "New customer" button in the header that clears My Selection
+     after a confirm dialog ("Start fresh for a new customer?").
+   - After 3 minutes without touch, a gentle overlay asks "Still browsing?"
+     with "Yes, continue" and "Start fresh". It never clears data without
+     a tap.
+   - Hides the floating WhatsApp button (staff are right there).
+
+L) ACCESSIBILITY
+   - WCAG AA contrast. Visible focus states (2px gold ring on green, 2px
+     green ring on ivory). All images have alt text. Full keyboard support
+     for menus, drawers, sliders and filters. Form labels always visible.
+
+M) RESPONSIVE BREAKPOINTS
+   - Mobile 360–767, Tablet 768–1199 (showroom tablet target: 1024–1280
+     landscape), Desktop 1200+.
+
+
+################################################################################
+PROMPT 01 — HOME PAGE
+################################################################################
+
+Use the Sri Skanda Traders design system (Prompt 00). Quick reminder: Poppins
+only; Royal Forest Green #123B32, Warm Ivory #F8F6EF, Champagne Gold #D4AF37
+(accents only, never as text on ivory), Deep Charcoal Green #2E3A35 text,
+Stone Beige #E7E2D6 borders; 60/30/10 balance; premium but not luxurious;
+homeowners first; touch-friendly; signature touches: Trust Frame, grout-line
+grid, tile reveal, flip cards, sample-chip swatches, gold star save.
+
+GOAL OF THE PAGE
+Make a homeowner feel "these people are trustworthy and have everything I
+need", then move them into browsing (Products), trying (3D Visualizer) or
+visiting (Showroom). The page must feel calm and spacious: exactly 9 sections,
+nothing more. No counters, awards, blog or CSR sections.
+
+SECTION 01 — HERO  (full viewport height on desktop, min 640px)
+- Layout: asymmetric split. Left 5 columns on ivory: text. Right 7 columns:
+  a large room photo (living room with a calm, light floor) bleeding to the
+  right edge, with the TRUST FRAME around it. The frame's bottom gap holds the
+  label "Our showroom · Sulur, Coimbatore".
+- The standard solid green header sits above the hero.
+- Eyebrow: "TILES · GRANITE · BATHWARE"
+- H1: "Tiles you'll love living with."
+- Sub (body large): "Floor and wall tiles, granite and bathware from brands
+  you trust, chosen with honest advice at our showroom in Sulur, Coimbatore."
+- Buttons: [Explore Products] (primary green) [Try 3D Visualizer] (secondary).
+- Trust line under buttons (small, muted, separated by gold dots):
+  "Every size, every brand · Free delivery · Laying support"
+- INTERACTIVE TOUCH — "Try a floor": on the bottom-left of the photo, three
+  small sample-chip swatches with the label "Try a floor". Tapping a chip
+  cross-fades (600ms) the hero photo to the same room with that floor
+  [3 renders of the same room needed]. A small link appears: "See more in 3D
+  →" to the Visualizer page. This previews the visualizer without leaving Home.
+- Image enters with TILE REVEAL. Text fades up with 60ms stagger.
+- Mobile: image on top (4:5), text below, chips stay on the image.
+
+SECTION 02 — SHOP BY CATEGORY
+- Eyebrow: "02 — SHOP BY CATEGORY". H2: "Start with what you need."
+- Layout "laid like tiles": a 4-column bento grid with 8px Stone Beige gaps
+  between cards, like grout lines.
+    • TILES — large card (2 cols × 2 rows), room photo, title "Tiles",
+      sub-links as chips: Floor · Wall · Vitrified.
+    • BATHWARE — 2 cols × 1 row: "Bathware" — Sanitary ware, faucets,
+      accessories.
+    • GRANITE — 1 × 1.
+    • ADHESIVES — 1 × 1, with a small "JSW Authorised Dealer" tag.
+- Card text sits on a soft green gradient at the bottom of each photo
+  (#123B32 0% → 70%), ivory title, arrow that nudges on hover.
+- Hover: photo scale 1.04, arrow moves 4px.
+
+SECTION 03 — SHOP BY SPACE
+- Background: ivory with the GROUT-LINE GRID texture.
+- Eyebrow: "03 — SHOP BY SPACE". H2: "Find tiles for every room."
+- Horizontal scroller of 7 tall portrait cards (3:4): Living room · Bedroom ·
+  Kitchen · Bathroom · Parking · Elevation · Outdoor.
+  Each card: photo, room name (H3, ivory on soft green overlay), small count
+  "[N] collections".
+- Controls: drag/swipe; prev/next round buttons (green outline) at top-right;
+  a thin gold progress line under the row shows scroll position.
+- Each card links to Products filtered by that space.
+
+SECTION 04 — 3D VISUALIZER BAND  (Royal Forest Green, full width)
+- Grout-line grid at 6% white over the green.
+- Left (5 cols): eyebrow (gold) "04 — 3D VISUALIZER", H2 (ivory):
+  "See it in your home before you buy.", body (muted on green):
+  "Pick a room, tap the floor or a wall, and try any tile in seconds. Use it
+  at home, or on the tablet in our showroom.", button (gold accent):
+  [Open the Visualizer].
+- Right (7 cols): an interactive BEFORE / AFTER slider of the same room with
+  two different floors. A gold vertical handle with a round grip; labels
+  "Before" and "After" in small ivory chips. Drag on desktop, swipe on touch.
+  [2 renders/screenshots from the visualizer needed]
+- The image sits inside a TRUST FRAME (gold) with the label "Living room".
+
+SECTION 05 — TRENDING COLLECTIONS
+- Eyebrow: "05 — TRENDING". H2: "Collections people are choosing now."
+- Tabs (chips): New arrivals · Floor · Wall · Bathroom. Switching tabs fades
+  cards out/in (250ms).
+- 8 COLLECTION CARDS: 4 × 2 grid desktop, 2 columns tablet, horizontal swipe
+  on mobile. FLIP CARD behaviour and gold-star save on each.
+- Link at the end: "View all collections →".
+
+SECTION 06 — WHY SRI SKANDA
+- Editorial split. Left (6 cols): a showroom or team photo with TRUST FRAME,
+  bottom-gap label "People's Trust".
+- Right (6 cols): eyebrow "06 — WHY SRI SKANDA", H2:
+  "Choose with people you can trust."
+  Then 4 rows separated by 1px beige lines (no icon cards):
+    01  Every size, every brand
+        Compare collections from many brands side by side, under one roof.
+    02  Honest advice
+        We help you choose what suits your home and your budget.
+    03  Free delivery
+        Your tiles reach your site safely and on time.
+    04  Measurement & laying support
+        We measure your site and support the laying, start to finish.
+  Row numbers in green SemiBold; each row fades up in sequence.
+
+SECTION 07 — BRANDS WE CARRY
+- Small eyebrow "07 — BRANDS WE CARRY", one-line H3: "Trusted brands, all in
+  one showroom."
+- A slow marquee of brand logos (one direction, 40s loop, pauses on hover).
+  Logos in single-colour green at 60% opacity, full colour on hover.
+  [BRAND LOGOS — list to be confirmed by client]
+- Below: two small badges with gold hairline borders:
+  "Authorised Dealer · Johnson (Sanitary & CP)" and
+  "Authorised Dealer · JSW Adhesives".
+- Each logo links to Products filtered by that brand.
+
+SECTION 08 — PROJECTS & REVIEWS
+- Eyebrow "08 — REAL HOMES". H2: "Homes we're proud to be part of."
+- Layout: left (7 cols) one large project photo with caption below
+  ("[Project name], [Area] · Tiles: [Collection name]" + link
+  "Shop this look →"). Right (5 cols) a stack of 2–3 review cards (ivory
+  card, beige border, short quote in body large, name + area in small,
+  Google icon if it is a Google review). Card arrows to see more.
+- Small link: "See all projects and reviews →" (Gallery).
+- Use only real reviews. Until supplied: [REVIEW TEXT — client to provide].
+
+SECTION 09 — VISIT OUR SHOWROOM
+- Background: Stone Beige #E7E2D6 band.
+- Left (7 cols): a muted, custom-styled map (greys + green pin with the logo
+  mark) with rounded 20px corners.
+- Right (5 cols): ivory card with TRUST FRAME, bottom label "Sulur,
+  Coimbatore". Inside: H3 "Visit our showroom", address [ADDRESS], hours
+  [OPENING HOURS], phone [PHONE], buttons [Get directions] (primary) and
+  [WhatsApp us] (secondary). Below, a 3-field quick enquiry: Name, Phone,
+  Interested in (dropdown) + [Request a call back].
+
+Then the shared FOOTER.
+
+INTERACTION SUMMARY FOR THIS PAGE
+- Hero floor swap, tile reveal, trust frame drawing, before/after slider,
+  space scroller with progress line, tab switch on trending, flip cards,
+  brand marquee, review card arrows. Everything else: simple fade-up.
+
+
+################################################################################
+PROMPT 02 — PRODUCTS (LISTING PAGE)
+################################################################################
+
+Use the Sri Skanda Traders design system (Prompt 00). Reminder: Poppins;
+green #123B32, ivory #F8F6EF, gold #D4AF37 accents only, charcoal green
+#2E3A35 text, beige #E7E2D6 borders; premium not luxurious; touch-first
+(this page is used on the showroom tablet a lot); signature touches: flip
+cards, sample-chip colour filters, gold star save.
+
+GOAL
+Let a homeowner narrow hundreds of tiles down to a few collections quickly,
+without feeling overwhelmed. Layout inspired by the Simpolo living-room tiles
+page (filters on the left, collection cards on the right), but calmer and on
+brand.
+
+ONE TEMPLATE FOR ALL LISTINGS
+The same template serves: all tiles, floor, wall, vitrified, each space
+(living room, bedroom…), each brand, and the bathware / granite / adhesives
+categories (with product cards instead of collection cards).
+
+PAGE HEADER BAND (ivory, 280px)
+- Breadcrumb: Home / Tiles / Living Room Tiles
+- H1 (dynamic): e.g. "Living Room Tiles"
+- One-line intro (dynamic, muted): e.g. "Calm, easy-care floors and walls for
+  the room your family uses most."
+- Category tabs (large underline tabs): Tiles · Bathware · Granite · Adhesives
+- When Tiles is active, sub-tabs as chips: All · Floor · Wall · Vitrified.
+- VITRIFIED gets its own small section: when "Vitrified" is selected (and as
+  a slim strip at the top of the "All" tiles view), show a beige card:
+  "Vitrified tiles — Strong, low-water-absorption tiles that suit busy floors.
+  [Learn more ↓]" which scrolls to the guide text at the bottom.
+
+TOOLBAR (sticky under the header when scrolling)
+- Left: result count "48 collections".
+- Middle: active filter chips (green, with ×) + "Clear all".
+- Right: Sort dropdown: Latest · Popular · A–Z.
+- On tablet/mobile: a [Filters (3)] button opens the filter BOTTOM SHEET.
+
+FILTER SIDEBAR (desktop, 280px, sticky)
+Accordion groups, first two open by default. Each group shows a count of
+selections. Order:
+  1. Space: Living room, Bedroom, Kitchen, Bathroom, Parking, Elevation,
+     Outdoor (checkbox list)
+  2. Look & feel: Marble, Stone, Wood, Concrete, Plain, Decor, Metallic,
+     Rustic (small sample-chip thumbnails with labels, 2 per row)
+  3. Colour: White, Cream, Beige, Grey, Brown, Black, Special — round colour
+     dots 28px with names under them; selected = gold ring.
+  4. Finish: Glossy, Matt, Satin, Polished, Rustic/Carving (chips). Glossy and
+     Polished chips get the subtle FINISH SHEEN.
+  5. Size: list of sizes in mm with a tiny to-scale rectangle icon next to
+     each (e.g. 600 × 600, 600 × 1200, 800 × 1600, 1200 × 2400…).
+  6. Brand: checkbox list with search if more than 8.
+- Filters apply instantly on desktop (results fade 200ms). In the bottom
+  sheet (touch) they apply with a big [Show 24 results] button.
+- Selected filters update the URL so a filtered view can be shared.
+
+RESULTS GRID
+- COLLECTION CARDS (see Prompt 00-G): 3 columns desktop, 2 tablet landscape,
+  2 tablet portrait, 1 mobile (or 2 compact).
+- Card: room photo (flip to tile face), star save, brand, name,
+  "6 colours · 2 finishes · 3 sizes", colour dots, View / Enquire.
+- Every 9th position (desktop only), one "help" tile in green:
+  "Not sure where to start? Try tiles in your room →" (to 3D Visualizer)
+  or "Talk to us on WhatsApp →". Max 2 per page.
+- Pagination: "Showing 12 of 48" + [Load more] button (no infinite scroll).
+- Loading: skeleton cards with a beige shimmer.
+
+EMPTY STATE
+- "No collections match all these filters." + [Clear filters] and a list of
+  the 3 nearest suggestions ("Try removing 'Black'").
+
+BATHWARE / GRANITE / ADHESIVES VARIANT
+- Same header band and toolbar.
+- Filters for Bathware: Type (Wall-hung WC, Floor-mounted WC, Wash basins,
+  Counter-top basins, Faucets, Showers, Accessories), Brand, Finish (Chrome,
+  Matt black, White, [others]).
+- Granite: Colour, Finish (Polished, Flamed, Leather), Use (Kitchen top,
+  Flooring, Staircase, Elevation).
+- Adhesives: Type, Use, Brand.
+- Uses PRODUCT CARDS (Prompt 00-H), 4 columns desktop.
+- Johnson items show a small "Authorised Dealer" tag.
+
+BOTTOM GUIDE TEXT (SEO, collapsed)
+- A short, useful guide for the current category, e.g. "Choosing living room
+  tiles": sizes, finishes, colours. Show first 3 lines, then
+  [Read more]. Body text, max 68 characters per line.
+
+INTERACTIONS
+- Sticky toolbar and sidebar; filter chips animate in/out; results crossfade;
+  flip cards; star save with fly-to-header; bottom sheet slides up with
+  drag handle; "Load more" adds cards with a staggered fade-up.
+
+
+################################################################################
+PROMPT 03 — COLLECTION PAGE (TILE DETAIL) + BATHWARE PRODUCT VARIANT
+################################################################################
+
+Use the Sri Skanda Traders design system (Prompt 00). Reminder: Poppins;
+green #123B32, ivory #F8F6EF, gold #D4AF37 accents only, charcoal green
+#2E3A35 text, beige #E7E2D6 borders; premium not luxurious; homeowners;
+touch-first; signature touches: Trust Frame, tile reveal, sample-chip
+swatches, finish sheen, gold star save.
+
+GOAL
+Show everything about ONE collection on one page, so the homeowner can pick
+the exact colour, finish and size, see it in rooms, try it in 3D, and save or
+enquire. Modelled on the Simpolo collection page (colour options, texture
+options, decor options, features, finishes), made calmer and on brand.
+
+SECTION ORDER (approved — keep this order)
+  01 Hero · 02 Colours · 03 Features · 04 Textures · 05 Finishes & sizes ·
+  06 Actions · 07 Room gallery · 08 Decor · 09 Similar collections
+
+STICKY ACTION BAR
+After the hero scrolls away, a slim ivory bar (64px, beige bottom border)
+sticks under the header: collection name + brand on the left; on the right
+[Try in 3D] (secondary) · ☆ Save · [Enquire] (primary) · WhatsApp icon.
+On mobile it docks to the bottom of the screen instead.
+
+01 HERO
+- Full-width room photo (70vh, min 520px) with TILE REVEAL.
+- Bottom-left over a soft green gradient: breadcrumb (ivory, small), brand
+  (eyebrow, gold), collection name (H1, ivory), one-line description.
+- Quick facts row (ivory chips on green 60%): "[N] colours · [N] finishes ·
+  Sizes: [600 × 1200, 1200 × 2400]".
+- Buttons: [Try in 3D] (gold accent) · ☆ Save · [Enquire].
+
+02 COLOURS
+- Eyebrow "COLOURS", H2 "Pick your colour."
+- A row/grid of large SAMPLE-CHIP SWATCHES (160px desktop, 120px tablet),
+  each with colour name and code under it.
+- Selecting a chip opens a DETAIL PANEL beside the grid (desktop) or below it
+  (touch), with a 200ms slide:
+    • large flat tile face image (zoomable on tap),
+    • colour name, code, sizes available, finishes available, floor/wall use,
+      thickness [if supplied],
+    • [☆ Save this colour] · [Enquire about this colour] · [Try in 3D].
+- The selected colour also updates the sticky bar label.
+
+03 FEATURES
+- A single calm row of 4–8 features with thin line icons and 1–2 word labels,
+  e.g. Anti-skid · Stain resistant · Scratch resistant · Easy to clean ·
+  Frost resistant. Show ONLY features the brand states for this collection.
+- On tap/hover, a feature shows a one-line plain-English explanation
+  ("Anti-skid: better grip, safer for bathrooms and outdoors").
+
+04 TEXTURES
+- Close-up images of each surface, 3–4 per row, square.
+- Desktop hover: a circular magnifier (180px) follows the cursor.
+  Touch: tap opens a full-screen lightbox with pinch-zoom.
+
+05 FINISHES & SIZES
+- Two columns.
+- Left — Finishes: toggle chips (e.g. Matt | Polished). Switching animates the
+  same tile face with or without the FINISH SHEEN, plus one line on where each
+  finish works best.
+- Right — Sizes: a SIZE-TO-SCALE guide. Each available size is drawn as a
+  rectangle to true proportion next to a simple outline of a standard door
+  (2100 mm tall) so homeowners understand the real size. Tapping a size
+  highlights its rectangle in green.
+
+06 ACTIONS  (Royal Forest Green panel, 20px radius, inside the ivory page)
+- H2 (ivory): "Like this collection?"
+- Body: "Try it in a room, save it for later, or ask us for samples and
+  availability."
+- Four large touch buttons in a row: [Try in 3D Visualizer] (gold) ·
+  [☆ Save to My Selection] · [Send an enquiry] · [WhatsApp us].
+- Small muted line: "Prices and availability on enquiry. Our team replies
+  within a few hours."
+
+07 ROOM GALLERY
+- Slider of room photos (16:9), large, with thumbnails below; arrows and
+  swipe; counter "3 / 8". Tap opens a lightbox. Each photo caption names the
+  colour used.
+
+08 DECOR
+- Eyebrow "DECOR & HIGHLIGHTERS", H3 "Pair it with".
+- Cards for matching decor / highlighter tiles: image, name, size, star,
+  Enquire.
+
+09 SIMILAR COLLECTIONS
+- H3 "You may also like". 4 COLLECTION CARDS (flip + star).
+
+BATHWARE PRODUCT VARIANT (toilets, basins, faucets, accessories)
+- Simpler two-column layout:
+  Left (7 cols): image gallery (product on #FFFDF8 background, 4–6 views,
+  thumbnails, zoom).
+  Right (5 cols, sticky): brand (with "Authorised Dealer" tag for Johnson),
+  product name (H1), code, key specs table (dimensions in mm, type, mounting,
+  material, warranty [if supplied]), finish/colour options as round swatches,
+  feature list, buttons [☆ Save] [Enquire] [WhatsApp].
+- Below: "Pairs well with" (4 product cards) and "Tiles for your bathroom"
+  (4 collection cards filtered to Bathroom).
+
+
+################################################################################
+PROMPT 04 — 3D VISUALIZER PAGE
+################################################################################
+
+Use the Sri Skanda Traders design system (Prompt 00). Reminder: Poppins;
+green #123B32, ivory #F8F6EF, gold #D4AF37 accents only, charcoal green
+#2E3A35 text, beige #E7E2D6 borders; premium not luxurious; touch-first
+(heavily used on the showroom tablet).
+
+IMPORTANT: The 3D visualizer already exists. We only design the page around
+it. It is EMBEDDED on this page (iframe / embed). Do not design the
+visualizer's own interface.
+
+GOAL
+Give the visualizer the biggest possible space first, then teach homeowners
+how to use it and how to choose the right tile.
+
+SECTION 01 — HERO = THE VISUALIZER (reserved space)
+- Directly under the header: a slim title row on ivory (72px):
+  H1 "3D Visualizer" (32px on this page) + one line "Try any tile in a real
+  room." + right-aligned buttons [⤢ Full screen] and [How it works ↓].
+- Below it, a reserved EMBED AREA: full content width (or full bleed),
+  height = viewport minus header and title row (min 560px, max 860px),
+  20px radius, 1px beige border.
+  Label it clearly in the design: "[EMBED: Sri Skanda 3D Visualizer]".
+- Loading state: ivory panel with the GROUT-LINE GRID, the logo mark at 20%,
+  and the text "Setting up the room…" with a thin gold progress line.
+- Error state: "The visualizer couldn't load. Check your connection or try
+  again." + [Reload] + [Browse products instead].
+- Mobile: embed height 75vh; a hint chip "Rotate your phone for a wider view".
+
+SECTION 02 — HOW TO USE IT
+(DRAFT STEPS — final wording will be matched to the visualizer's actual
+controls before launch)
+- Eyebrow "HOW IT WORKS", H2 "Five steps to see your tile in place."
+- A horizontal stepper on desktop (vertical on mobile) with numbered circles
+  (green outline, gold number on hover) joined by a thin gold line that draws
+  as you scroll:
+    1  Choose an angle       — Pick the view of the room you want to see.
+    2  Tap the floor or a wall — Select the surface you want to change.
+    3  Pick a tile           — Browse the list and tap a tile to apply it.
+    4  Look around           — Move around the room to see it from every side.
+    5  Save or enquire       — Keep it in My Selection or ask us about it.
+- Each step has a small, simple line illustration or a cropped screenshot
+  placeholder [SCREENSHOT: step N]. No 3D renders, no AI images.
+
+SECTION 03 — HOW TO CHOOSE THE RIGHT TILE
+- Eyebrow "BEFORE YOU DECIDE", H2 "How to choose the right tile."
+- Interactive guide with 5 tabs (chips on desktop, accordion on mobile):
+    SIZE    — Big formats (600 × 1200 and above) suit large rooms and mean
+              fewer joints. Smaller sizes suit compact rooms and bathrooms.
+              Visual: size-to-scale rectangles against a door outline.
+    FINISH  — Glossy reflects light and makes rooms feel brighter. Matt hides
+              marks and gives better grip. Visual: two swatches, one with the
+              finish sheen.
+    SAFETY  — Choose anti-skid or matt tiles for bathrooms, parking and
+              outdoor areas. Visual: three small room labels with a check.
+    COLOUR  — Light tones make small rooms feel bigger. Darker tones add
+              warmth and hide dust. Visual: a light and a dark room swatch.
+    GROUT   — A grout colour close to the tile gives a seamless look; a
+              contrasting colour shows the pattern. Visual: two mini tile
+              grids with different grout.
+- Switching tabs crossfades content (250ms).
+
+SECTION 04 — QUICK QUESTIONS (accordion, 4–5 items)
+  • Will the colour on screen match the real tile?
+    Screens show colours slightly differently. Save your favourites and see
+    the real sample at our showroom before you decide.
+  • Can I use this in the showroom?
+    Yes. Ask our team for the tablet and try tiles while you sit with us.
+  • How many tiles will I need?
+    Share your room size with us, or ask about our site measurement service.
+  • [Additional question — to confirm with client]
+
+SECTION 05 — CLOSING BAND (Royal Forest Green)
+- H2 (ivory): "Found one you like?"
+- Body: "Save it to My Selection and visit us, or send your choice on
+  WhatsApp."
+- Buttons: [View My Selection] (gold) · [Visit the showroom] (ivory outline)
+  · WhatsApp icon button.
+
+
+################################################################################
+PROMPT 05 — MY SELECTION PAGE
+################################################################################
+
+Use the Sri Skanda Traders design system (Prompt 00). Reminder: Poppins;
+green #123B32, ivory #F8F6EF, gold #D4AF37 accents only, charcoal green
+#2E3A35 text, beige #E7E2D6 borders; premium not luxurious; touch-first.
+
+GOAL
+The customer's shortlist. At home it turns browsing into ONE ready-made
+enquiry. In the showroom, staff open it on the tablet and bring out the real
+samples. No login: items are saved on the device.
+
+PAGE HEADER
+- Breadcrumb, H1 "My Selection", count "(7 items)".
+- Sub: "Everything you've saved, ready to send to us or show at the
+  showroom."
+- Right side: group toggle (segmented control): By room | By code.
+- Showroom mode only: a [New customer] button (secondary) with confirm
+  dialog "Start fresh for a new customer? This clears the list on this
+  tablet." [Cancel] [Clear and start fresh].
+
+LIST (left, 8 cols)
+- Grouped by room (default) with room headings (Living room, Bathroom…) and
+  a count; or a flat list sorted by product code.
+- Each item row (ivory card, beige border, 20px radius):
+  thumbnail (tile face, 96px) · collection name + colour · code · size ·
+  finish · brand.
+  Controls: "Room" dropdown chip (re-assign room) · optional "Approx. area"
+  field (sq ft) · [View] link · remove (×) with an undo toast.
+- Drag to reorder on desktop (handle icon); not required on touch.
+
+SEND PANEL (right, 4 cols, sticky)
+- Card with TRUST FRAME, bottom label "Your shortlist".
+- Summary: "7 items · 3 rooms".
+- Inline form: Name* · Phone* · Area / Location · Message.
+- Buttons: [Send as one enquiry] (primary, full width) ·
+  [Share on WhatsApp] (secondary, builds a pre-filled message listing each
+  item: name, colour, code, size, room) · [Print list] (text link — for the
+  showroom).
+- Line: "Our team will get back to you within a few hours."
+- Success state replaces the panel: "Sent. We'll call you soon, [Name]."
+
+EMPTY STATE
+- No illustration. Large muted star outline, H2 "Nothing saved yet.",
+  body "Tap the ☆ on any collection or product to keep it here.",
+  buttons [Browse products] [Try the 3D Visualizer].
+
+MOBILE / TABLET
+- List first; the send panel becomes a bottom sticky bar
+  "[Send 7 items]" that opens the form as a bottom sheet.
+
+PRINT VIEW
+- Clean A4 list: logo, date, items grouped by room with codes and sizes,
+  showroom address, space for staff notes.
+
+
+################################################################################
+PROMPT 06 — GALLERY PAGE
+################################################################################
+
+Use the Sri Skanda Traders design system (Prompt 00). Reminder: Poppins;
+green #123B32, ivory #F8F6EF, gold #D4AF37 accents only, charcoal green
+#2E3A35 text, beige #E7E2D6 borders; premium not luxurious; homeowners.
+
+GOAL
+Build trust with real proof: the showroom, finished homes and what customers
+say. Every project should lead back to the tiles used ("Shop this look").
+
+PAGE HEADER
+- Eyebrow "GALLERY", H1 "Real homes. Real tiles.", sub "See our showroom,
+  homes we've helped finish, and what our customers say."
+- Tabs (large underline): Projects · Showroom · Reviews.
+
+TAB: PROJECTS (default)
+- Filter chips by space: All · Living · Bedroom · Kitchen · Bathroom ·
+  Parking · Elevation · Outdoor.
+- Masonry grid (3 columns desktop, 2 tablet, 1 mobile) of project photos,
+  16px radius. Hover: soft green overlay with project name + area.
+- Click opens a LIGHTBOX: large photo with TRUST FRAME, bottom-gap label
+  "[Area], Coimbatore", project name, short note, photo slider, and a
+  "Tiles used" row of collection cards (each with star + "Shop this look").
+- Content: [PROJECT PHOTOS — client to provide, with area and tiles used].
+
+TAB: SHOWROOM
+- One wide photo of the showroom front, then a 2–3 column grid of display
+  areas (bathroom mock-ups, floor displays, wall displays).
+- Optional embedded walkthrough video [VIDEO: showroom walkthrough],
+  click-to-play, no autoplay, custom green play button.
+
+TAB: REVIEWS
+- Summary bar: "Read our reviews on Google" with Google logo and
+  [See all on Google] link. Do not show a star rating unless the real figure
+  is supplied: [GOOGLE RATING — client to confirm].
+- Review cards in a 3-column masonry: quote (body large), name, area, date,
+  source icon. Max 6 lines then "Read more".
+- Video testimonials: thumbnails with play button, open in a modal.
+
+CLOSING
+- Stone Beige band: H3 "Want a home like these?" + [Visit the showroom]
+  [Enquire Now].
+
+
+################################################################################
+PROMPT 07 — ABOUT PAGE
+################################################################################
+
+Use the Sri Skanda Traders design system (Prompt 00). Reminder: Poppins;
+green #123B32, ivory #F8F6EF, gold #D4AF37 accents only, charcoal green
+#2E3A35 text, beige #E7E2D6 borders; premium not luxurious; warm and human.
+This page also carries the content of the former Brands and Services pages.
+
+GOAL
+Show the people and values behind the showroom, what we do for customers,
+and the brands we carry. It should read like a conversation, not a brochure.
+
+SECTION 01 — HERO
+- Split: left text, right founder/team photo with TRUST FRAME, bottom-gap
+  label "People's Trust".
+- Eyebrow "ABOUT US", H1 "A showroom built on people's trust."
+- Sub: "For 4 years, we've helped families in and around Coimbatore choose
+  tiles, granite and bathware with honest advice and real care."
+
+SECTION 02 — OUR STORY
+- Editorial layout: a large pull-quote on the left in green H2 weight,
+  story text on the right.
+- DRAFT copy (to be approved by the founder):
+  Pull-quote: "We love meeting people, understanding what they need, and
+  helping them build a home they'll be proud of."
+  Text: "Sri Skanda Traders began with a simple interest: the building trade,
+  and the people in it. Every family who walks in has a different home in
+  mind. Our job is to listen, suggest honestly, and make the choice easy. Many
+  of our customers have become friends, and that is the part we value most."
+- Signature line: "— [Founder name], Founder".
+
+SECTION 03 — WHAT WE STAND FOR (values)
+- 4 values in a 4-column row with thin gold top lines (no icon circles):
+    Trust       — Honest advice, even when it means a smaller bill.
+    Quality     — Only brands and products we would use in our own homes.
+    Service     — Like family: we stay with you until the last tile is laid.
+    Timeless    — Choices that will still look right years from now.
+
+SECTION 04 — HOW WE HELP (former Services page)
+- Eyebrow "HOW WE HELP", H2 "From first idea to the last tile."
+- A horizontal timeline (vertical on mobile) with a thin gold line and 5
+  stops, each with a short line:
+    1  Design consultation       — Talk through your rooms, style and budget.
+    2  Product selection help    — Compare collections and see real samples.
+    3  Site measurement          — We measure so you order the right quantity.
+    4  Free delivery             — Delivered to your site, safely and on time.
+                                   [Delivery area & usual timing — to confirm]
+    5  Laying & installation support — Guidance and support at the site.
+- Button: [Book a consultation] → opens enquiry drawer with "Design
+  consultation" pre-selected.
+
+SECTION 05 — BRANDS WE CARRY (former Brands page)
+- Eyebrow "OUR BRANDS", H2 "Many brands. One trusted showroom."
+- Two "Authorised Dealer" cards at the top (ivory, gold hairline border, a
+  small certificate-style seal drawn in line art):
+    Johnson — Sanitary ware & CP fittings
+    JSW — Adhesives
+- Below: logo grid (4–6 per row, single-colour green, colour on hover),
+  each logo links to Products filtered by that brand.
+  [BRAND LIST & LOGOS — client to confirm]
+
+SECTION 06 — THE PEOPLE
+- Team photo (wide) + 3–6 small portraits with name and role.
+  [TEAM PHOTOS — client to provide]. If not available, hide this section.
+
+SECTION 07 — OUR SHOWROOM
+- 3-photo collage of the showroom (one tall, two stacked) +
+  short text + [Get directions].
+
+SECTION 08 — CLOSING BAND (Royal Forest Green)
+- H2 (ivory) "Come and see us."
+- Address [ADDRESS] · hours [OPENING HOURS].
+- Buttons [Get directions] (gold) [Enquire Now] (ivory outline).
+
+
+################################################################################
+PROMPT 08 — CONTACT PAGE
+################################################################################
+
+Use the Sri Skanda Traders design system (Prompt 00). Reminder: Poppins;
+green #123B32, ivory #F8F6EF, gold #D4AF37 accents only, charcoal green
+#2E3A35 text, beige #E7E2D6 borders; premium not luxurious; touch-first.
+
+GOAL
+Make it effortless to visit, call, WhatsApp or send an enquiry. Also the
+place where architects, builders and contractors reach the business.
+
+SECTION 01 — HEADER + QUICK ACTIONS
+- Eyebrow "CONTACT", H1 "Visit our showroom.", sub "Come in, sit down, and
+  browse every collection with our team. Or reach us any way you like."
+- Four large action tiles in a row (2 × 2 on mobile), ivory cards with beige
+  border; each tile has a line icon, a label and the detail:
+    Call us        [PHONE]
+    WhatsApp       [WHATSAPP NUMBER]
+    Email          [EMAIL]
+    Directions     Open in Google Maps
+  Tapping triggers the action (tel:, wa.me, mailto:, maps link).
+
+SECTION 02 — MAP + DETAILS
+- Left (7 cols): custom-styled map (muted greys, green pin with logo mark).
+- Right (5 cols): card with TRUST FRAME, bottom-gap label "Sulur,
+  Coimbatore": full address [ADDRESS], opening hours table [DAYS / TIMES],
+  landmark note [NEARBY LANDMARK], parking note [if any].
+- Below: "Areas we serve" chips: Sulur · Trichy Road · Karanampettai ·
+  Neelambur · Palladam · Coimbatore city.
+
+SECTION 03 — ENQUIRY FORM (full)
+- Two columns: left intro, right form.
+- Left: H2 "Tell us about your project.", body "Share a few details and our
+  team will get back to you within a few hours during showroom timings."
+- Form fields:
+    Name*
+    Phone* (+91)
+    Email
+    Area / Location
+    I am a: Homeowner · Architect / Designer · Builder · Contractor (chips)
+    Interested in: Floor tiles · Wall tiles · Vitrified · Granite ·
+                   Bathware · Adhesives (multi-select chips)
+    Project stage: Planning · Under construction · Renovating (chips)
+    Message
+    [ ] Attach my saved items (N)   (only if My Selection has items)
+  Button [Send enquiry] + "Or chat on WhatsApp".
+- When "Architect / Designer", "Builder" or "Contractor" is chosen, two
+  extra fields slide in (250ms): Company / Firm name · Project size
+  (e.g. number of units / sq ft). Helper line: "We supply projects of every
+  size. Our team will contact you with project details."
+- Success state as in Prompt 00-D.
+
+SECTION 04 — QUICK ANSWERS (accordion, 3–4 items)
+  • Do you deliver?  — Yes, free delivery [area and usual timing — to confirm].
+  • Do you help with laying?  — Yes, we offer laying and installation support.
+  • Can I see samples before buying?  — Yes, every collection on the website
+    can be seen at our showroom. Save it to My Selection and show our team.
+  • [Additional question — to confirm]
+
+Then the shared FOOTER.
+
+
+################################################################################
+HANDOFF NOTES — OPEN ITEMS & CONTENT NEEDED
+################################################################################
+
+CONTENT THE CLIENT STILL NEEDS TO SUPPLY
+  [ ] Logo files (SVG / AI) — all colour versions
+  [ ] Phone, WhatsApp number, email, full address, Google Maps link,
+      opening hours, nearby landmark
+  [ ] Final list of brands carried + logos (Johnson and JSW confirmed as
+      authorised dealerships)
+  [ ] Product list grouped BY COLLECTION: collection name, brand, colours
+      (name + code), sizes, finishes, floor/wall use, features, spaces,
+      look & feel, plus room photos, flat tile-face images and texture
+      close-ups for each collection
+  [ ] Bathware product list: name, code, brand, type, dimensions, finishes,
+      images
+  [ ] Showroom photos, project photos (with area + tiles used), team and
+      founder photos
+  [ ] Real customer reviews / Google review link / video testimonials
+  [ ] Free delivery area and usual delivery time
+  [ ] Founder name and approval of the "Our Story" draft
+
+OPEN DECISIONS / TO CONFIRM
+  [ ] 3D Visualizer: embed URL/code, and its real controls — the "How to use
+      it" steps on Prompt 04 are a DRAFT until confirmed
+  [ ] 3 renders of the same room with different floors (Home hero "Try a
+      floor") and 2 renders for the Home before/after slider — can come from
+      the existing visualizer
+  [ ] Whether "Showroom mode" (New customer button + idle prompt) should be
+      enabled on the in-store tablet
+  [ ] Google rating figure (only show if supplied)
+
+SUGGESTED DATA MODEL (for the developer / CMS)
+  Collection: id, name, slug, brand, description, category (floor/wall/
+    vitrified), spaces[], look_and_feel[], features[], finishes[], sizes[],
+    hero_image, room_images[], is_new, is_trending
+  Colour (belongs to Collection): name, code, tile_face_image,
+    texture_image, finishes[], sizes[], application (floor/wall/both),
+    thickness
+  Decor (belongs to Collection): name, code, size, image
+  Product (bathware/granite/adhesives): name, code, brand, category, type,
+    specs (key/value), finishes[], images[], authorised_dealer (bool)
+  Project: title, area, space, photos[], note, collections_used[]
+  Review: name, area, text, source, date, video_url
+  Enquiry: name, phone, email, area, role, interests[], stage, message,
+    company, project_size, items[] (from My Selection), source_page
+  My Selection: stored on the device (local storage), items[] with
+    item_id, colour_code, room, approx_area
+
+PERFORMANCE
+  - Images in WebP/AVIF, lazy-loaded below the fold, responsive sizes.
+  - Target: Home loads in under 2.5s on 4G; smooth 60fps animations on the
+    showroom tablet.
+  - Basic SEO: unique titles and descriptions per page and per collection,
+    clean URLs (/tiles/living-room, /collection/[name]).
+
+================================================================================
+END OF FILE
+================================================================================

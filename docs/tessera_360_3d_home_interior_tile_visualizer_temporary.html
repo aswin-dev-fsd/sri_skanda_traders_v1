@@ -1,0 +1,3745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>TESSERA 360 — Inside 360° Photoreal Studio</title>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <style>
+    :root {
+      --bg-void: #090a0d;
+      --bg-glass: rgba(13, 15, 20, 0.82);
+      --bg-glass-heavy: rgba(10, 12, 16, 0.94);
+      --bg-card: rgba(24, 28, 36, 0.75);
+      --bg-card-hover: rgba(38, 44, 56, 0.92);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-bright: rgba(255, 255, 255, 0.18);
+      --accent: #d8a960;
+      --accent-soft: rgba(216, 169, 96, 0.16);
+      --accent-glow: rgba(216, 169, 96, 0.45);
+      --text-primary: #f4f5f7;
+      --text-secondary: #9ca3af;
+      --text-muted: #64748b;
+      --radius-sm: 7px;
+      --radius-md: 11px;
+      --radius-lg: 15px;
+      --shadow-studio: 0 24px 60px rgba(0, 0, 0, 0.65);
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-void);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      line-height: 1.4;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #viewport-wrap {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+    }
+
+    canvas#archviz-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      outline: none;
+      cursor: grab;
+    }
+
+    canvas#archviz-canvas:active {
+      cursor: grabbing;
+    }
+
+    /* Subtle film vignette overlay for photographic depth */
+    .vignette-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      background: radial-gradient(circle at center, transparent 60%, rgba(4, 5, 8, 0.46) 100%);
+    }
+
+    /* Top Studio Header */
+    .studio-topbar {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      right: 12px;
+      height: 52px;
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      z-index: 20;
+      box-shadow: var(--shadow-studio);
+      gap: 10px;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    body.photo-mode .studio-topbar,
+    body.photo-mode .dock-panel,
+    body.photo-mode .camera-dock,
+    body.photo-mode .compass-hud {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-8px);
+    }
+
+    .exit-photo-btn {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 40;
+      display: none;
+      background: var(--bg-glass-heavy);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 8px 14px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      box-shadow: var(--shadow-studio);
+    }
+
+    body.photo-mode .exit-photo-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #e7be74 0%, #9b6c29 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 12.5px;
+      color: #090a0d;
+      letter-spacing: -0.5px;
+      box-shadow: 0 4px 14px rgba(216, 169, 96, 0.35);
+    }
+
+    .brand-name {
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.4px;
+      color: #fff;
+    }
+
+    .brand-tag {
+      font-size: 9.5px;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 1.1px;
+      display: block;
+    }
+
+    /* Segmented Pill Bars in Topbar */
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 3.5px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      overflow-x: auto;
+    }
+
+    .toolbar-label {
+      font-size: 9.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      padding: 0 7px;
+      white-space: nowrap;
+    }
+
+    .seg-btn {
+      background: transparent;
+      color: var(--text-secondary);
+      border: none;
+      padding: 5px 10px;
+      border-radius: 7px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    .seg-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .seg-btn.active {
+      background: var(--accent);
+      color: #0e1015;
+      font-weight: 700;
+      box-shadow: 0 2px 10px rgba(216, 169, 96, 0.35);
+    }
+
+    .metal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      border: 1px solid rgba(255,255,255,0.4);
+    }
+
+    /* Action Buttons */
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .btn {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-subtle);
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.16s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover:not(:disabled) {
+      background: var(--bg-card-hover);
+      border-color: var(--border-bright);
+    }
+
+    .btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .btn.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #e0b368 0%, #b38036 100%);
+      color: #0e1015;
+      border: none;
+      font-weight: 700;
+    }
+
+    .btn-gold:hover:not(:disabled) {
+      filter: brightness(1.08);
+    }
+
+    /* Live 360° Compass & Optical Lens HUD */
+    .compass-hud {
+      position: fixed;
+      top: 74px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 18;
+      background: var(--bg-glass);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 30px;
+      padding: 5px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .compass-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .compass-dir {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid rgba(216, 169, 96, 0.38);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 10.5px;
+      min-width: 82px;
+      text-align: center;
+    }
+
+    .fov-badge {
+      font-size: 10.5px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .fov-badge strong {
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Side Docks */
+    .dock-panel {
+      position: fixed;
+      top: 74px;
+      bottom: 68px;
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      z-index: 15;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-studio);
+      overflow: hidden;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .left-dock {
+      left: 12px;
+      width: 304px;
+    }
+
+    .right-dock {
+      right: 12px;
+      width: 336px;
+    }
+
+    .dock-header {
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 700;
+      font-size: 11.5px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      background: rgba(0, 0, 0, 0.25);
+    }
+
+    .dock-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid rgba(216, 169, 96, 0.32);
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .dock-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .dock-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .dock-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.16);
+      border-radius: 4px;
+    }
+
+    .sec-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Zone Selector List */
+    .zone-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .zone-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6.5px 9px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-card);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .zone-row:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .zone-row.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+    }
+
+    .zone-left {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .zone-thumb {
+      width: 25px;
+      height: 25px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background-size: cover;
+      background-position: center;
+      flex-shrink: 0;
+    }
+
+    .zone-title {
+      font-weight: 600;
+      font-size: 11.5px;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .zone-desc {
+      font-size: 9.8px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Hero Tile Swatch Cards */
+    .swatch-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .swatch-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .swatch-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+    }
+
+    .swatch-card.active {
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-soft);
+    }
+
+    .swatch-preview {
+      width: 100%;
+      height: 78px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .sku-pill {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      background: rgba(9, 10, 13, 0.75);
+      backdrop-filter: blur(4px);
+      color: #e5e7eb;
+      font-size: 8.5px;
+      font-weight: 700;
+      padding: 2px 5px;
+      border-radius: 4px;
+      letter-spacing: 0.4px;
+    }
+
+    .finish-pill {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      background: rgba(15, 17, 22, 0.84);
+      color: var(--accent);
+      font-size: 8.5px;
+      font-weight: 700;
+      padding: 1.5px 5px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .swatch-info {
+      padding: 6.5px 8px;
+    }
+
+    .swatch-name {
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .swatch-sub {
+      font-size: 9.5px;
+      color: var(--text-secondary);
+      margin-top: 1px;
+    }
+
+    /* Right Dock Controls */
+    .control-box {
+      background: rgba(0, 0, 0, 0.24);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ctrl-row {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .ctrl-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .ctrl-head strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .opt-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(66px, 1fr));
+      gap: 5px;
+    }
+
+    .opt-pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      padding: 5px 6px;
+      border-radius: 6px;
+      font-size: 10.5px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.14s ease;
+    }
+
+    .opt-pill:hover:not(:disabled) {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.22);
+    }
+
+    .opt-pill.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-color: var(--accent);
+      font-weight: 700;
+    }
+
+    .opt-pill:disabled {
+      opacity: 0.25;
+      cursor: not-allowed;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.14);
+      border-radius: 4px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: 2px solid #090a0d;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.6);
+    }
+
+    .swatch-dots {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .color-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, 0.22);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+
+    .color-dot:hover {
+      transform: scale(1.1);
+    }
+
+    .color-dot.active {
+      border-color: var(--accent);
+      transform: scale(1.16);
+      box-shadow: 0 0 0 2px var(--accent-soft);
+    }
+
+    .mode-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      background: rgba(0, 0, 0, 0.36);
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .mode-tab {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 6px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .mode-tab.active {
+      background: var(--bg-card-hover);
+      color: var(--accent);
+    }
+
+    /* Bottom Inside-360° Standing Points & Rotation Bar */
+    .camera-dock {
+      position: fixed;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 40px;
+      padding: 5px 10px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      z-index: 18;
+      box-shadow: var(--shadow-studio);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      max-width: 96vw;
+      overflow-x: auto;
+    }
+
+    .dock-sep {
+      width: 1px;
+      height: 18px;
+      background: var(--border-subtle);
+      margin: 0 4px;
+    }
+
+    /* Status Toast Pill */
+    .toast-pill {
+      position: fixed;
+      top: 118px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-glass-heavy);
+      border: 1px solid rgba(216, 169, 96, 0.45);
+      color: var(--text-primary);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 11.5px;
+      font-weight: 600;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+    }
+
+    .toast-pill.visible {
+      opacity: 1;
+    }
+
+    .toast-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    /* Specification Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 5, 8, 0.78);
+      backdrop-filter: blur(10px);
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #12151c;
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 820px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-studio);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 15px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-body {
+      padding: 18px 20px;
+      overflow-y: auto;
+    }
+
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .spec-table th, .spec-table td {
+      text-align: left;
+      padding: 10px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .spec-table th {
+      color: var(--text-secondary);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    @media (max-width: 1180px) {
+      .left-dock { width: 265px; }
+      .right-dock { width: 285px; }
+      .brand-tag { display: none; }
+    }
+
+    @media (max-width: 900px) {
+      .compass-hud { display: none; }
+      .left-dock {
+        top: auto;
+        bottom: 64px;
+        left: 10px;
+        right: 10px;
+        width: auto;
+        height: 195px;
+      }
+      .right-dock {
+        top: 68px;
+        right: 10px;
+        width: 270px;
+        bottom: 266px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 3D Viewport -->
+  <div id="viewport-wrap">
+    <canvas id="archviz-canvas"></canvas>
+  </div>
+  <div class="vignette-overlay"></div>
+
+  <!-- Exit Fullscreen Photo Mode Button -->
+  <button class="exit-photo-btn" id="btn-exit-photo">&#10005; Exit Photo Mode (Esc)</button>
+
+  <!-- Live 360° Compass & Optical Lens HUD -->
+  <div class="compass-hud">
+    <div class="compass-pill">
+      <span>360° INSIDE VIEW</span>
+      <span class="compass-dir" id="compass-readout">NORTH • 0°</span>
+    </div>
+    <div class="dock-sep"></div>
+    <div class="fov-badge">
+      <span>Lens FOV (Scroll to Zoom):</span>
+      <strong id="hud-fov-label">62° Wide</strong>
+    </div>
+  </div>
+
+  <!-- Status Toast -->
+  <div class="toast-pill" id="toast-pill">
+    <span class="toast-dot"></span>
+    <span id="toast-text">Standing Inside Center (360° Look-Around Ready)</span>
+  </div>
+
+  <!-- Top Studio Bar -->
+  <header class="studio-topbar">
+    <div class="brand-block">
+      <div class="brand-mark">360°</div>
+      <div>
+        <div class="brand-name">TESSERA 360 // INSIDE STUDIO</div>
+        <span class="brand-tag">4-Wall Enclosed Panoramic Sanctuary</span>
+      </div>
+    </div>
+
+    <!-- Lighting Mood Switcher -->
+    <div class="toolbar-group">
+      <span class="toolbar-label">Lighting</span>
+      <button class="seg-btn active" data-mood="golden">&#9728; Golden Hour Sunbeams</button>
+      <button class="seg-btn" data-mood="daylight">&#9729; High-Noon Daylight</button>
+      <button class="seg-btn" data-mood="midnight">&#9790; Candlelit Evening Spa</button>
+    </div>
+
+    <!-- Global Metal Hardware Switcher -->
+    <div class="toolbar-group">
+      <span class="toolbar-label">Hardware</span>
+      <button class="seg-btn active" data-metal="brass">
+        <span class="metal-dot" style="background:#d8a95c;"></span>Brushed Brass
+      </button>
+      <button class="seg-btn" data-metal="black">
+        <span class="metal-dot" style="background:#1c1e22;"></span>Matte Black
+      </button>
+      <button class="seg-btn" data-metal="chrome">
+        <span class="metal-dot" style="background:#eef2f6;"></span>Mirror Chrome
+      </button>
+    </div>
+
+    <!-- Render Pass / Diagnostic Mode -->
+    <div class="toolbar-group">
+      <span class="toolbar-label">Pass</span>
+      <button class="seg-btn active" data-pass="pbr">Photoreal PBR</button>
+      <button class="seg-btn" data-pass="normal">Normal Map</button>
+      <button class="seg-btn" data-pass="roughness">Roughness</button>
+      <button class="seg-btn" data-pass="clay">Clay</button>
+    </div>
+
+    <!-- Top Right Studio Actions -->
+    <div class="top-actions">
+      <button class="btn" id="btn-undo" title="Undo (Ctrl+Z)" disabled>&#8630;</button>
+      <button class="btn" id="btn-redo" title="Redo (Ctrl+Y)" disabled>&#8631;</button>
+      <button class="btn active" id="btn-quality" title="Toggle GTAO + Bloom + Planar Mirror">GTAO HQ</button>
+      <button class="btn" id="btn-spec" title="Architectural Schedule">&#9776; Schedule</button>
+      <button class="btn" id="btn-photo-mode" title="Hide UI for Clean 360° View">&#128065; Hide UI</button>
+      <button class="btn btn-gold" id="btn-capture" title="Render High-Res PNG">&#128247; Snapshot</button>
+    </div>
+  </header>
+
+  <!-- Left Dock: 7 Surface Zones & 8 Hero Materials -->
+  <aside class="dock-panel left-dock">
+    <div class="dock-header">
+      <span>1. 360° Room Zones (7)</span>
+      <span class="dock-badge">Click Any Surface</span>
+    </div>
+    <div class="dock-scroll">
+      <div class="zone-grid" id="zone-list"></div>
+
+      <div>
+        <div class="sec-title">
+          <span>2. Curated Hero Tiles (8)</span>
+          <span style="color:var(--accent); font-size:9px;">Sobel Normal + Bevels</span>
+        </div>
+        <div class="swatch-grid" id="swatch-grid"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Right Dock: Surface PBR & Optical Lens Inspector -->
+  <aside class="dock-panel right-dock">
+    <div class="dock-header">
+      <span>3. Surface PBR Inspector</span>
+      <span class="dock-badge" id="active-zone-badge">North Shower Wall</span>
+    </div>
+    <div class="dock-scroll">
+      <!-- Tile vs Matte Wall Paint Toggle for Walls -->
+      <div id="wall-mode-wrap" style="display:none;">
+        <div class="mode-tabs">
+          <button class="mode-tab active" id="tab-mode-tile">Architectural Tile / Slab</button>
+          <button class="mode-tab" id="tab-mode-paint">Matte Wall Paint (6)</button>
+        </div>
+      </div>
+
+      <!-- Matte Wall Paint Selector -->
+      <div id="plaster-wrap" class="control-box" style="display:none;">
+        <div class="sec-title"><span>Select Architectural Matte Paint</span></div>
+        <div class="swatch-dots" id="plaster-dots"></div>
+      </div>
+
+      <!-- Precision Tile & Grout Controls -->
+      <div id="tile-controls-wrap" class="control-box">
+        <div class="ctrl-row">
+          <div class="ctrl-head">
+            <span>Physical Tile Format (mm)</span>
+            <strong id="lbl-size">600×1200 mm</strong>
+          </div>
+          <div class="opt-grid" id="size-grid"></div>
+        </div>
+
+        <div class="ctrl-row">
+          <div class="ctrl-head">
+            <span>Bond / Installation Pattern</span>
+            <strong id="lbl-pattern">GRID</strong>
+          </div>
+          <div class="opt-grid" id="pattern-grid" style="grid-template-columns: repeat(4, 1fr);">
+            <button class="opt-pill active" data-pattern="grid">Grid</button>
+            <button class="opt-pill" data-pattern="brick">1/2 Brick</button>
+            <button class="opt-pill" data-pattern="third">1/3 Offset</button>
+            <button class="opt-pill" data-pattern="herringbone">Herring</button>
+          </div>
+        </div>
+
+        <div class="ctrl-row">
+          <div class="ctrl-head">
+            <span>Rotation &amp; Surface Finish</span>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1.55fr; gap:6px;">
+            <div class="opt-grid" id="rot-grid" style="grid-template-columns: repeat(3, 1fr);">
+              <button class="opt-pill active" data-rot="0">0°</button>
+              <button class="opt-pill" data-rot="45">45°</button>
+              <button class="opt-pill" data-rot="90">90°</button>
+            </div>
+            <div class="opt-grid" id="finish-grid" style="grid-template-columns: repeat(2, 1fr);">
+              <button class="opt-pill active" data-finish="polished">Polished Mirror</button>
+              <button class="opt-pill" data-finish="honed">Satin Honed</button>
+              <button class="opt-pill" data-finish="matte">Natural Matte</button>
+              <button class="opt-pill" data-finish="relief">Brushed Relief</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="ctrl-row">
+          <div class="ctrl-head">
+            <span>Grout Joint Width (0–10 mm)</span>
+            <strong id="lbl-grout-mm">2.0 mm</strong>
+          </div>
+          <input type="range" id="slider-grout" min="0.0" max="10.0" step="0.5" value="2.0" />
+        </div>
+
+        <div class="ctrl-row">
+          <div class="ctrl-head">
+            <span>Mortar / Grout Color (6)</span>
+            <strong id="lbl-grout-name">Warm Limestone</strong>
+          </div>
+          <div class="swatch-dots" id="grout-dots"></div>
+        </div>
+
+        <div class="ctrl-row">
+          <div class="ctrl-head">
+            <span>3D Bevel &amp; Lippage Depth</span>
+            <strong id="lbl-bump">1.25×</strong>
+          </div>
+          <input type="range" id="slider-bump" min="0.2" max="3.0" step="0.05" value="1.25" />
+        </div>
+
+        <div class="ctrl-row">
+          <div class="ctrl-head">
+            <span>Specular Clearcoat Gloss</span>
+            <strong id="lbl-clearcoat">85%</strong>
+          </div>
+          <input type="range" id="slider-clearcoat" min="0" max="100" step="5" value="85" />
+        </div>
+      </div>
+
+      <!-- Optical Lens Zoom (FOV) & Exposure Controls -->
+      <div class="control-box">
+        <div class="sec-title" style="margin-bottom:0;">
+          <span>Inside 360° Optical Lens &amp; Exposure</span>
+        </div>
+        <div class="ctrl-row">
+          <div class="ctrl-head">
+            <span>Optical Lens Zoom (FOV 32°–85°)</span>
+            <strong id="lbl-fov">62°</strong>
+          </div>
+          <input type="range" id="slider-fov" min="32" max="85" step="1" value="62" />
+        </div>
+        <div class="ctrl-row">
+          <div class="ctrl-head">
+            <span>ACES Filmic Exposure</span>
+            <strong id="lbl-exposure">1.10 EV</strong>
+          </div>
+          <input type="range" id="slider-exposure" min="0.55" max="1.75" step="0.05" value="1.10" />
+        </div>
+        <div style="display:flex; gap:6px; margin-top:2px;">
+          <button class="btn" id="btn-reset-zone" style="flex:1; justify-content:center;">Reset Zone</button>
+          <button class="btn" id="btn-reset-all" style="flex:1; justify-content:center;">Reset Room</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Bottom HUD: Strictly Inside Standing Spots & 360° Quick Turn Controls -->
+  <nav class="camera-dock">
+    <span class="toolbar-label">Inside Standing Spot</span>
+    <button class="seg-btn active" data-spot="center">&#9673; Room Center (360°)</button>
+    <button class="seg-btn" data-spot="vanity">Vanity Station</button>
+    <button class="seg-btn" data-spot="shower">Inside Shower</button>
+    <button class="seg-btn" data-spot="tub">Bathtub Side</button>
+    <button class="seg-btn" data-spot="door">Entrance Door</button>
+    <div class="dock-sep"></div>
+    <span class="toolbar-label">360° Turn</span>
+    <button class="seg-btn" id="btn-turn-left" title="Look Left 45°">&#8634; Left 45°</button>
+    <button class="seg-btn" id="btn-turn-right" title="Look Right 45°">Right 45° &#8635;</button>
+    <button class="seg-btn" id="btn-turn-180" title="Flip View 180°">&#8644; Flip 180°</button>
+    <button class="seg-btn" id="btn-autopan" title="Toggle Gentle 360° Panorama Rotation">&#10227; Auto-360°</button>
+  </nav>
+
+  <!-- Architectural Schedule Modal -->
+  <div class="modal-backdrop" id="spec-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <div style="font-size:14px; font-weight:700; color:#fff;">360° ARCHITECTURAL TILE &amp; FINISH SCHEDULE</div>
+          <div style="font-size:11px; color:var(--text-secondary);">Enclosed 4-Wall Luxury Spa Sanctuary (5.6m × 4.6m × 3.0m) — Includes 10% Wastage</div>
+        </div>
+        <button class="btn" id="btn-close-spec">&#10005; Close</button>
+      </div>
+      <div class="modal-body" id="spec-modal-body"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+    import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+    import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+    import { Reflector } from 'three/addons/objects/Reflector.js';
+
+    /* ============================================================================
+     * 1. SEEDED 2D PERLIN / SIMPLEX FBM NOISE WITH DOMAIN WARPING
+     * ============================================================================ */
+    class ArchVizNoise {
+      constructor(seed = 90210) {
+        this.p = new Uint8Array(512);
+        let s = seed >>> 0;
+        const perm = new Uint8Array(256);
+        for (let i = 0; i < 256; i++) perm[i] = i;
+        for (let i = 255; i > 0; i--) {
+          s = (s * 1664525 + 1013904223) >>> 0;
+          const j = s % (i + 1);
+          const tmp = perm[i];
+          perm[i] = perm[j];
+          perm[j] = tmp;
+        }
+        for (let i = 0; i < 512; i++) this.p[i] = perm[i & 255];
+      }
+
+      fade(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
+      lerp(a, b, t) { return a + t * (b - a); }
+
+      grad(hash, x, y) {
+        const h = hash & 7;
+        const u = h < 4 ? x : y;
+        const v = h < 4 ? y : x;
+        return ((h & 1) ? -u : u) + ((h & 2) ? -2.0 * v : 2.0 * v);
+      }
+
+      noise2D(x, y) {
+        const X = Math.floor(x) & 255;
+        const Y = Math.floor(y) & 255;
+        x -= Math.floor(x);
+        y -= Math.floor(y);
+        const u = this.fade(x);
+        const v = this.fade(y);
+        const A = this.p[X] + Y;
+        const B = this.p[X + 1] + Y;
+        const res = this.lerp(
+          this.lerp(this.grad(this.p[A], x, y), this.grad(this.p[B], x - 1, y), u),
+          this.lerp(this.grad(this.p[A + 1], x, y - 1), this.grad(this.p[B + 1], x - 1, y - 1), u),
+          v
+        );
+        return Math.max(0, Math.min(1, 0.5 + 0.36 * res));
+      }
+
+      fbm(x, y, octaves = 5, persistence = 0.52, lacunarity = 2.05) {
+        let total = 0, freq = 1, amp = 1, norm = 0;
+        for (let i = 0; i < octaves; i++) {
+          total += this.noise2D(x * freq, y * freq) * amp;
+          norm += amp;
+          amp *= persistence;
+          freq *= lacunarity;
+        }
+        return total / norm;
+      }
+
+      domainWarp(x, y, octaves = 4) {
+        const qx = this.fbm(x + 1.7, y + 9.2, octaves);
+        const qy = this.fbm(x + 8.3, y + 2.8, octaves);
+        const rx = this.fbm(x + 3.2 * qx + 1.7, y + 3.2 * qy + 9.2, octaves);
+        const ry = this.fbm(x + 3.2 * qx + 8.3, y + 3.2 * qy + 2.8, octaves);
+        return {
+          val: this.fbm(x + 2.8 * rx, y + 2.8 * ry, octaves),
+          qx, qy, rx, ry
+        };
+      }
+    }
+
+    /* ============================================================================
+     * 2. HERO PROCEDURAL MATERIALS (8), GROUT (6) & WALL PAINTS (6)
+     * ============================================================================ */
+    const HERO_TILES = [
+      {
+        id: 'calacatta_viola',
+        sku: 'TS-MBL-01',
+        name: 'Calacatta Viola Breccia',
+        subtitle: 'Cabernet & Gold Brecciated Marble',
+        sizes: ['600x1200', '1200x1200', '600x600', '300x600'],
+        defaultSize: '600x1200',
+        defaultFinish: 'polished',
+        defaultBump: 1.15,
+        defaultClearcoat: 95
+      },
+      {
+        id: 'statuario_extra',
+        sku: 'TS-MBL-02',
+        name: 'Statuario Venato Extra',
+        subtitle: 'Carrara White Structural Marble',
+        sizes: ['600x1200', '1200x1200', '600x600', '300x600'],
+        defaultSize: '600x1200',
+        defaultFinish: 'polished',
+        defaultBump: 1.0,
+        defaultClearcoat: 90
+      },
+      {
+        id: 'nero_dorado',
+        sku: 'TS-MBL-03',
+        name: 'Nero Marquina Dorado',
+        subtitle: 'Obsidian Black & Bronze Vein Marble',
+        sizes: ['600x1200', '1200x1200', '600x600', '300x600'],
+        defaultSize: '600x1200',
+        defaultFinish: 'polished',
+        defaultBump: 1.15,
+        defaultClearcoat: 95
+      },
+      {
+        id: 'emerald_zellige',
+        sku: 'TS-ZEL-04',
+        name: 'Artisanal Emerald Zellige',
+        subtitle: 'Hand-Cut Moroccan Glazed Clay',
+        sizes: ['100x100', '75x300', '300x600'],
+        defaultSize: '100x100',
+        defaultFinish: 'polished',
+        defaultBump: 2.15,
+        defaultClearcoat: 100
+      },
+      {
+        id: 'travertino_silver',
+        sku: 'TS-STN-05',
+        name: 'Travertino Romano Silver',
+        subtitle: 'Vein-Cut Porous Sedimentary Stone',
+        sizes: ['600x1200', '1200x1200', '600x600', '300x600', '75x300'],
+        defaultSize: '600x1200',
+        defaultFinish: 'honed',
+        defaultBump: 1.65,
+        defaultClearcoat: 20
+      },
+      {
+        id: 'ceppo_terrazzo',
+        sku: 'TS-TRZ-06',
+        name: 'Ceppo di Gré Terrazzo',
+        subtitle: 'Milanese Mineral Clast Conglomerate',
+        sizes: ['600x600', '600x1200', '1200x1200', '300x600'],
+        defaultSize: '600x600',
+        defaultFinish: 'honed',
+        defaultBump: 1.35,
+        defaultClearcoat: 35
+      },
+      {
+        id: 'smoked_oak',
+        sku: 'TS-WOD-07',
+        name: 'Nordic Smoked Oak Plank',
+        subtitle: 'Brushed Cathedral Timber Plank',
+        sizes: ['200x1200', '75x300', '300x600'],
+        defaultSize: '200x1200',
+        defaultFinish: 'honed',
+        defaultBump: 1.5,
+        defaultClearcoat: 25
+      },
+      {
+        id: 'basaltina_fluted',
+        sku: 'TS-FLT-08',
+        name: 'Basaltina 3D Fluted Stone',
+        subtitle: 'Carved Volcanic Ribbed Relief',
+        sizes: ['600x1200', '600x600', '300x600'],
+        defaultSize: '600x1200',
+        defaultFinish: 'relief',
+        defaultBump: 2.45,
+        defaultClearcoat: 10
+      }
+    ];
+
+    const ALL_FORMATS = [
+      '600x1200', '1200x1200', '600x600', '300x600',
+      '200x1200', '100x100', '75x300'
+    ];
+
+    const GROUT_PALETTE = [
+      { id: 'alabaster', name: 'Alabaster White', hex: '#f1efe9' },
+      { id: 'limestone', name: 'Warm Limestone', hex: '#d8cfc0' },
+      { id: 'silver', name: 'Silver Grey', hex: '#a6acb3' },
+      { id: 'anthracite', name: 'Anthracite', hex: '#383c42' },
+      { id: 'espresso', name: 'Deep Espresso', hex: '#241d19' },
+      { id: 'terracotta', name: 'Terracotta Clay', hex: '#9e5b43' }
+    ];
+
+    const PLASTER_PALETTE = [
+      { id: 'plaster_travertine', sku: 'MP-01', name: 'Chalk Travertine', hex: '#ece7df' },
+      { id: 'plaster_oat', sku: 'MP-02', name: 'Warm Tuscan Oat', hex: '#d7cbb8' },
+      { id: 'plaster_sage', sku: 'MP-03', name: 'Olive Mist Matte', hex: '#aeb8ad' },
+      { id: 'plaster_greige', sku: 'MP-04', name: 'Milanese Greige', hex: '#948d84' },
+      { id: 'plaster_clay', sku: 'MP-05', name: 'Sienna Earth', hex: '#b67d67' },
+      { id: 'plaster_obsidian', sku: 'MP-06', name: 'Charcoal Tadelakt', hex: '#2b2e33' }
+    ];
+
+    /* ============================================================================
+     * 3. HIGH-RES PROCEDURAL PBR & SOBEL NORMAL SYNTHESIZER
+     * ============================================================================ */
+    class PhotorealPBRSynthesizer {
+      constructor() {
+        this.noise = new ArchVizNoise(77419);
+        this.pbrCache = new Map();
+        this.thumbCache = new Map();
+      }
+
+      hexToRgb(hex) {
+        const v = parseInt(hex.replace('#', ''), 16);
+        return { r: (v >> 16) & 255, g: (v >> 8) & 255, b: v & 255 };
+      }
+
+      mix(c1, c2, t) {
+        const cl = Math.max(0, Math.min(1, t));
+        return {
+          r: c1.r + (c2.r - c1.r) * cl,
+          g: c1.g + (c2.g - c1.g) * cl,
+          b: c1.b + (c2.b - c1.b) * cl
+        };
+      }
+
+      evaluateMaterialPixel(id, u, v, cellHash, cellSeed) {
+        const nx = u * 3.2 + cellSeed * 4.7;
+        const ny = v * 3.2 + cellSeed * 2.9;
+
+        let r = 240, g = 240, b = 240;
+        let height = 0.85;
+        let rough = 0.2;
+
+        if (id === 'calacatta_viola') {
+          const w = this.noise.domainWarp(nx * 0.95, ny * 0.95, 4);
+          const clastMask = Math.pow(Math.max(0, Math.sin(w.val * Math.PI * 2.3)), 1.6);
+          const veinSharp = Math.pow(Math.max(0, 1.0 - Math.abs(w.rx - 0.5) * 4.8), 3.5);
+          const goldVein = Math.pow(Math.max(0, 1.0 - Math.abs(w.qy - 0.48) * 6.5), 4.0);
+
+          const cream = { r: 247, g: 243, b: 236 };
+          const warmCloud = { r: 234, g: 225, b: 215 };
+          const viola = { r: 84, g: 32, b: 52 };
+          const gold = { r: 184, g: 138, b: 72 };
+
+          let col = this.mix(viola, cream, Math.min(1, clastMask * 1.45));
+          col = this.mix(col, warmCloud, w.qx * 0.35);
+          col = this.mix(col, viola, veinSharp * 0.85);
+          col = this.mix(col, gold, goldVein * 0.78);
+
+          r = col.r; g = col.g; b = col.b;
+          height = 0.88 - (1.0 - clastMask) * 0.04 - veinSharp * 0.03;
+          rough = 0.08 + (1.0 - clastMask) * 0.14;
+
+        } else if (id === 'statuario_extra') {
+          const w = this.noise.domainWarp(nx * 1.1, ny * 0.9, 4);
+          const primaryVein = Math.pow(Math.max(0, 1.0 - Math.abs(w.val - 0.5) * 3.8), 3.2);
+          const secVein = Math.pow(Math.max(0, 1.0 - Math.abs(w.rx - 0.52) * 5.2), 4.2);
+
+          const white = { r: 249, g: 251, b: 253 };
+          const dove = { r: 198, g: 205, b: 214 };
+          const charcoal = { r: 74, g: 82, b: 94 };
+
+          let col = this.mix(white, dove, w.qx * 0.42);
+          col = this.mix(col, charcoal, primaryVein * 0.82 + secVein * 0.45);
+          r = col.r; g = col.g; b = col.b;
+          height = 0.89 - primaryVein * 0.03;
+          rough = 0.07 + primaryVein * 0.12;
+
+        } else if (id === 'nero_dorado') {
+          const w = this.noise.domainWarp(nx * 1.2, ny * 1.2, 4);
+          const whiteLightning = Math.pow(Math.max(0, 1.0 - Math.abs(w.val - 0.49) * 6.0), 4.5);
+          const goldStreak = Math.pow(Math.max(0, 1.0 - Math.abs(w.ry - 0.51) * 5.5), 4.0);
+
+          const obsidian = { r: 20, g: 22, b: 26 };
+          const deepGrey = { r: 36, g: 40, b: 47 };
+          const calcite = { r: 244, g: 246, b: 250 };
+          const dorado = { r: 198, g: 148, b: 76 };
+
+          let col = this.mix(obsidian, deepGrey, w.qx * 0.5);
+          col = this.mix(col, dorado, goldStreak * 0.85);
+          col = this.mix(col, calcite, whiteLightning * 0.92);
+          r = col.r; g = col.g; b = col.b;
+          height = 0.88 - whiteLightning * 0.025;
+          rough = 0.06 + (1.0 - w.qx) * 0.08;
+
+        } else if (id === 'emerald_zellige') {
+          const edgeDist = Math.min(u, 1 - u, v, 1 - v) * 2.8;
+          const ripple = this.noise.fbm(u * 5.5 + cellSeed, v * 5.5, 3);
+          const toneShift = (cellHash - 0.5) * 44;
+
+          const deepTeal = { r: 14, g: 58, b: 52 };
+          const emerald = { r: 32, g: 102, b: 88 };
+          const seafoam = { r: 68, g: 138, b: 118 };
+
+          let col = this.mix(deepTeal, emerald, Math.min(1, edgeDist * 0.85 + ripple * 0.35));
+          col = this.mix(col, seafoam, Math.pow(ripple, 2) * 0.45);
+          r = col.r + toneShift;
+          g = col.g + toneShift * 1.1;
+          b = col.b + toneShift * 0.9;
+
+          height = 0.78 + Math.sin(u * Math.PI) * Math.sin(v * Math.PI) * 0.08 + (ripple - 0.5) * 0.11;
+          rough = 0.08 + (ripple - 0.5) * 0.06;
+
+        } else if (id === 'travertino_silver') {
+          const waveY = v * 12.0 + this.noise.fbm(u * 2.5 + cellSeed, v * 2.5, 3) * 1.8;
+          const strata = this.noise.fbm(u * 1.5 + cellSeed, waveY, 4);
+          const poreNoise = this.noise.noise2D(u * 38 + cellSeed * 11, v * 14 + cellSeed * 7);
+          const cavity = poreNoise < 0.24 ? (0.24 - poreNoise) / 0.24 : 0;
+
+          const silverLight = { r: 218, g: 210, b: 198 };
+          const taupeMid = { r: 174, g: 162, b: 146 };
+          const darkPore = { r: 108, g: 98, b: 86 };
+
+          let col = this.mix(silverLight, taupeMid, strata * 0.88);
+          col = this.mix(col, darkPore, cavity * 0.85);
+          r = col.r; g = col.g; b = col.b;
+          height = 0.86 - cavity * 0.32 - strata * 0.05;
+          rough = 0.32 + cavity * 0.55 + strata * 0.12;
+
+        } else if (id === 'ceppo_terrazzo') {
+          const fine = this.noise.noise2D(u * 45 + cellSeed, v * 45);
+          const matrix = { r: 142 + (fine - 0.5) * 18, g: 140 + (fine - 0.5) * 18, b: 135 + (fine - 0.5) * 18 };
+          let col = matrix;
+          height = 0.85 + (fine - 0.5) * 0.03;
+          rough = 0.38;
+
+          const gridScale = 8.0;
+          const gx = u * gridScale + cellSeed * 3.1;
+          const gy = v * gridScale + cellSeed * 1.7;
+          const ix = Math.floor(gx);
+          const iy = Math.floor(gy);
+          const fx = gx - ix;
+          const fy = gy - iy;
+          const h = ((ix * 73856093) ^ (iy * 19349663)) >>> 0;
+          const cx = 0.22 + ((h & 0xff) / 255) * 0.56;
+          const cy = 0.22 + (((h >> 8) & 0xff) / 255) * 0.56;
+          const rad = 0.16 + (((h >> 16) & 0xff) / 255) * 0.26;
+          const warp = this.noise.noise2D(gx * 2.2, gy * 2.2) * 0.12;
+          const dist = Math.hypot(fx - cx, fy - cy) + warp;
+
+          if (dist < rad) {
+            const palette = [
+              { r: 225, g: 220, b: 212 },
+              { r: 88, g: 92, b: 96 },
+              { r: 182, g: 174, b: 162 },
+              { r: 54, g: 56, b: 60 }
+            ];
+            col = palette[h % palette.length];
+            height = 0.89;
+            rough = 0.18;
+          }
+          r = col.r; g = col.g; b = col.b;
+
+        } else if (id === 'smoked_oak') {
+          const along = u;
+          const across = v;
+          const knotU = 0.3 + (cellHash * 0.4);
+          const knotV = 0.35 + ((cellSeed % 1) * 0.3);
+          const dx = (along - knotU) * 2.2;
+          const dy = (across - knotV) * 7.5;
+          const dKnot = Math.hypot(dx, dy);
+          const deflect = Math.exp(-dKnot * 3.2) * 0.38;
+
+          const ring = Math.sin((across * 20 + deflect * 12 + this.noise.fbm(along * 2.5 + cellSeed, across * 9, 3) * 4.2) * Math.PI);
+          const fiber = this.noise.noise2D(along * 60 + cellSeed, across * 140);
+          const t = (ring * 0.5 + 0.5) * 0.58 + fiber * 0.24 + Math.exp(-dKnot * 5.0) * 0.42;
+
+          const lightOak = { r: 158, g: 118, b: 82 };
+          const smokedBark = { r: 78, g: 52, b: 32 };
+          const col = this.mix(lightOak, smokedBark, t);
+          const plankShift = (cellHash - 0.5) * 18;
+          r = col.r + plankShift; g = col.g + plankShift; b = col.b + plankShift;
+          height = 0.86 - t * 0.09 + (fiber - 0.5) * 0.04;
+          rough = 0.34 + t * 0.22;
+
+        } else if (id === 'basaltina_fluted') {
+          const fluteCount = 12.0;
+          const flutePhase = (u * fluteCount) * Math.PI * 2;
+          const fluteWave = Math.cos(flutePhase) * 0.5 + 0.5;
+          const micro = this.noise.fbm(u * 24 + cellSeed, v * 24, 3);
+          const sparkle = this.noise.noise2D(u * 85, v * 85);
+
+          const basaltDark = { r: 42, g: 45, b: 49 };
+          const basaltCrest = { r: 76, g: 80, b: 86 };
+          const col = this.mix(basaltDark, basaltCrest, fluteWave * 0.65 + micro * 0.35);
+          r = col.r + (sparkle - 0.5) * 14;
+          g = col.g + (sparkle - 0.5) * 14;
+          b = col.b + (sparkle - 0.5) * 14;
+          height = 0.62 + fluteWave * 0.32 + (micro - 0.5) * 0.04;
+          rough = 0.52 - fluteWave * 0.14;
+        }
+
+        return { r, g, b, height, rough };
+      }
+
+      getThumbnailDataURL(tileId) {
+        if (this.thumbCache.has(tileId)) return this.thumbCache.get(tileId);
+        const size = 108;
+        const c = document.createElement('canvas');
+        c.width = size; c.height = size;
+        const ctx = c.getContext('2d');
+        const img = ctx.createImageData(size, size);
+        const d = img.data;
+
+        for (let py = 0; py < size; py++) {
+          for (let px = 0; px < size; px++) {
+            const p = this.evaluateMaterialPixel(tileId, px / size, py / size, 0.5, 1.7);
+            const idx = (py * size + px) * 4;
+            d[idx] = Math.max(0, Math.min(255, p.r));
+            d[idx + 1] = Math.max(0, Math.min(255, p.g));
+            d[idx + 2] = Math.max(0, Math.min(255, p.b));
+            d[idx + 3] = 255;
+          }
+        }
+        ctx.putImageData(img, 0, 0);
+        const url = c.toDataURL();
+        this.thumbCache.set(tileId, url);
+        return url;
+      }
+
+      getPBRMaps(zoneConfig, maxAnisotropy = 8) {
+        const key = `${zoneConfig.tileId}_${zoneConfig.size}_${zoneConfig.pattern}_${zoneConfig.groutWidth}_${zoneConfig.groutColor}`;
+        if (this.pbrCache.has(key)) return this.pbrCache.get(key);
+
+        const groutObj = GROUT_PALETTE.find(g => g.id === zoneConfig.groutColor) || GROUT_PALETTE[1];
+        const groutRgb = this.hexToRgb(groutObj.hex);
+
+        const [wMm, hMm] = zoneConfig.size.split('x').map(Number);
+        const aspect = wMm / hMm;
+
+        const cols = zoneConfig.size === '100x100' ? 5 : 3;
+        const rows = zoneConfig.pattern === 'brick' ? 4 : (zoneConfig.size === '100x100' ? 5 : 3);
+
+        const mapW = 768;
+        const mapH = Math.max(384, Math.min(768, Math.round(768 / Math.max(0.35, Math.min(2.5, aspect)))));
+
+        const albedoCanvas = document.createElement('canvas');
+        albedoCanvas.width = mapW; albedoCanvas.height = mapH;
+        const aCtx = albedoCanvas.getContext('2d');
+        const aImg = aCtx.createImageData(mapW, mapH);
+        const aData = aImg.data;
+
+        const roughCanvas = document.createElement('canvas');
+        roughCanvas.width = mapW; roughCanvas.height = mapH;
+        const rCtx = roughCanvas.getContext('2d');
+        const rImg = rCtx.createImageData(mapW, mapH);
+        const rData = rImg.data;
+
+        const heightBuf = new Float32Array(mapW * mapH);
+        const tiltXBuf = new Float32Array(mapW * mapH);
+        const tiltYBuf = new Float32Array(mapW * mapH);
+
+        const isHerringbone = zoneConfig.pattern === 'herringbone';
+        const isZellige = zoneConfig.tileId === 'emerald_zellige';
+        const lippageStrength = isZellige ? 0.16 : 0.035;
+
+        const groutFracX = Math.min(0.14, (zoneConfig.groutWidth / wMm));
+        const groutFracY = Math.min(0.14, (zoneConfig.groutWidth / hMm));
+
+        for (let py = 0; py < mapH; py++) {
+          const vNorm = py / mapH;
+          for (let px = 0; px < mapW; px++) {
+            const uNorm = px / mapW;
+            const pIdx = py * mapW + px;
+            const cIdx = pIdx * 4;
+
+            let localU = 0, localV = 0;
+            let edgeDistX = 1, edgeDistY = 1;
+            let cellHash = 0.5, cellSeed = 1.0;
+            let inGrout = false;
+
+            if (isHerringbone) {
+              const ratio = 4;
+              const scale = 4.0;
+              const u = (uNorm + vNorm) * scale;
+              const v = (uNorm - vNorm + 1.0) * scale;
+              const iu = Math.floor(u);
+              const iv = Math.floor(v);
+              const fu = u - iu;
+              const fv = v - iv;
+              const step = ((iu + iv) % ratio + ratio) % ratio;
+
+              let plankId;
+              if (fu + fv < 1.0) {
+                plankId = ((iu - step) * 131 + iv * 17) & 0xff;
+                localU = (step + fu) / ratio;
+                localV = fv;
+              } else {
+                plankId = ((iu + 1 - step) * 131 + (iv + 1) * 17) & 0xff;
+                localU = (step + (1 - fv)) / ratio;
+                localV = 1 - fu;
+              }
+              cellHash = (plankId & 0xff) / 255;
+              cellSeed = plankId * 0.73;
+              const edge = Math.min(localV, 1 - localV, localU * ratio, (1 - localU) * ratio);
+              inGrout = zoneConfig.groutWidth > 0 && edge < (zoneConfig.groutWidth / 100);
+              edgeDistX = edge;
+              edgeDistY = edge;
+            } else {
+              const rowFloat = vNorm * rows;
+              const rIdx = Math.floor(rowFloat);
+              localV = rowFloat - rIdx;
+
+              let rowOffset = 0;
+              if (zoneConfig.pattern === 'brick') rowOffset = (rIdx % 2) * 0.5;
+              else if (zoneConfig.pattern === 'third') rowOffset = (rIdx % 3) / 3.0;
+
+              const colFloat = ((uNorm * cols) + rowOffset * cols) % cols;
+              const cIdxTile = Math.floor(colFloat);
+              localU = colFloat - cIdxTile;
+
+              const hBits = (((cIdxTile + 11) * 73856093) ^ ((rIdx + 7) * 19349663)) >>> 0;
+              cellHash = (hBits & 0xff) / 255.0;
+              cellSeed = ((hBits >> 8) & 0xff) * 0.19;
+
+              edgeDistX = Math.min(localU, 1.0 - localU);
+              edgeDistY = Math.min(localV, 1.0 - localV);
+
+              const edgeWobble = isZellige ? (this.noise.noise2D(uNorm * 28, vNorm * 28) - 0.5) * 0.012 : 0;
+              if (zoneConfig.groutWidth > 0 && (edgeDistX + edgeWobble < groutFracX * 0.5 || edgeDistY + edgeWobble < groutFracY * 0.5)) {
+                inGrout = true;
+              }
+            }
+
+            if (inGrout) {
+              const sand = (this.noise.noise2D(px * 0.45, py * 0.45) - 0.5) * 20;
+              aData[cIdx] = Math.max(0, Math.min(255, groutRgb.r + sand - 8));
+              aData[cIdx + 1] = Math.max(0, Math.min(255, groutRgb.g + sand - 8));
+              aData[cIdx + 2] = Math.max(0, Math.min(255, groutRgb.b + sand - 8));
+              aData[cIdx + 3] = 255;
+
+              heightBuf[pIdx] = 0.12 + (sand / 255) * 0.05;
+              rData[cIdx] = rData[cIdx + 1] = rData[cIdx + 2] = 238;
+              rData[cIdx + 3] = 255;
+              tiltXBuf[pIdx] = 0;
+              tiltYBuf[pIdx] = 0;
+            } else {
+              const matPx = this.evaluateMaterialPixel(zoneConfig.tileId, localU, localV, cellHash, cellSeed);
+              const clearX = Math.max(0.001, edgeDistX - groutFracX * 0.5);
+              const clearY = Math.max(0.001, edgeDistY - groutFracY * 0.5);
+              const bevelZone = isZellige ? 0.08 : 0.032;
+              const bx = Math.min(1.0, clearX / bevelZone);
+              const by = Math.min(1.0, clearY / bevelZone);
+              const bevelFactor = Math.sin(Math.min(bx, by) * Math.PI * 0.5);
+
+              const edgeShade = 0.90 + 0.10 * bevelFactor;
+              aData[cIdx] = Math.max(0, Math.min(255, matPx.r * edgeShade));
+              aData[cIdx + 1] = Math.max(0, Math.min(255, matPx.g * edgeShade));
+              aData[cIdx + 2] = Math.max(0, Math.min(255, matPx.b * edgeShade));
+              aData[cIdx + 3] = 255;
+
+              heightBuf[pIdx] = 0.25 + (matPx.height - 0.25) * bevelFactor;
+
+              const rByte = Math.max(8, Math.min(250, Math.round(matPx.rough * 255)));
+              rData[cIdx] = rData[cIdx + 1] = rData[cIdx + 2] = rByte;
+              rData[cIdx + 3] = 255;
+
+              tiltXBuf[pIdx] = (cellHash - 0.5) * lippageStrength;
+              tiltYBuf[pIdx] = (((cellSeed * 10) % 1) - 0.5) * lippageStrength;
+            }
+          }
+        }
+
+        aCtx.putImageData(aImg, 0, 0);
+        rCtx.putImageData(rImg, 0, 0);
+
+        const normCanvas = document.createElement('canvas');
+        normCanvas.width = mapW; normCanvas.height = mapH;
+        const nCtx = normCanvas.getContext('2d');
+        const nImg = nCtx.createImageData(mapW, mapH);
+        const nData = nImg.data;
+
+        const hSample = (x, y) => {
+          const wx = (x + mapW) % mapW;
+          const wy = (y + mapH) % mapH;
+          return heightBuf[wy * mapW + wx];
+        };
+
+        const sobelScale = 5.2;
+        for (let y = 0; y < mapH; y++) {
+          for (let x = 0; x < mapW; x++) {
+            const pIdx = y * mapW + x;
+            const tl = hSample(x - 1, y - 1);
+            const t  = hSample(x,     y - 1);
+            const tr = hSample(x + 1, y - 1);
+            const l  = hSample(x - 1, y);
+            const r  = hSample(x + 1, y);
+            const bl = hSample(x - 1, y + 1);
+            const b  = hSample(x,     y + 1);
+            const br = hSample(x + 1, y + 1);
+
+            const dX = ((tr + 2 * r + br) - (tl + 2 * l + bl));
+            const dY = ((bl + 2 * b + br) - (tl + 2 * t + tr));
+
+            let nx = -dX * sobelScale + tiltXBuf[pIdx];
+            let ny = -dY * sobelScale + tiltYBuf[pIdx];
+            let nz = 1.0;
+            const invLen = 1.0 / Math.sqrt(nx * nx + ny * ny + nz * nz);
+            nx *= invLen; ny *= invLen; nz *= invLen;
+
+            const cIdx = pIdx * 4;
+            nData[cIdx]     = Math.round((nx * 0.5 + 0.5) * 255);
+            nData[cIdx + 1] = Math.round((ny * 0.5 + 0.5) * 255);
+            nData[cIdx + 2] = Math.round((nz * 0.5 + 0.5) * 255);
+            nData[cIdx + 3] = 255;
+          }
+        }
+        nCtx.putImageData(nImg, 0, 0);
+
+        const albedoTex = new THREE.CanvasTexture(albedoCanvas);
+        albedoTex.colorSpace = THREE.SRGBColorSpace;
+        albedoTex.wrapS = THREE.RepeatWrapping;
+        albedoTex.wrapT = THREE.RepeatWrapping;
+        albedoTex.anisotropy = maxAnisotropy;
+
+        const normalTex = new THREE.CanvasTexture(normCanvas);
+        normalTex.colorSpace = THREE.LinearSRGBColorSpace;
+        normalTex.wrapS = THREE.RepeatWrapping;
+        normalTex.wrapT = THREE.RepeatWrapping;
+        normalTex.anisotropy = maxAnisotropy;
+
+        const roughTex = new THREE.CanvasTexture(roughCanvas);
+        roughTex.colorSpace = THREE.LinearSRGBColorSpace;
+        roughTex.wrapS = THREE.RepeatWrapping;
+        roughTex.wrapT = THREE.RepeatWrapping;
+        roughTex.anisotropy = maxAnisotropy;
+
+        const atlasWidthM = (wMm / 1000) * (isHerringbone ? 1.5 : cols);
+        const atlasHeightM = (hMm / 1000) * (isHerringbone ? 1.5 : rows);
+
+        const bundle = { albedoTex, normalTex, roughTex, atlasWidthM, atlasHeightM };
+        this.pbrCache.set(key, bundle);
+        return bundle;
+      }
+    }
+
+    const pbrSynth = new PhotorealPBRSynthesizer();
+
+    /* ============================================================================
+     * 4. 7 SELECTABLE SURFACE ZONES ACROSS THE ENCLOSED 4-WALL 360° SANCTUARY
+     * ============================================================================ */
+    function createInitialZones() {
+      return {
+        MAIN_FLOOR: {
+          name: 'Main Sanctuary Floor',
+          type: 'floor',
+          area: 21.8,
+          mode: 'tile',
+          tileId: 'travertino_silver',
+          size: '600x1200',
+          pattern: 'grid',
+          rotation: 0,
+          finish: 'honed',
+          groutWidth: 2.0,
+          groutColor: 'limestone',
+          bumpScale: 1.35,
+          clearcoat: 25,
+          plasterId: 'plaster_travertine'
+        },
+        SHOWER_FLOOR: {
+          name: 'Wet-Room Shower Pan',
+          type: 'floor',
+          area: 3.9,
+          mode: 'tile',
+          tileId: 'ceppo_terrazzo',
+          size: '600x600',
+          pattern: 'grid',
+          rotation: 0,
+          finish: 'honed',
+          groutWidth: 2.5,
+          groutColor: 'silver',
+          bumpScale: 1.45,
+          clearcoat: 20,
+          plasterId: 'plaster_travertine'
+        },
+        WALL_NORTH: {
+          name: 'North Wall (Shower & Tub)',
+          type: 'wall',
+          area: 16.8,
+          mode: 'tile',
+          tileId: 'emerald_zellige',
+          size: '100x100',
+          pattern: 'grid',
+          rotation: 0,
+          finish: 'polished',
+          groutWidth: 2.0,
+          groutColor: 'limestone',
+          bumpScale: 2.2,
+          clearcoat: 100,
+          plasterId: 'plaster_obsidian'
+        },
+        WALL_WEST: {
+          name: 'West Wall (Fluted Vanity)',
+          type: 'wall',
+          area: 13.8,
+          mode: 'tile',
+          tileId: 'calacatta_viola',
+          size: '600x1200',
+          pattern: 'grid',
+          rotation: 0,
+          finish: 'polished',
+          groutWidth: 1.5,
+          groutColor: 'alabaster',
+          bumpScale: 1.15,
+          clearcoat: 95,
+          plasterId: 'plaster_travertine'
+        },
+        WALL_EAST: {
+          name: 'East Wall (Louver Window)',
+          type: 'wall',
+          area: 11.2,
+          mode: 'tile',
+          tileId: 'travertino_silver',
+          size: '600x1200',
+          pattern: 'brick',
+          rotation: 0,
+          finish: 'honed',
+          groutWidth: 2.0,
+          groutColor: 'limestone',
+          bumpScale: 1.5,
+          clearcoat: 20,
+          plasterId: 'plaster_oat'
+        },
+        WALL_SOUTH: {
+          name: 'South Wall (Entrance & Niche)',
+          type: 'wall',
+          area: 14.5,
+          mode: 'tile',
+          tileId: 'statuario_extra',
+          size: '600x1200',
+          pattern: 'grid',
+          rotation: 0,
+          finish: 'polished',
+          groutWidth: 1.5,
+          groutColor: 'alabaster',
+          bumpScale: 1.05,
+          clearcoat: 90,
+          plasterId: 'plaster_travertine'
+        },
+        NICHE_INSET: {
+          name: 'Backlit Shower Niche',
+          type: 'wall',
+          area: 1.5,
+          mode: 'tile',
+          tileId: 'calacatta_viola',
+          size: '600x1200',
+          pattern: 'grid',
+          rotation: 0,
+          finish: 'polished',
+          groutWidth: 1.0,
+          groutColor: 'alabaster',
+          bumpScale: 1.1,
+          clearcoat: 95,
+          plasterId: 'plaster_travertine'
+        }
+      };
+    }
+
+    const studioState = {
+      selectedZone: 'WALL_NORTH',
+      activeSpot: 'center',
+      mood: 'golden',
+      hardware: 'brass',
+      renderPass: 'pbr',
+      ultraQuality: true,
+      fov: 62,
+      targetFov: 62,
+      exposure: 1.10,
+      autoPan: false,
+      zones: createInitialZones(),
+      defaultZones: createInitialZones(),
+      undoStack: [],
+      redoStack: []
+    };
+
+    function saveUndoSnapshot() {
+      const snap = JSON.stringify({
+        zones: studioState.zones,
+        hardware: studioState.hardware
+      });
+      if (studioState.undoStack.length && studioState.undoStack[studioState.undoStack.length - 1] === snap) return;
+      studioState.undoStack.push(snap);
+      if (studioState.undoStack.length > 30) studioState.undoStack.shift();
+      studioState.redoStack = [];
+      updateUndoUI();
+    }
+
+    function updateUndoUI() {
+      document.getElementById('btn-undo').disabled = studioState.undoStack.length === 0;
+      document.getElementById('btn-redo').disabled = studioState.redoStack.length === 0;
+    }
+
+    /* ============================================================================
+     * 5. THREE.JS RENDERER & STRICTLY-INSIDE 360° PANORAMIC CAMERA CONTROLLER
+     * ============================================================================ */
+    const canvas = document.getElementById('archviz-canvas');
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      preserveDrawingBuffer: true,
+      powerPreference: 'high-performance'
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = studioState.exposure;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    const maxAniso = Math.min(16, renderer.capabilities.getMaxAnisotropy());
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0b0d12);
+
+    // Strictly Inside 360° Camera at Eye-Level (y = 1.52m)
+    const EYE_HEIGHT = 1.52;
+    const camera = new THREE.PerspectiveCamera(studioState.fov, window.innerWidth / window.innerHeight, 0.05, 45);
+
+    // OrbitControls configured as an Inside-Out 360° Panoramic Head Pivot:
+    // By locking minDistance = maxDistance = 0.01m around the standing point and disabling pan/zoom,
+    // the camera NEVER moves outside the walls or clips through furniture!
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.065;
+    controls.enablePan = false;
+    controls.enableZoom = false; // Wheel controls optical lens FOV instead of camera dolly!
+    controls.rotateSpeed = -0.45; // Natural drag-to-look-around feel inside a 360° room
+    controls.minDistance = 0.01;
+    controls.maxDistance = 0.01;
+    controls.minPolarAngle = 0.14;               // Look up at ceiling coves
+    controls.maxPolarAngle = Math.PI - 0.14;     // Look down at floor tiles
+
+    // Internal Standing Positions (All strictly inside the 5.6m x 4.6m room)
+    const STANDING_SPOTS = {
+      center: { name: 'Room Center (360°)', x: 0.0,  z: 0.0,   lookYaw: 0 },
+      vanity: { name: 'Vanity Station',     x: -1.15, z: -0.15, lookYaw: Math.PI / 2 },
+      shower: { name: 'Inside Shower',      x: -1.15, z: -1.15, lookYaw: 0 },
+      tub:    { name: 'Bathtub Side',       x: 0.72,  z: -0.35, lookYaw: -Math.PI / 3 },
+      door:   { name: 'Entrance Door',      x: 0.0,   z: 1.25,  lookYaw: Math.PI }
+    };
+
+    const spotAnim = {
+      active: false,
+      startTarget: new THREE.Vector3(),
+      endTarget: new THREE.Vector3(),
+      startOffset: new THREE.Vector3(),
+      endOffset: new THREE.Vector3(),
+      t: 0
+    };
+
+    // Set initial camera at Room Center (0, 1.52, 0) looking North (0, 1.52, -0.01)
+    function setInitialInsideView() {
+      controls.target.set(0, EYE_HEIGHT, 0);
+      camera.position.set(0, EYE_HEIGHT, 0.01);
+      controls.update();
+    }
+    setInitialInsideView();
+
+    // Smoothly transition between internal standing spots or rotate yaw angle
+    function moveToStandingSpot(spotKey, customLookYaw = null) {
+      const spot = STANDING_SPOTS[spotKey] || STANDING_SPOTS.center;
+      studioState.activeSpot = spotKey;
+
+      const curOffset = camera.position.clone().sub(controls.target);
+      if (curOffset.lengthSq() < 1e-6) curOffset.set(0, 0, 0.01);
+
+      let nextOffset = curOffset.clone();
+      if (customLookYaw !== null) {
+        nextOffset.set(Math.sin(customLookYaw) * 0.01, 0, Math.cos(customLookYaw) * 0.01);
+      }
+
+      spotAnim.startTarget.copy(controls.target);
+      spotAnim.endTarget.set(spot.x, EYE_HEIGHT, spot.z);
+      spotAnim.startOffset.copy(curOffset);
+      spotAnim.endOffset.copy(nextOffset);
+      spotAnim.t = 0;
+      spotAnim.active = true;
+
+      document.querySelectorAll('[data-spot]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.spot === spotKey);
+      });
+      updateHotspotVisibility();
+      showToast(`Standing Spot: ${spot.name} — Drag 360° to Look Around`);
+    }
+
+    function rotateLookByAngle(deltaRad) {
+      const offset = camera.position.clone().sub(controls.target);
+      const spherical = new THREE.Spherical().setFromVector3(offset);
+      spherical.theta += deltaRad;
+      const nextOffset = new THREE.Vector3().setFromSpherical(spherical);
+
+      spotAnim.startTarget.copy(controls.target);
+      spotAnim.endTarget.copy(controls.target);
+      spotAnim.startOffset.copy(offset);
+      spotAnim.endOffset.copy(nextOffset);
+      spotAnim.t = 0;
+      spotAnim.active = true;
+    }
+
+    // Mouse Wheel Optical Lens Zoom (FOV 32° to 85°) — Never moves camera outside room!
+    canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      const delta = Math.sign(e.deltaY) * 2.8;
+      studioState.targetFov = Math.max(32, Math.min(85, studioState.targetFov + delta));
+      document.getElementById('slider-fov').value = Math.round(studioState.targetFov);
+      updateFovLabels(studioState.targetFov);
+    }, { passive: false });
+
+    function updateFovLabels(fovVal) {
+      const rounded = Math.round(fovVal);
+      let desc = 'Standard';
+      if (rounded <= 42) desc = 'Telephoto Macro';
+      else if (rounded >= 70) desc = 'Ultra-Wide';
+      else if (rounded >= 58) desc = 'Wide Angle';
+      document.getElementById('lbl-fov').textContent = `${rounded}°`;
+      document.getElementById('hud-fov-label').textContent = `${rounded}° ${desc}`;
+    }
+
+    // Live 360° Compass Readout
+    function updateCompassHUD() {
+      const lookDir = new THREE.Vector3();
+      camera.getWorldDirection(lookDir);
+      // North is -Z (0°), East is +X (90°), South is +Z (180°), West is -X (270°)
+      let deg = Math.atan2(lookDir.x, -lookDir.z) * (180 / Math.PI);
+      if (deg < 0) deg += 360;
+      const rounded = Math.round(deg) % 360;
+
+      const dirs = ['NORTH', 'NE', 'EAST', 'SE', 'SOUTH', 'SW', 'WEST', 'NW'];
+      const idx = Math.round(rounded / 45) % 8;
+      document.getElementById('compass-readout').textContent = `${dirs[idx]} • ${rounded}°`;
+    }
+
+    // PMREM Environment + Live Room 512x512 CubeCamera Probe at Room Center
+    const pmremGen = new THREE.PMREMGenerator(renderer);
+    pmremGen.compileEquirectangularShader();
+    const fallbackEnv = pmremGen.fromScene(new RoomEnvironment(), 0.04).texture;
+    scene.environment = fallbackEnv;
+    scene.environmentIntensity = 0.75;
+
+    const cubeRT = new THREE.WebGLCubeRenderTarget(512, {
+      generateMipmaps: true,
+      minFilter: THREE.LinearMipmapLinearFilter
+    });
+    const roomProbeCam = new THREE.CubeCamera(0.1, 20, cubeRT);
+    let bakedEnvRT = null;
+    let probeTimer = null;
+    let planarMirrorMesh = null;
+
+    // Post-Processing: RenderPass -> GTAOPass -> UnrealBloomPass -> OutputPass
+    const composer = new EffectComposer(renderer);
+    const renderPass = new RenderPass(scene, camera);
+    composer.addPass(renderPass);
+
+    let gtaoPass = null;
+    try {
+      gtaoPass = new GTAOPass(scene, camera, window.innerWidth, window.innerHeight);
+      gtaoPass.output = GTAOPass.OUTPUT.Default;
+      gtaoPass.blendIntensity = 0.72;
+      composer.addPass(gtaoPass);
+    } catch (e) {
+      console.warn('GTAO fallback:', e);
+    }
+
+    const bloomPass = new UnrealBloomPass(
+      new THREE.Vector2(window.innerWidth, window.innerHeight),
+      0.22,
+      0.45,
+      0.88
+    );
+    composer.addPass(bloomPass);
+
+    const outputPass = new OutputPass();
+    composer.addPass(outputPass);
+
+    /* ============================================================================
+     * 6. MULTI-LIGHT 360° ARCHITECTURAL LIGHTING RIG
+     * ============================================================================ */
+    const lightRig = new THREE.Group();
+    scene.add(lightRig);
+
+    const hemiLight = new THREE.HemisphereLight(0xfff5e8, 0x383e4c, 0.6);
+    lightRig.add(hemiLight);
+
+    // 1. Primary Directional Sun angling through East Wall Timber Louvers
+    const sunLight = new THREE.DirectionalLight(0xffdfb0, 4.2);
+    sunLight.position.set(8.8, 3.8, 0.4);
+    sunLight.target.position.set(-1.2, 0.3, -0.3);
+    sunLight.castShadow = true;
+    sunLight.shadow.mapSize.width = 2048;
+    sunLight.shadow.mapSize.height = 2048;
+    sunLight.shadow.camera.near = 0.5;
+    sunLight.shadow.camera.far = 20;
+    const sd = 4.8;
+    sunLight.shadow.camera.left = -sd;
+    sunLight.shadow.camera.right = sd;
+    sunLight.shadow.camera.top = sd;
+    sunLight.shadow.camera.bottom = -sd;
+    sunLight.shadow.bias = -0.0004;
+    sunLight.shadow.normalBias = 0.018;
+    lightRig.add(sunLight, sunLight.target);
+
+    // 2. 360° Ceiling Perimeter Grazing SpotLights washing all 4 walls
+    const grazingLights = [];
+    // North Wall grazing
+    [-1.5, 0.0, 1.5].forEach(gx => {
+      const spot = new THREE.SpotLight(0xffd699, 3.0, 5.5, Math.PI * 0.38, 0.65, 1.4);
+      spot.position.set(gx, 2.92, -2.05);
+      spot.target.position.set(gx, 0.2, -2.28);
+      spot.castShadow = true;
+      spot.shadow.bias = -0.0005;
+      lightRig.add(spot, spot.target);
+      grazingLights.push(spot);
+    });
+
+    // West Vanity Wall grazing
+    const vanityGrazing = new THREE.SpotLight(0xffd8a3, 2.8, 5.2, Math.PI * 0.40, 0.65, 1.4);
+    vanityGrazing.position.set(-2.55, 2.92, -0.15);
+    vanityGrazing.target.position.set(-2.78, 0.3, -0.15);
+    lightRig.add(vanityGrazing, vanityGrazing.target);
+    grazingLights.push(vanityGrazing);
+
+    // South Entrance Wall grazing (illuminates the 4th wall door, towel ladder & display niche)
+    const southGrazing1 = new THREE.SpotLight(0xffd8a3, 2.6, 5.2, Math.PI * 0.42, 0.65, 1.4);
+    southGrazing1.position.set(-1.1, 2.92, 2.02);
+    southGrazing1.target.position.set(-1.1, 0.3, 2.28);
+    const southGrazing2 = new THREE.SpotLight(0xffd8a3, 2.6, 5.2, Math.PI * 0.42, 0.65, 1.4);
+    southGrazing2.position.set(1.1, 2.92, 2.02);
+    southGrazing2.target.position.set(1.1, 0.3, 2.28);
+    lightRig.add(southGrazing1, southGrazing1.target, southGrazing2, southGrazing2.target);
+    grazingLights.push(southGrazing1, southGrazing2);
+
+    // 3. Accent & Cove PointLights
+    const underVanityLight = new THREE.PointLight(0xffb454, 1.8, 3.2, 1.8);
+    underVanityLight.position.set(-2.35, 0.30, -0.15);
+    const nicheLight = new THREE.PointLight(0xffc270, 1.9, 2.4, 1.8);
+    nicheLight.position.set(-1.15, 1.54, -2.36);
+    const mirrorHaloLight = new THREE.PointLight(0xffcfa0, 1.5, 2.8, 1.6);
+    mirrorHaloLight.position.set(-2.65, 1.65, -0.15);
+    const southNicheLight = new THREE.PointLight(0xffbe6b, 1.6, 2.6, 1.8);
+    southNicheLight.position.set(-0.95, 1.55, 2.22);
+    const candleLight = new THREE.PointLight(0xff9d3b, 0.85, 1.8, 2.0);
+    candleLight.position.set(-2.42, 0.98, 0.45);
+    lightRig.add(underVanityLight, nicheLight, mirrorHaloLight, southNicheLight, candleLight);
+
+    /* ============================================================================
+     * 7. ENCLOSED 4-WALL 360° SANCTUARY GEOMETRY (5.6m x 4.6m x 3.0m)
+     * ============================================================================ */
+    const roomGroup = new THREE.Group();
+    scene.add(roomGroup);
+
+    const zoneMeshes = new Map();
+    const zoneTrueMaterials = new Map();
+    const hardwareMeshes = [];
+    const raycastTargets = [];
+    const hotspotMeshes = [];
+
+    const hardwareMaterials = {
+      brass: new THREE.MeshPhysicalMaterial({
+        color: 0xd8a95c,
+        metalness: 0.94,
+        roughness: 0.16,
+        clearcoat: 0.3,
+        envMapIntensity: 1.45
+      }),
+      black: new THREE.MeshPhysicalMaterial({
+        color: 0x181a1e,
+        metalness: 0.55,
+        roughness: 0.32,
+        clearcoat: 0.1,
+        envMapIntensity: 1.0
+      }),
+      chrome: new THREE.MeshPhysicalMaterial({
+        color: 0xf4f7fa,
+        metalness: 1.0,
+        roughness: 0.03,
+        clearcoat: 0.5,
+        envMapIntensity: 1.65
+      })
+    };
+
+    function registerHardwareMesh(mesh) {
+      mesh.material = hardwareMaterials[studioState.hardware];
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      hardwareMeshes.push(mesh);
+      return mesh;
+    }
+
+    function applyMetricUVs(geometry, planeMode = 'auto') {
+      geometry.computeVertexNormals();
+      const pos = geometry.attributes.position;
+      const norm = geometry.attributes.normal;
+      const uvs = new Float32Array(pos.count * 2);
+
+      for (let i = 0; i < pos.count; i++) {
+        const vx = pos.getX(i);
+        const vy = pos.getY(i);
+        const vz = pos.getZ(i);
+
+        const nx = Math.abs(norm.getX(i));
+        const ny = Math.abs(norm.getY(i));
+        const nz = Math.abs(norm.getZ(i));
+
+        if (planeMode === 'floor' || (planeMode === 'auto' && ny > nx && ny > nz)) {
+          uvs[i * 2] = vx + 2.8;
+          uvs[i * 2 + 1] = vz + 2.3;
+        } else if (planeMode === 'side' || (planeMode === 'auto' && nx > ny && nx > nz)) {
+          uvs[i * 2] = vz + 2.3;
+          uvs[i * 2 + 1] = vy;
+        } else {
+          uvs[i * 2] = vx + 2.8;
+          uvs[i * 2 + 1] = vy;
+        }
+      }
+      geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+      return geometry;
+    }
+
+    function buildWallWithCutouts(width, height, thickness, holes = []) {
+      const shape = new THREE.Shape();
+      shape.moveTo(-width / 2, 0);
+      shape.lineTo(width / 2, 0);
+      shape.lineTo(width / 2, height);
+      shape.lineTo(-width / 2, height);
+      shape.closePath();
+
+      holes.forEach(h => {
+        const path = new THREE.Path();
+        path.moveTo(h.x - h.w / 2, h.y);
+        path.lineTo(h.x + h.w / 2, h.y);
+        path.lineTo(h.x + h.w / 2, h.y + h.h);
+        path.lineTo(h.x - h.w / 2, h.y + h.h);
+        path.closePath();
+        shape.holes.push(path);
+      });
+
+      const geo = new THREE.ExtrudeGeometry(shape, { depth: thickness, bevelEnabled: false });
+      const pos = geo.attributes.position;
+      const norm = geo.attributes.normal;
+      const uv = geo.attributes.uv;
+      for (let i = 0; i < pos.count; i++) {
+        const vx = pos.getX(i) + width / 2;
+        const vy = pos.getY(i);
+        const vz = pos.getZ(i);
+        if (Math.abs(norm.getZ(i)) > 0.5) {
+          uv.setXY(i, vx, vy);
+        } else {
+          uv.setXY(i, vx + vz, vy);
+        }
+      }
+      uv.needsUpdate = true;
+      return geo;
+    }
+
+    function registerZoneSurface(mesh, zoneKey) {
+      mesh.userData.zoneKey = zoneKey;
+      mesh.receiveShadow = true;
+      if (!zoneMeshes.has(zoneKey)) zoneMeshes.set(zoneKey, []);
+      zoneMeshes.get(zoneKey).push(mesh);
+      raycastTargets.push(mesh);
+      return mesh;
+    }
+
+    function createWalnutMaterial() {
+      const c = document.createElement('canvas');
+      c.width = 512; c.height = 512;
+      const ctx = c.getContext('2d');
+      const img = ctx.createImageData(512, 512);
+      const d = img.data;
+      for (let y = 0; y < 512; y++) {
+        for (let x = 0; x < 512; x++) {
+          const p = pbrSynth.evaluateMaterialPixel('smoked_oak', x / 512, y / 512, 0.3, 2.1);
+          const i = (y * 512 + x) * 4;
+          d[i] = p.r * 0.72;
+          d[i + 1] = p.g * 0.68;
+          d[i + 2] = p.b * 0.64;
+          d[i + 3] = 255;
+        }
+      }
+      ctx.putImageData(img, 0, 0);
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      return new THREE.MeshPhysicalMaterial({
+        map: tex,
+        roughness: 0.40,
+        clearcoat: 0.20,
+        clearcoatRoughness: 0.32
+      });
+    }
+
+    function createTowelMaterial(hex = '#ede8df') {
+      const c = document.createElement('canvas');
+      c.width = 128; c.height = 128;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = hex;
+      ctx.fillRect(0, 0, 128, 128);
+      ctx.fillStyle = 'rgba(0,0,0,0.08)';
+      for (let y = 0; y < 128; y += 4) ctx.fillRect(0, y, 128, 1.5);
+      for (let x = 0; x < 128; x += 4) ctx.fillRect(x, 0, 1.5, 128);
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(10, 10);
+      return new THREE.MeshPhysicalMaterial({
+        map: tex,
+        roughness: 0.88,
+        sheen: 0.9,
+        sheenRoughness: 0.5,
+        sheenColor: new THREE.Color(0xffffff)
+      });
+    }
+
+    function buildSpaSanctuaryRoom() {
+      const W = 5.6, D = 4.6, H = 3.0;
+      const walnutMat = createWalnutMaterial();
+      const darkBronzeMat = new THREE.MeshStandardMaterial({ color: 0x1a1c20, roughness: 0.35, metalness: 0.6 });
+      const matteStoneMat = new THREE.MeshPhysicalMaterial({
+        color: 0xf5f4f0,
+        roughness: 0.30,
+        clearcoat: 0.14
+      });
+      const ceilingMat = new THREE.MeshStandardMaterial({ color: 0xf4f2ec, roughness: 0.86 });
+      const glowStripMat = new THREE.MeshBasicMaterial({ color: 0xffe4b5 });
+
+      // 1. MAIN_FLOOR & SHOWER_FLOOR ZONES (y = 0)
+      const mainFloorGeo = new THREE.PlaneGeometry(W, D);
+      mainFloorGeo.rotateX(-Math.PI / 2);
+      applyMetricUVs(mainFloorGeo, 'floor');
+      const mainFloorMesh = new THREE.Mesh(mainFloorGeo);
+      registerZoneSurface(mainFloorMesh, 'MAIN_FLOOR');
+      roomGroup.add(mainFloorMesh);
+
+      // Dedicated Walk-In Wet-Room Shower Pan (Back-Left North-West quadrant, elevated 3mm)
+      const showerPanW = 2.15, showerPanD = 1.65;
+      const showerFloorGeo = new THREE.PlaneGeometry(showerPanW, showerPanD);
+      showerFloorGeo.rotateX(-Math.PI / 2);
+      applyMetricUVs(showerFloorGeo, 'floor');
+      const showerFloorMesh = new THREE.Mesh(showerFloorGeo);
+      showerFloorMesh.position.set(-W / 2 + showerPanW / 2, 0.003, -D / 2 + showerPanD / 2);
+      registerZoneSurface(showerFloorMesh, 'SHOWER_FLOOR');
+      roomGroup.add(showerFloorMesh);
+
+      // Subtle Brushed Metal Threshold Strip separating Wet-Room Shower Pan & Main Floor
+      const showerCurb = registerHardwareMesh(new THREE.Mesh(new THREE.BoxGeometry(showerPanW, 0.008, 0.018)));
+      showerCurb.position.set(-W / 2 + showerPanW / 2, 0.004, -D / 2 + showerPanD);
+      roomGroup.add(showerCurb);
+
+      // 2. ARCHITECTURAL CEILING WITH 360° PERIMETER LED COVE & RECESSED DOWNLIGHTS
+      const mainCeil = new THREE.Mesh(new THREE.BoxGeometry(W - 0.32, 0.08, D - 0.32), ceilingMat);
+      mainCeil.position.set(0, H - 0.04, 0);
+      mainCeil.receiveShadow = true;
+      roomGroup.add(mainCeil);
+
+      const outerCeil = new THREE.Mesh(new THREE.PlaneGeometry(W + 0.4, D + 0.4), ceilingMat);
+      outerCeil.rotation.x = Math.PI / 2;
+      outerCeil.position.y = H + 0.06;
+      roomGroup.add(outerCeil);
+
+      // 4-Wall Perimeter LED Cove Strips
+      const coveN = new THREE.Mesh(new THREE.BoxGeometry(W - 0.2, 0.015, 0.04), glowStripMat);
+      coveN.position.set(0, H - 0.01, -D / 2 + 0.08);
+      const coveS = new THREE.Mesh(new THREE.BoxGeometry(W - 0.2, 0.015, 0.04), glowStripMat);
+      coveS.position.set(0, H - 0.01, D / 2 - 0.08);
+      const coveW = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.015, D - 0.2), glowStripMat);
+      coveW.position.set(-W / 2 + 0.08, H - 0.01, 0);
+      const coveE = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.015, D - 0.2), glowStripMat);
+      coveE.position.set(W / 2 - 0.08, H - 0.01, 0);
+      roomGroup.add(coveN, coveS, coveW, coveE);
+
+      // 6 Recessed Architectural Downlight Rings in Ceiling
+      [[-1.3, -0.9], [1.3, -0.9], [-1.3, 0.9], [1.3, 0.9], [0, -0.9], [0, 0.9]].forEach(([dx, dz]) => {
+        const trim = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.01, 24), darkBronzeMat);
+        trim.position.set(dx, H - 0.082, dz);
+        const bulb = new THREE.Mesh(new THREE.CircleGeometry(0.04, 20), glowStripMat);
+        bulb.rotation.x = Math.PI / 2;
+        bulb.position.set(dx, H - 0.088, dz);
+        roomGroup.add(trim, bulb);
+      });
+
+      // 3. NORTH WALL (`WALL_NORTH` - Back Feature Wall at z = -D/2) with Recessed Shower Niche
+      const nicheHole = [{ x: -1.15, y: 1.18, w: 1.25, h: 0.44 }];
+      const northWallGeo = buildWallWithCutouts(W, H, 0.24, nicheHole);
+      const northWallMesh = new THREE.Mesh(northWallGeo);
+      northWallMesh.position.set(0, 0, -D / 2 - 0.24);
+      northWallMesh.castShadow = true;
+      registerZoneSurface(northWallMesh, 'WALL_NORTH');
+      roomGroup.add(northWallMesh);
+
+      // Illuminated Recessed Shower Niche (`NICHE_INSET`)
+      const nicheBackGeo = new THREE.PlaneGeometry(1.25, 0.44);
+      applyMetricUVs(nicheBackGeo, 'front');
+      const nicheBack = new THREE.Mesh(nicheBackGeo);
+      nicheBack.position.set(-1.15, 1.18 + 0.22, -D / 2 - 0.20);
+      registerZoneSurface(nicheBack, 'NICHE_INSET');
+      roomGroup.add(nicheBack);
+
+      const nicheShelf = new THREE.Mesh(new THREE.BoxGeometry(1.25, 0.022, 0.22), matteStoneMat);
+      nicheShelf.position.set(-1.15, 1.19, -D / 2 - 0.11);
+      const nicheLed = new THREE.Mesh(new THREE.BoxGeometry(1.20, 0.008, 0.03), glowStripMat);
+      nicheLed.position.set(-1.15, 1.615, -D / 2 - 0.08);
+      roomGroup.add(nicheShelf, nicheLed);
+
+      // 4. WEST WALL (`WALL_WEST` - Left Fluted Vanity Wall at x = -W/2)
+      const westWallGeo = buildWallWithCutouts(D, H, 0.24, []);
+      const westWallMesh = new THREE.Mesh(westWallGeo);
+      westWallMesh.rotation.y = Math.PI / 2;
+      westWallMesh.position.set(-W / 2 - 0.24, 0, 0);
+      westWallMesh.castShadow = true;
+      registerZoneSurface(westWallMesh, 'WALL_WEST');
+      roomGroup.add(westWallMesh);
+
+      // 5. EAST WALL (`WALL_EAST` - Right Window Wall at x = +W/2)
+      const winHoles = [{ x: 0.10, y: 0.34, w: 2.50, h: 2.30 }];
+      const eastWallGeo = buildWallWithCutouts(D, H, 0.28, winHoles);
+      const eastWallMesh = new THREE.Mesh(eastWallGeo);
+      eastWallMesh.rotation.y = -Math.PI / 2;
+      eastWallMesh.position.set(W / 2 + 0.28, 0, 0);
+      eastWallMesh.castShadow = true;
+      registerZoneSurface(eastWallMesh, 'WALL_EAST');
+      roomGroup.add(eastWallMesh);
+
+      // 6. SOUTH WALL (`WALL_SOUTH` - Enclosed 4th Front Entrance Wall at z = +D/2)
+      const southWallGeo = buildWallWithCutouts(W, H, 0.24, []);
+      const southWallMesh = new THREE.Mesh(southWallGeo);
+      southWallMesh.rotation.y = Math.PI;
+      southWallMesh.position.set(0, 0, D / 2 + 0.24);
+      southWallMesh.castShadow = true;
+      registerZoneSurface(southWallMesh, 'WALL_SOUTH');
+      roomGroup.add(southWallMesh);
+
+      // =========================================================================
+      // BESPOKE SOUTH WALL ARCHITECTURAL FEATURES (Door, Display Niche, Towel Ladder)
+      // =========================================================================
+      // a) Floor-to-Ceiling Flush Walnut Pivot Entrance Door (South-East side, x = +1.15)
+      const doorGroup = new THREE.Group();
+      doorGroup.position.set(1.15, 0, D / 2 - 0.01);
+
+      const doorFrame = new THREE.Mesh(new THREE.BoxGeometry(1.12, 2.68, 0.06), darkBronzeMat);
+      doorFrame.position.y = 1.34;
+      doorGroup.add(doorFrame);
+
+      const doorLeaf = new THREE.Mesh(new RoundedBoxGeometry(1.02, 2.62, 0.045, 3, 0.005), walnutMat);
+      doorLeaf.position.set(0, 1.31, -0.008);
+      doorLeaf.castShadow = true;
+      doorLeaf.receiveShadow = true;
+      doorGroup.add(doorLeaf);
+
+      // Vertical shadow-groove lines on bespoke walnut door
+      [-0.32, 0, 0.32].forEach(gx => {
+        const groove = new THREE.Mesh(new THREE.BoxGeometry(0.006, 2.60, 0.048), darkBronzeMat);
+        groove.position.set(gx, 1.31, -0.008);
+        doorGroup.add(groove);
+      });
+
+      // Architectural Lever Handle & Rose Escutcheon
+      const handleRose = registerHardwareMesh(new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.028, 0.012, 24)));
+      handleRose.rotation.x = Math.PI / 2;
+      handleRose.position.set(-0.40, 1.02, -0.032);
+      const handleNeck = registerHardwareMesh(new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.045, 16)));
+      handleNeck.rotation.x = Math.PI / 2;
+      handleNeck.position.set(-0.40, 1.02, -0.052);
+      const handleLever = registerHardwareMesh(new THREE.Mesh(new RoundedBoxGeometry(0.13, 0.018, 0.014, 2, 0.004)));
+      handleLever.position.set(-0.345, 1.02, -0.072);
+      doorGroup.add(handleRose, handleNeck, handleLever);
+      roomGroup.add(doorGroup);
+
+      // b) Illuminated Architectural Linen & Art Display Shelving Unit (South Center-West, x = -0.75)
+      const displayGroup = new THREE.Group();
+      displayGroup.position.set(-0.75, 0.35, D / 2 - 0.14);
+
+      const cabinetFrame = new THREE.Mesh(new RoundedBoxGeometry(0.92, 2.15, 0.26, 3, 0.008), walnutMat);
+      cabinetFrame.position.y = 1.075;
+      cabinetFrame.castShadow = true;
+      displayGroup.add(cabinetFrame);
+
+      const cabinetInner = new THREE.Mesh(new THREE.BoxGeometry(0.84, 2.05, 0.24), darkBronzeMat);
+      cabinetInner.position.set(0, 1.075, -0.015);
+      displayGroup.add(cabinetInner);
+
+      const ledBackBar = new THREE.Mesh(new THREE.BoxGeometry(0.80, 0.012, 0.02), glowStripMat);
+      ledBackBar.position.set(0, 2.06, -0.06);
+      displayGroup.add(ledBackBar);
+
+      const towelMatWhite = createTowelMaterial('#f3efe6');
+      const towelMatSand = createTowelMaterial('#cbbba4');
+
+      // 4 Lit Floating Shelves inside Display Unit with Rolled Towels & Sculptural Ceramics
+      [0.45, 0.92, 1.38, 1.82].forEach((sy, idx) => {
+        const shelf = new THREE.Mesh(new THREE.BoxGeometry(0.84, 0.022, 0.25), walnutMat);
+        shelf.position.set(0, sy, -0.01);
+        displayGroup.add(shelf);
+
+        const strip = new THREE.Mesh(new THREE.BoxGeometry(0.80, 0.006, 0.016), glowStripMat);
+        strip.position.set(0, sy - 0.014, 0.06);
+        displayGroup.add(strip);
+
+        if (idx === 0 || idx === 1) {
+          // Stacked spa towels
+          const stack1 = new THREE.Mesh(new RoundedBoxGeometry(0.32, 0.07, 0.20, 3, 0.015), towelMatWhite);
+          stack1.position.set(-0.18, sy + 0.045, -0.01);
+          const stack2 = new THREE.Mesh(new RoundedBoxGeometry(0.30, 0.065, 0.19, 3, 0.015), towelMatSand);
+          stack2.position.set(-0.18, sy + 0.11, -0.01);
+          displayGroup.add(stack1, stack2);
+        }
+        if (idx === 1 || idx === 2) {
+          // Minimalist ceramic vessel
+          const vessel = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.08, 0.22, 24), matteStoneMat);
+          vessel.position.set(0.18, sy + 0.12, -0.01);
+          vessel.castShadow = true;
+          displayGroup.add(vessel);
+        }
+      });
+      roomGroup.add(displayGroup);
+
+      // c) Wall-Mounted Heated Towel Ladder Rail (South-West corner, x = -1.95)
+      const warmerGroup = new THREE.Group();
+      warmerGroup.position.set(-1.95, 1.38, D / 2 - 0.06);
+      [-0.26, 0.26].forEach(wx => {
+        const rail = registerHardwareMesh(new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 1.22, 16)));
+        rail.position.x = wx;
+        warmerGroup.add(rail);
+      });
+      for (let i = -3; i <= 3; i++) {
+        const bar = registerHardwareMesh(new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.52, 16)));
+        bar.rotation.z = Math.PI / 2;
+        bar.position.y = i * 0.16;
+        warmerGroup.add(bar);
+      }
+      const drapedTowel = new THREE.Mesh(new RoundedBoxGeometry(0.36, 0.64, 0.04, 4, 0.015), towelMatWhite);
+      drapedTowel.position.set(0, -0.12, -0.015);
+      drapedTowel.castShadow = true;
+      warmerGroup.add(drapedTowel);
+      roomGroup.add(warmerGroup);
+
+      // =========================================================================
+      // EAST WALL: TIMBER LOUVER WINDOW & EXTERIOR COURTYARD BACKDROP
+      // =========================================================================
+      const winGroup = new THREE.Group();
+      winGroup.position.set(W / 2, 0.34, 0.10);
+
+      const fTop = new THREE.Mesh(new THREE.BoxGeometry(0.30, 0.045, 2.50), darkBronzeMat);
+      fTop.position.y = 2.30 - 0.022;
+      const fBot = new THREE.Mesh(new THREE.BoxGeometry(0.30, 0.045, 2.50), darkBronzeMat);
+      fBot.position.y = 0.022;
+      winGroup.add(fTop, fBot);
+
+      // 26 Horizontal Timber Louver Slats casting rhythmic sunbeams across the room
+      const slatCount = 26;
+      for (let i = 0; i < slatCount; i++) {
+        const sy = 0.10 + (i / slatCount) * 2.12;
+        const slat = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.014, 2.44), walnutMat);
+        slat.position.set(0.05, sy, 0);
+        slat.rotation.z = 0.22;
+        slat.castShadow = true;
+        slat.receiveShadow = true;
+        winGroup.add(slat);
+      }
+      roomGroup.add(winGroup);
+
+      // Exterior Sky Dome outside window so looking East looks realistic
+      const skyDome = new THREE.Mesh(
+        new THREE.SphereGeometry(28, 32, 16),
+        new THREE.MeshBasicMaterial({ color: 0xffecd2, side: THREE.BackSide })
+      );
+      skyDome.name = 'SkyDome';
+      roomGroup.add(skyDome);
+
+      // =========================================================================
+      // WEST WALL: FLOATING FLUTED WALNUT VANITY, PLANAR MIRROR & PENDANT
+      // =========================================================================
+      const vanityGroup = new THREE.Group();
+      vanityGroup.position.set(-W / 2 + 0.30, 0.62, 0.25);
+
+      const vWidth = 1.82, vHeight = 0.42, vDepth = 0.56;
+      const carcass = new THREE.Mesh(new RoundedBoxGeometry(vDepth, vHeight, vWidth, 3, 0.015), walnutMat);
+      carcass.castShadow = true;
+      carcass.receiveShadow = true;
+      vanityGroup.add(carcass);
+
+      // 38 Individual Vertical Half-Round Fluted Walnut Ribs
+      const ribCount = 38;
+      const ribGeo = new THREE.CylinderGeometry(0.014, 0.014, vHeight - 0.03, 12);
+      for (let i = 0; i < ribCount; i++) {
+        const rz = -vWidth / 2 + 0.035 + (i / (ribCount - 1)) * (vWidth - 0.07);
+        const rib = new THREE.Mesh(ribGeo, walnutMat);
+        rib.position.set(vDepth / 2 + 0.004, 0, rz);
+        rib.castShadow = true;
+        rib.receiveShadow = true;
+        vanityGroup.add(rib);
+      }
+
+      const counterSlab = new THREE.Mesh(new RoundedBoxGeometry(vDepth + 0.03, 0.07, vWidth + 0.03, 3, 0.008), matteStoneMat);
+      counterSlab.position.set(0.01, vHeight / 2 + 0.035, 0);
+      counterSlab.castShadow = true;
+      counterSlab.receiveShadow = true;
+      vanityGroup.add(counterSlab);
+
+      const vesselBowl = new THREE.Mesh(new RoundedBoxGeometry(0.38, 0.12, 0.58, 5, 0.04), matteStoneMat);
+      vesselBowl.position.set(0.02, vHeight / 2 + 0.12, -0.22);
+      vesselBowl.castShadow = true;
+      const vesselInner = new THREE.Mesh(
+        new THREE.BoxGeometry(0.30, 0.02, 0.50),
+        new THREE.MeshStandardMaterial({ color: 0xd8d5ce, roughness: 0.4 })
+      );
+      vesselInner.position.set(0.02, vHeight / 2 + 0.172, -0.22);
+      const basinDrain = registerHardwareMesh(new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.025, 20)));
+      basinDrain.position.set(0.02, vHeight / 2 + 0.175, -0.22);
+      vanityGroup.add(vesselBowl, vesselInner, basinDrain);
+
+      const wallSpout = registerHardwareMesh(new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.24, 20)));
+      wallSpout.rotation.z = Math.PI / 2;
+      wallSpout.position.set(-vDepth / 2 + 0.12, vHeight / 2 + 0.30, -0.22);
+      const spoutTip = registerHardwareMesh(new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.012, 0.05, 20)));
+      spoutTip.position.set(-vDepth / 2 + 0.23, vHeight / 2 + 0.28, -0.22);
+
+      [-0.34, -0.10].forEach(mz => {
+        const knob = registerHardwareMesh(new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.06, 24)));
+        knob.rotation.z = Math.PI / 2;
+        knob.position.set(-vDepth / 2 + 0.03, vHeight / 2 + 0.30, mz);
+        vanityGroup.add(knob);
+      });
+      vanityGroup.add(wallSpout, spoutTip);
+
+      const underLed = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.01, vWidth - 0.1), glowStripMat);
+      underLed.position.set(0.12, -vHeight / 2 - 0.005, 0);
+      vanityGroup.add(underLed);
+      roomGroup.add(vanityGroup);
+
+      // Real-Time Planar Mirror (`Reflector`) with Backlit Halo on West Wall
+      const mirrorGroup = new THREE.Group();
+      mirrorGroup.position.set(-W / 2 + 0.035, 1.68, 0.05);
+      mirrorGroup.rotation.y = Math.PI / 2;
+
+      const mirrorRadius = 0.58;
+      const haloRing = new THREE.Mesh(new THREE.RingGeometry(mirrorRadius - 0.01, mirrorRadius + 0.035, 64), glowStripMat);
+      haloRing.position.z = -0.012;
+      mirrorGroup.add(haloRing);
+
+      const mirrorFrame = registerHardwareMesh(new THREE.Mesh(new THREE.TorusGeometry(mirrorRadius, 0.012, 16, 64)));
+      mirrorFrame.position.z = 0.005;
+      mirrorGroup.add(mirrorFrame);
+
+      const mirrorGeo = new THREE.CircleGeometry(mirrorRadius - 0.005, 64);
+      planarMirrorMesh = new Reflector(mirrorGeo, {
+        clipBias: 0.003,
+        textureWidth: Math.floor(window.innerWidth * window.devicePixelRatio * 0.75),
+        textureHeight: Math.floor(window.innerHeight * window.devicePixelRatio * 0.75),
+        color: 0xdcdcdc
+      });
+      planarMirrorMesh.position.z = 0.004;
+      mirrorGroup.add(planarMirrorMesh);
+      roomGroup.add(mirrorGroup);
+
+      // Architectural Drop Pendant Light beside Vanity Mirror
+      const pendantRod = registerHardwareMesh(new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 1.18, 12)));
+      pendantRod.position.set(-W / 2 + 0.34, H - 0.59, 0.85);
+      const pendantGlobe = new THREE.Mesh(new THREE.SphereGeometry(0.075, 24, 24), glowStripMat);
+      pendantGlobe.position.set(-W / 2 + 0.34, H - 1.22, 0.85);
+      roomGroup.add(pendantRod, pendantGlobe);
+
+      // =========================================================================
+      // NORTH-WEST WALK-IN WET-ROOM SHOWER & NORTH-EAST SCULPTURAL BATHTUB
+      // =========================================================================
+      const glassMat = new THREE.MeshPhysicalMaterial({
+        color: 0xf2fbf9,
+        transparent: true,
+        opacity: 0.24,
+        roughness: 0.03,
+        metalness: 0.05,
+        reflectivity: 0.95,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.02
+      });
+      const showerGlass = new THREE.Mesh(new THREE.BoxGeometry(1.62, 2.42, 0.016), glassMat);
+      showerGlass.position.set(-W / 2 + showerPanW, 1.21, -D / 2 + 0.82);
+      showerGlass.rotation.y = Math.PI / 2;
+      roomGroup.add(showerGlass);
+
+      const supportBar = registerHardwareMesh(new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, showerPanW, 16)));
+      supportBar.rotation.z = Math.PI / 2;
+      supportBar.position.set(-W / 2 + showerPanW / 2, 2.36, -D / 2 + 1.55);
+      roomGroup.add(supportBar);
+
+      const rainDropRod = registerHardwareMesh(new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.32, 16)));
+      rainDropRod.position.set(-1.15, H - 0.16, -D / 2 + 0.58);
+      const rainPlate = registerHardwareMesh(new THREE.Mesh(new RoundedBoxGeometry(0.38, 0.016, 0.38, 3, 0.005)));
+      rainPlate.position.set(-1.15, H - 0.32, -D / 2 + 0.58);
+      roomGroup.add(rainDropRod, rainPlate);
+
+      const mixerPlate = registerHardwareMesh(new THREE.Mesh(new RoundedBoxGeometry(0.12, 0.24, 0.012, 2, 0.004)));
+      mixerPlate.position.set(-0.35, 1.15, -D / 2 + 0.008);
+      const wandRail = registerHardwareMesh(new THREE.Mesh(new THREE.CylinderGeometry(0.009, 0.009, 0.75, 16)));
+      wandRail.position.set(-0.58, 1.35, -D / 2 + 0.035);
+      const wandHead = registerHardwareMesh(new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.014, 0.22, 16)));
+      wandHead.position.set(-0.58, 1.42, -D / 2 + 0.065);
+      roomGroup.add(mixerPlate, wandRail, wandHead);
+
+      const linearDrain = registerHardwareMesh(new THREE.Mesh(new THREE.BoxGeometry(1.25, 0.006, 0.065)));
+      linearDrain.position.set(-1.15, 0.006, -D / 2 + 0.20);
+      roomGroup.add(linearDrain);
+
+      // Sculptural Freestanding Organic Bathtub (East Side near Louver Window)
+      const tubGroup = new THREE.Group();
+      tubGroup.position.set(1.52, 0, -0.58);
+      tubGroup.rotation.y = -0.24;
+
+      const tubPts = [];
+      const segments = 32;
+      for (let i = 0; i <= segments; i++) {
+        const t = i / segments;
+        const y = t * 0.58;
+        const rOuter = 0.38 + Math.sin(t * Math.PI * 0.65) * 0.09;
+        tubPts.push(new THREE.Vector2(rOuter, y));
+      }
+      for (let i = segments; i >= 0; i--) {
+        const t = i / segments;
+        const y = 0.06 + t * 0.52;
+        const rInner = 0.34 + Math.sin(t * Math.PI * 0.65) * 0.085;
+        tubPts.push(new THREE.Vector2(rInner, y));
+      }
+      tubPts.push(tubPts[0].clone());
+
+      const tubGeo = new THREE.LatheGeometry(tubPts, 64);
+      tubGeo.scale(1.0, 1.0, 1.88);
+      tubGeo.computeVertexNormals();
+      const tubMesh = new THREE.Mesh(tubGeo, matteStoneMat);
+      tubMesh.castShadow = true;
+      tubMesh.receiveShadow = true;
+      tubGroup.add(tubMesh);
+
+      const waterMat = new THREE.MeshPhysicalMaterial({
+        color: 0xc2e9e4,
+        transparent: true,
+        opacity: 0.72,
+        roughness: 0.04,
+        metalness: 0.05,
+        ior: 1.333,
+        clearcoat: 1.0
+      });
+      const waterDisc = new THREE.Mesh(new THREE.CircleGeometry(0.41, 48), waterMat);
+      waterDisc.rotation.x = -Math.PI / 2;
+      waterDisc.scale.set(1.0, 1.86, 1.0);
+      waterDisc.position.y = 0.44;
+      tubGroup.add(waterDisc);
+
+      const fillerStand = registerHardwareMesh(new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.026, 0.88, 24)));
+      fillerStand.position.set(0.54, 0.44, -0.35);
+      const fillerArm = registerHardwareMesh(new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.24, 20)));
+      fillerArm.rotation.z = Math.PI / 2;
+      fillerArm.position.set(0.44, 0.86, -0.35);
+      tubGroup.add(fillerStand, fillerArm);
+      roomGroup.add(tubGroup);
+
+      // =========================================================================
+      // STYLING PROPS & MATTERPORT-STYLE 360° FLOOR WAYPOINT RINGS
+      // =========================================================================
+      const amberGlassMat = new THREE.MeshPhysicalMaterial({
+        color: 0x6e320c,
+        roughness: 0.08,
+        metalness: 0.05,
+        clearcoat: 1.0,
+        transparent: true,
+        opacity: 0.90
+      });
+      const labelMat = new THREE.MeshStandardMaterial({ color: 0xf4efe6, roughness: 0.7 });
+
+      function createApothecaryBottle(scale = 1.0) {
+        const bGroup = new THREE.Group();
+        const body = new THREE.Mesh(new THREE.CylinderGeometry(0.032 * scale, 0.032 * scale, 0.13 * scale, 24), amberGlassMat);
+        body.position.y = 0.065 * scale;
+        body.castShadow = true;
+        const shoulder = new THREE.Mesh(new THREE.SphereGeometry(0.032 * scale, 20, 12), amberGlassMat);
+        shoulder.position.y = 0.13 * scale;
+        shoulder.scale.y = 0.45;
+        const label = new THREE.Mesh(new THREE.CylinderGeometry(0.0326 * scale, 0.0326 * scale, 0.065 * scale, 24, 1, true), labelMat);
+        label.position.y = 0.065 * scale;
+        const pumpNeck = registerHardwareMesh(new THREE.Mesh(new THREE.CylinderGeometry(0.009 * scale, 0.011 * scale, 0.035 * scale, 16)));
+        pumpNeck.position.y = 0.155 * scale;
+        bGroup.add(body, shoulder, label, pumpNeck);
+        return bGroup;
+      }
+
+      const nb1 = createApothecaryBottle(1.0);
+      nb1.position.set(-1.32, 1.20, -D / 2 - 0.10);
+      const nb2 = createApothecaryBottle(0.92);
+      nb2.position.set(-1.20, 1.20, -D / 2 - 0.11);
+      const vb1 = createApothecaryBottle(0.95);
+      vb1.position.set(-W / 2 + 0.28, 0.90, 0.55);
+      const vb2 = createApothecaryBottle(0.85);
+      vb2.position.set(-W / 2 + 0.36, 0.90, 0.63);
+      roomGroup.add(nb1, nb2, vb1, vb2);
+
+      // Glowing Scented Candle on Vanity Counter
+      const candleJar = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.042, 0.04, 0.09, 24),
+        new THREE.MeshPhysicalMaterial({ color: 0x2a2420, transparent: true, opacity: 0.78, roughness: 0.15 })
+      );
+      candleJar.position.set(-W / 2 + 0.32, 0.945, 0.78);
+      const candleFlame = new THREE.Mesh(
+        new THREE.SphereGeometry(0.012, 12, 12),
+        new THREE.MeshBasicMaterial({ color: 0xffb84d })
+      );
+      candleFlame.scale.set(0.6, 1.6, 0.6);
+      candleFlame.position.set(-W / 2 + 0.32, 0.98, 0.78);
+      roomGroup.add(candleJar, candleFlame);
+
+      // Teak Stool beside Freestanding Tub with Rolled Waffle Towels
+      const stoolGroup = new THREE.Group();
+      stoolGroup.position.set(1.92, 0, 0.68);
+      const stoolTop = new THREE.Mesh(new RoundedBoxGeometry(0.46, 0.035, 0.34, 3, 0.008), walnutMat);
+      stoolTop.position.y = 0.44;
+      stoolTop.castShadow = true;
+      stoolGroup.add(stoolTop);
+      [[-0.18, -0.12], [0.18, -0.12], [-0.18, 0.12], [0.18, 0.12]].forEach(([lx, lz]) => {
+        const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.014, 0.44, 12), walnutMat);
+        leg.position.set(lx, 0.22, lz);
+        leg.castShadow = true;
+        stoolGroup.add(leg);
+      });
+
+      const roll1 = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.065, 0.28, 24), towelMatWhite);
+      roll1.rotation.x = Math.PI / 2;
+      roll1.position.set(-0.07, 0.52, 0);
+      roll1.castShadow = true;
+      const roll2 = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.28, 24), towelMatSand);
+      roll2.rotation.x = Math.PI / 2;
+      roll2.position.set(0.07, 0.515, 0);
+      roll2.castShadow = true;
+      stoolGroup.add(roll1, roll2);
+      roomGroup.add(stoolGroup);
+
+      // Sculptural Ceramic Floor Vessel with Organic Botanical Branches
+      const plantGroup = new THREE.Group();
+      plantGroup.position.set(2.05, 0, -1.65);
+      const vase = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.12, 0.44, 28), matteStoneMat);
+      vase.position.y = 0.22;
+      vase.castShadow = true;
+      plantGroup.add(vase);
+
+      const leafMat = new THREE.MeshPhysicalMaterial({
+        color: 0x354f39,
+        roughness: 0.38,
+        clearcoat: 0.25,
+        side: THREE.DoubleSide
+      });
+      for (let i = 0; i < 12; i++) {
+        const ang = (i / 12) * Math.PI * 2;
+        const branch = new THREE.Group();
+        branch.position.y = 0.42;
+        branch.rotation.y = ang;
+        branch.rotation.z = 0.28 + (i % 3) * 0.16;
+
+        const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.009, 0.42, 8), leafMat);
+        stem.position.y = 0.21;
+        branch.add(stem);
+
+        const leafGeo = new THREE.PlaneGeometry(0.16, 0.28, 4, 8);
+        const lPos = leafGeo.attributes.position;
+        for (let k = 0; k < lPos.count; k++) {
+          const ly = (lPos.getY(k) / 0.28) + 0.5;
+          lPos.setX(k, lPos.getX(k) * Math.sin(ly * Math.PI));
+          lPos.setZ(k, -ly * ly * 0.07);
+        }
+        leafGeo.computeVertexNormals();
+        const leaf = new THREE.Mesh(leafGeo, leafMat);
+        leaf.position.y = 0.46;
+        leaf.castShadow = true;
+        branch.add(leaf);
+        plantGroup.add(branch);
+      }
+      roomGroup.add(plantGroup);
+
+      // Matterport-Style 3D Floor Standing Hotspot Rings (Click on Floor to Step Between Internal Spots)
+      Object.entries(STANDING_SPOTS).forEach(([spotKey, spot]) => {
+        const hsGroup = new THREE.Group();
+        hsGroup.position.set(spot.x, 0.008, spot.z);
+
+        const outerRing = new THREE.Mesh(
+          new THREE.RingGeometry(0.15, 0.195, 36),
+          new THREE.MeshBasicMaterial({
+            color: 0xd8a960,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.78
+          })
+        );
+        outerRing.rotation.x = -Math.PI / 2;
+
+        const innerDisc = new THREE.Mesh(
+          new THREE.CircleGeometry(0.14, 32),
+          new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.20
+          })
+        );
+        innerDisc.rotation.x = -Math.PI / 2;
+        innerDisc.userData.spotKey = spotKey;
+
+        hsGroup.add(outerRing, innerDisc);
+        hsGroup.userData.spotKey = spotKey;
+        roomGroup.add(hsGroup);
+        hotspotMeshes.push(innerDisc);
+      });
+      updateHotspotVisibility();
+    }
+
+    function updateHotspotVisibility() {
+      hotspotMeshes.forEach(disc => {
+        const isCurrent = disc.userData.spotKey === studioState.activeSpot;
+        disc.parent.visible = !isCurrent;
+      });
+    }
+
+    /* ============================================================================
+     * 8. ZONE MATERIAL APPLICATION & DIAGNOSTIC RENDER PASSES
+     * ============================================================================ */
+    function updateZoneMaterial(zoneKey) {
+      const zCfg = studioState.zones[zoneKey];
+      if (!zCfg) return;
+
+      let pbrMat;
+      if (zCfg.mode === 'paint') {
+        const pl = PLASTER_PALETTE.find(p => p.id === zCfg.plasterId) || PLASTER_PALETTE[0];
+        pbrMat = new THREE.MeshPhysicalMaterial({
+          color: new THREE.Color(pl.hex),
+          roughness: 0.78,
+          metalness: 0.0,
+          clearcoat: 0.04
+        });
+      } else {
+        const maps = pbrSynth.getPBRMaps(zCfg, maxAniso);
+        const rotRad = (zCfg.rotation * Math.PI) / 180;
+
+        const albedo = maps.albedoTex.clone();
+        const normal = maps.normalTex.clone();
+        const rough = maps.roughTex.clone();
+        albedo.needsUpdate = true;
+        normal.needsUpdate = true;
+        rough.needsUpdate = true;
+
+        const repX = 1.0 / maps.atlasWidthM;
+        const repY = 1.0 / maps.atlasHeightM;
+
+        [albedo, normal, rough].forEach(tex => {
+          tex.wrapS = THREE.RepeatWrapping;
+          tex.wrapT = THREE.RepeatWrapping;
+          tex.center.set(0.5, 0.5);
+          tex.rotation = rotRad;
+          tex.repeat.set(repX, repY);
+        });
+
+        let baseRough = 0.12;
+        let ccRough = 0.05;
+        let envInt = 1.35;
+
+        if (zCfg.finish === 'polished') {
+          baseRough = 0.07;
+          ccRough = 0.03;
+          envInt = 1.50;
+        } else if (zCfg.finish === 'honed') {
+          baseRough = 0.34;
+          ccRough = 0.22;
+          envInt = 0.90;
+        } else if (zCfg.finish === 'matte') {
+          baseRough = 0.54;
+          ccRough = 0.38;
+          envInt = 0.65;
+        } else if (zCfg.finish === 'relief') {
+          baseRough = 0.68;
+          ccRough = 0.45;
+          envInt = 0.55;
+        }
+
+        const nScale = 0.55 * zCfg.bumpScale;
+        pbrMat = new THREE.MeshPhysicalMaterial({
+          map: albedo,
+          normalMap: normal,
+          normalScale: new THREE.Vector2(nScale, nScale),
+          roughnessMap: rough,
+          roughness: baseRough,
+          metalness: 0.02,
+          clearcoat: zCfg.clearcoat / 100,
+          clearcoatRoughness: ccRough,
+          envMapIntensity: envInt
+        });
+      }
+
+      zoneTrueMaterials.set(zoneKey, pbrMat);
+      applyCurrentRenderPassToZone(zoneKey);
+    }
+
+    function applyCurrentRenderPassToZone(zoneKey) {
+      const meshes = zoneMeshes.get(zoneKey) || [];
+      const trueMat = zoneTrueMaterials.get(zoneKey);
+      if (!trueMat) return;
+
+      let activeMat = trueMat;
+      if (studioState.renderPass === 'normal' && trueMat.normalMap) {
+        activeMat = new THREE.MeshBasicMaterial({ map: trueMat.normalMap });
+      } else if (studioState.renderPass === 'roughness' && trueMat.roughnessMap) {
+        activeMat = new THREE.MeshBasicMaterial({ map: trueMat.roughnessMap });
+      } else if (studioState.renderPass === 'clay') {
+        activeMat = new THREE.MeshPhysicalMaterial({
+          color: 0xdcd9d0,
+          normalMap: trueMat.normalMap || null,
+          normalScale: trueMat.normalScale ? trueMat.normalScale.clone() : new THREE.Vector2(1, 1),
+          roughness: 0.48,
+          clearcoat: 0.1
+        });
+      }
+
+      meshes.forEach(m => { m.material = activeMat; });
+    }
+
+    function applyAllZones() {
+      Object.keys(studioState.zones).forEach(zKey => updateZoneMaterial(zKey));
+      scheduleProbeBake();
+    }
+
+    // Live 512x512 CubeCamera Reflection Probe Baker from Room Center
+    function scheduleProbeBake() {
+      if (probeTimer) clearTimeout(probeTimer);
+      probeTimer = setTimeout(() => {
+        if (!studioState.ultraQuality) {
+          scene.environment = fallbackEnv;
+          return;
+        }
+        try {
+          if (planarMirrorMesh) planarMirrorMesh.visible = false;
+          hotspotMeshes.forEach(h => { h.parent.visible = false; });
+          roomProbeCam.position.set(0, EYE_HEIGHT, 0);
+          roomProbeCam.update(renderer, scene);
+          if (planarMirrorMesh) planarMirrorMesh.visible = true;
+          updateHotspotVisibility();
+
+          const nextEnv = pmremGen.fromCubemap(cubeRT.texture);
+          if (bakedEnvRT) bakedEnvRT.dispose();
+          bakedEnvRT = nextEnv;
+          scene.environment = bakedEnvRT.texture;
+        } catch (e) {
+          scene.environment = fallbackEnv;
+        }
+      }, 110);
+    }
+
+    /* ============================================================================
+     * 9. LIGHTING PRESETS & RAYCAST INTERACTION (ZONES + FLOOR HOTSPOTS)
+     * ============================================================================ */
+    function applyLightingMood(mood) {
+      studioState.mood = mood;
+      const sky = roomGroup.getObjectByName('SkyDome');
+
+      if (mood === 'golden') {
+        sunLight.color.setHex(0xffd89b);
+        sunLight.intensity = 4.5;
+        sunLight.position.set(8.8, 3.5, 0.6);
+        hemiLight.color.setHex(0xfff2df);
+        hemiLight.intensity = 0.60;
+        if (sky) sky.material.color.setHex(0xffdfc2);
+        grazingLights.forEach(s => { s.color.setHex(0xffcf8c); s.intensity = 3.0; });
+        underVanityLight.intensity = 1.8;
+        nicheLight.intensity = 1.9;
+        southNicheLight.intensity = 1.7;
+        mirrorHaloLight.intensity = 1.5;
+        bloomPass.strength = 0.22;
+
+      } else if (mood === 'daylight') {
+        sunLight.color.setHex(0xffffff);
+        sunLight.intensity = 3.8;
+        sunLight.position.set(8.0, 5.4, 0.3);
+        hemiLight.color.setHex(0xf4f9ff);
+        hemiLight.intensity = 0.98;
+        if (sky) sky.material.color.setHex(0xd8ecff);
+        grazingLights.forEach(s => { s.color.setHex(0xfff4e4); s.intensity = 2.1; });
+        underVanityLight.intensity = 1.0;
+        nicheLight.intensity = 1.2;
+        southNicheLight.intensity = 1.1;
+        mirrorHaloLight.intensity = 1.0;
+        bloomPass.strength = 0.15;
+
+      } else if (mood === 'midnight') {
+        sunLight.intensity = 0.08;
+        sunLight.color.setHex(0x4b6cb7);
+        hemiLight.color.setHex(0x1f293d);
+        hemiLight.intensity = 0.26;
+        if (sky) sky.material.color.setHex(0x090d18);
+        grazingLights.forEach(s => { s.color.setHex(0xffbe6b); s.intensity = 4.0; });
+        underVanityLight.intensity = 2.5;
+        nicheLight.intensity = 2.8;
+        southNicheLight.intensity = 2.4;
+        mirrorHaloLight.intensity = 2.2;
+        bloomPass.strength = 0.34;
+      }
+
+      scheduleProbeBake();
+    }
+
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    let downPt = { x: 0, y: 0 };
+
+    canvas.addEventListener('pointerdown', e => {
+      downPt = { x: e.clientX, y: e.clientY };
+      if (studioState.autoPan) {
+        studioState.autoPan = false;
+        document.getElementById('btn-autopan').classList.remove('active');
+      }
+    });
+
+    canvas.addEventListener('pointerup', e => {
+      if (Math.hypot(e.clientX - downPt.x, e.clientY - downPt.y) > 6) return;
+      const rect = canvas.getBoundingClientRect();
+      pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(pointer, camera);
+
+      // 1. Check if user clicked an internal 3D floor standing hotspot ring first
+      const spotHits = raycaster.intersectObjects(hotspotMeshes, false);
+      if (spotHits.length > 0 && spotHits[0].object.userData.spotKey) {
+        moveToStandingSpot(spotHits[0].object.userData.spotKey);
+        return;
+      }
+
+      // 2. Otherwise check if user clicked one of the 7 architectural tileable zones
+      const hits = raycaster.intersectObjects(raycastTargets, false);
+      if (hits.length > 0 && hits[0].object.userData.zoneKey) {
+        selectZone(hits[0].object.userData.zoneKey);
+      }
+    });
+
+    function showToast(msg) {
+      const pill = document.getElementById('toast-pill');
+      document.getElementById('toast-text').textContent = msg;
+      pill.classList.add('visible');
+      clearTimeout(pill._timer);
+      pill._timer = setTimeout(() => pill.classList.remove('visible'), 2200);
+    }
+
+    function pulseZoneHighlight(zoneKey) {
+      const meshes = zoneMeshes.get(zoneKey) || [];
+      meshes.forEach(m => {
+        if (m.material && m.material.emissive) {
+          m.material.emissive.setHex(0xd8a960);
+          m.material.emissiveIntensity = 0.24;
+          setTimeout(() => {
+            if (m.material && m.material.emissive) m.material.emissiveIntensity = 0;
+          }, 320);
+        }
+      });
+    }
+
+    function selectZone(zoneKey) {
+      studioState.selectedZone = zoneKey;
+      const z = studioState.zones[zoneKey];
+      showToast(`Selected Surface: ${z.name}`);
+      pulseZoneHighlight(zoneKey);
+      syncStudioUI();
+    }
+
+    /* ============================================================================
+     * 10. UI SYNCHRONIZATION & EVENT HANDLERS
+     * ============================================================================ */
+    function syncStudioUI() {
+      const activeKey = studioState.selectedZone;
+      const activeZ = studioState.zones[activeKey];
+      document.getElementById('active-zone-badge').textContent = activeZ.name;
+
+      // 1. Left Dock 7 Zone List
+      const zList = document.getElementById('zone-list');
+      zList.innerHTML = '';
+      Object.entries(studioState.zones).forEach(([zKey, zCfg]) => {
+        const row = document.createElement('div');
+        row.className = `zone-row ${zKey === activeKey ? 'active' : ''}`;
+
+        let thumbStyle = '';
+        let desc = '';
+        if (zCfg.mode === 'paint') {
+          const pl = PLASTER_PALETTE.find(p => p.id === zCfg.plasterId) || PLASTER_PALETTE[0];
+          thumbStyle = `background-color:${pl.hex};`;
+          desc = `Matte Paint • ${pl.name}`;
+        } else {
+          const t = HERO_TILES.find(x => x.id === zCfg.tileId) || HERO_TILES[0];
+          const url = pbrSynth.getThumbnailDataURL(t.id);
+          thumbStyle = `background-image:url('${url}');`;
+          desc = `${t.name} • ${zCfg.size}mm`;
+        }
+
+        row.innerHTML = `
+          <div class="zone-left">
+            <div class="zone-thumb" style="${thumbStyle}"></div>
+            <div>
+              <div class="zone-title">${zCfg.name}</div>
+              <div class="zone-desc">${desc}</div>
+            </div>
+          </div>
+          <span style="font-size:9.5px; color:var(--text-muted);">${zCfg.area}m²</span>
+        `;
+        row.addEventListener('click', () => selectZone(zKey));
+        zList.appendChild(row);
+      });
+
+      // 2. Left Dock 8 Hero Tile Swatches
+      const sGrid = document.getElementById('swatch-grid');
+      sGrid.innerHTML = '';
+      HERO_TILES.forEach(tile => {
+        const card = document.createElement('div');
+        card.className = `swatch-card ${(activeZ.mode === 'tile' && activeZ.tileId === tile.id) ? 'active' : ''}`;
+        const url = pbrSynth.getThumbnailDataURL(tile.id);
+
+        card.innerHTML = `
+          <div class="swatch-preview" style="background-image:url('${url}');">
+            <span class="sku-pill">${tile.sku}</span>
+            <span class="finish-pill">${tile.defaultFinish}</span>
+          </div>
+          <div class="swatch-info">
+            <div class="swatch-name">${tile.name}</div>
+            <div class="swatch-sub">${tile.subtitle}</div>
+          </div>
+        `;
+        card.addEventListener('click', () => {
+          saveUndoSnapshot();
+          activeZ.mode = 'tile';
+          activeZ.tileId = tile.id;
+          if (!tile.sizes.includes(activeZ.size)) activeZ.size = tile.defaultSize;
+          activeZ.finish = tile.defaultFinish;
+          activeZ.bumpScale = tile.defaultBump;
+          activeZ.clearcoat = tile.defaultClearcoat;
+          updateZoneMaterial(activeKey);
+          scheduleProbeBake();
+          showToast(`Applied ${tile.name} to ${activeZ.name}`);
+          syncStudioUI();
+        });
+        sGrid.appendChild(card);
+      });
+
+      // 3. Right Dock Wall Mode vs Tile Mode
+      const wallModeWrap = document.getElementById('wall-mode-wrap');
+      const plasterWrap = document.getElementById('plaster-wrap');
+      const tileCtrlWrap = document.getElementById('tile-controls-wrap');
+
+      if (activeZ.type === 'wall') {
+        wallModeWrap.style.display = 'block';
+        document.getElementById('tab-mode-tile').classList.toggle('active', activeZ.mode === 'tile');
+        document.getElementById('tab-mode-paint').classList.toggle('active', activeZ.mode === 'paint');
+      } else {
+        wallModeWrap.style.display = 'none';
+        activeZ.mode = 'tile';
+      }
+
+      if (activeZ.mode === 'paint') {
+        plasterWrap.style.display = 'flex';
+        tileCtrlWrap.style.display = 'none';
+
+        const pDots = document.getElementById('plaster-dots');
+        pDots.innerHTML = '';
+        PLASTER_PALETTE.forEach(p => {
+          const dot = document.createElement('div');
+          dot.className = `color-dot ${activeZ.plasterId === p.id ? 'active' : ''}`;
+          dot.style.backgroundColor = p.hex;
+          dot.title = p.name;
+          dot.addEventListener('click', () => {
+            saveUndoSnapshot();
+            activeZ.plasterId = p.id;
+            updateZoneMaterial(activeKey);
+            scheduleProbeBake();
+            syncStudioUI();
+          });
+          pDots.appendChild(dot);
+        });
+        return;
+      }
+
+      plasterWrap.style.display = 'none';
+      tileCtrlWrap.style.display = 'flex';
+
+      const curTile = HERO_TILES.find(t => t.id === activeZ.tileId) || HERO_TILES[0];
+
+      // Format Sizes
+      document.getElementById('lbl-size').textContent = `${activeZ.size} mm`;
+      const sizeGrid = document.getElementById('size-grid');
+      sizeGrid.innerHTML = '';
+      ALL_FORMATS.forEach(sz => {
+        const btn = document.createElement('button');
+        const allowed = curTile.sizes.includes(sz);
+        btn.className = `opt-pill ${activeZ.size === sz ? 'active' : ''}`;
+        btn.disabled = !allowed;
+        btn.textContent = sz;
+        btn.addEventListener('click', () => {
+          saveUndoSnapshot();
+          activeZ.size = sz;
+          updateZoneMaterial(activeKey);
+          syncStudioUI();
+        });
+        sizeGrid.appendChild(btn);
+      });
+
+      // Bond Pattern
+      document.getElementById('lbl-pattern').textContent = activeZ.pattern.toUpperCase();
+      document.querySelectorAll('#pattern-grid .opt-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.pattern === activeZ.pattern);
+      });
+
+      // Rotation & Finish
+      document.querySelectorAll('#rot-grid .opt-pill').forEach(btn => {
+        btn.classList.toggle('active', Number(btn.dataset.rot) === activeZ.rotation);
+      });
+      document.querySelectorAll('#finish-grid .opt-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.finish === activeZ.finish);
+      });
+
+      // Grout Width & Pigment
+      document.getElementById('slider-grout').value = activeZ.groutWidth;
+      document.getElementById('lbl-grout-mm').textContent = `${activeZ.groutWidth.toFixed(1)} mm`;
+
+      const gObj = GROUT_PALETTE.find(g => g.id === activeZ.groutColor) || GROUT_PALETTE[1];
+      document.getElementById('lbl-grout-name').textContent = gObj.name;
+      const gDots = document.getElementById('grout-dots');
+      gDots.innerHTML = '';
+      GROUT_PALETTE.forEach(g => {
+        const dot = document.createElement('div');
+        dot.className = `color-dot ${activeZ.groutColor === g.id ? 'active' : ''}`;
+        dot.style.backgroundColor = g.hex;
+        dot.title = g.name;
+        dot.addEventListener('click', () => {
+          saveUndoSnapshot();
+          activeZ.groutColor = g.id;
+          updateZoneMaterial(activeKey);
+          syncStudioUI();
+        });
+        gDots.appendChild(dot);
+      });
+
+      // 3D Bevel / Lippage Bump & Clearcoat Sliders
+      document.getElementById('slider-bump').value = activeZ.bumpScale;
+      document.getElementById('lbl-bump').textContent = `${activeZ.bumpScale.toFixed(2)}×`;
+
+      document.getElementById('slider-clearcoat').value = activeZ.clearcoat;
+      document.getElementById('lbl-clearcoat').textContent = `${activeZ.clearcoat}%`;
+    }
+
+    // Lighting Mood Buttons
+    document.querySelectorAll('[data-mood]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-mood]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        applyLightingMood(btn.dataset.mood);
+        showToast(`Lighting Preset: ${btn.textContent.trim()}`);
+      });
+    });
+
+    // Global Metal Hardware Switcher
+    document.querySelectorAll('[data-metal]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        saveUndoSnapshot();
+        studioState.hardware = btn.dataset.metal;
+        document.querySelectorAll('[data-metal]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const mat = hardwareMaterials[studioState.hardware];
+        hardwareMeshes.forEach(m => { m.material = mat; });
+        scheduleProbeBake();
+        showToast(`Hardware Finish: ${btn.textContent.trim()}`);
+      });
+    });
+
+    // Diagnostic Render Pass Switcher
+    document.querySelectorAll('[data-pass]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        studioState.renderPass = btn.dataset.pass;
+        document.querySelectorAll('[data-pass]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        Object.keys(studioState.zones).forEach(zKey => applyCurrentRenderPassToZone(zKey));
+        showToast(`Diagnostic Pass: ${btn.textContent.trim()}`);
+      });
+    });
+
+    // Bottom Dock: Inside Standing Spot Buttons
+    document.querySelectorAll('[data-spot]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.spot;
+        const sp = STANDING_SPOTS[key];
+        moveToStandingSpot(key, sp ? sp.lookYaw : null);
+      });
+    });
+
+    // Bottom Dock: 360° Quick Rotation Buttons
+    document.getElementById('btn-turn-left').addEventListener('click', () => rotateLookByAngle(Math.PI / 4));
+    document.getElementById('btn-turn-right').addEventListener('click', () => rotateLookByAngle(-Math.PI / 4));
+    document.getElementById('btn-turn-180').addEventListener('click', () => rotateLookByAngle(Math.PI));
+
+    const btnAutoPan = document.getElementById('btn-autopan');
+    btnAutoPan.addEventListener('click', () => {
+      studioState.autoPan = !studioState.autoPan;
+      btnAutoPan.classList.toggle('active', studioState.autoPan);
+      showToast(studioState.autoPan ? '360° Auto-Rotation Enabled' : '360° Auto-Rotation Paused');
+    });
+
+    // Wall Tile vs Matte Paint Tabs
+    document.getElementById('tab-mode-tile').addEventListener('click', () => {
+      const z = studioState.zones[studioState.selectedZone];
+      if (z.mode !== 'tile') {
+        saveUndoSnapshot();
+        z.mode = 'tile';
+        updateZoneMaterial(studioState.selectedZone);
+        scheduleProbeBake();
+        syncStudioUI();
+      }
+    });
+
+    document.getElementById('tab-mode-paint').addEventListener('click', () => {
+      const z = studioState.zones[studioState.selectedZone];
+      if (z.mode !== 'paint') {
+        saveUndoSnapshot();
+        z.mode = 'paint';
+        updateZoneMaterial(studioState.selectedZone);
+        scheduleProbeBake();
+        syncStudioUI();
+      }
+    });
+
+    // Pattern, Rotation, Finish
+    document.querySelectorAll('#pattern-grid .opt-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        saveUndoSnapshot();
+        const z = studioState.zones[studioState.selectedZone];
+        z.pattern = btn.dataset.pattern;
+        updateZoneMaterial(studioState.selectedZone);
+        syncStudioUI();
+      });
+    });
+
+    document.querySelectorAll('#rot-grid .opt-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        saveUndoSnapshot();
+        const z = studioState.zones[studioState.selectedZone];
+        z.rotation = Number(btn.dataset.rot);
+        updateZoneMaterial(studioState.selectedZone);
+        syncStudioUI();
+      });
+    });
+
+    document.querySelectorAll('#finish-grid .opt-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        saveUndoSnapshot();
+        const z = studioState.zones[studioState.selectedZone];
+        z.finish = btn.dataset.finish;
+        if (z.finish === 'polished') z.clearcoat = 95;
+        else if (z.finish === 'honed') z.clearcoat = 25;
+        else if (z.finish === 'matte') z.clearcoat = 10;
+        else z.clearcoat = 5;
+        updateZoneMaterial(studioState.selectedZone);
+        scheduleProbeBake();
+        syncStudioUI();
+      });
+    });
+
+    // Sliders
+    document.getElementById('slider-grout').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      document.getElementById('lbl-grout-mm').textContent = `${val.toFixed(1)} mm`;
+      const z = studioState.zones[studioState.selectedZone];
+      z.groutWidth = val;
+      updateZoneMaterial(studioState.selectedZone);
+    });
+
+    document.getElementById('slider-bump').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      document.getElementById('lbl-bump').textContent = `${val.toFixed(2)}×`;
+      const z = studioState.zones[studioState.selectedZone];
+      z.bumpScale = val;
+      const mat = zoneTrueMaterials.get(studioState.selectedZone);
+      if (mat && mat.normalScale) {
+        const s = 0.55 * val;
+        mat.normalScale.set(s, s);
+      }
+    });
+
+    document.getElementById('slider-clearcoat').addEventListener('input', e => {
+      const val = parseInt(e.target.value, 10);
+      document.getElementById('lbl-clearcoat').textContent = `${val}%`;
+      const z = studioState.zones[studioState.selectedZone];
+      z.clearcoat = val;
+      const mat = zoneTrueMaterials.get(studioState.selectedZone);
+      if (mat) mat.clearcoat = val / 100;
+    });
+
+    document.getElementById('slider-fov').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      studioState.targetFov = val;
+      updateFovLabels(val);
+    });
+
+    document.getElementById('slider-exposure').addEventListener('input', e => {
+      const val = parseFloat(e.target.value);
+      studioState.exposure = val;
+      renderer.toneMappingExposure = val;
+      document.getElementById('lbl-exposure').textContent = `${val.toFixed(2)} EV`;
+    });
+
+    // Undo / Redo / Reset
+    document.getElementById('btn-undo').addEventListener('click', () => {
+      if (!studioState.undoStack.length) return;
+      studioState.redoStack.push(JSON.stringify({ zones: studioState.zones, hardware: studioState.hardware }));
+      const prev = JSON.parse(studioState.undoStack.pop());
+      studioState.zones = prev.zones;
+      studioState.hardware = prev.hardware;
+      const mat = hardwareMaterials[studioState.hardware];
+      hardwareMeshes.forEach(m => { m.material = mat; });
+      updateUndoUI();
+      applyAllZones();
+      syncStudioUI();
+      showToast('Undid last change');
+    });
+
+    document.getElementById('btn-redo').addEventListener('click', () => {
+      if (!studioState.redoStack.length) return;
+      studioState.undoStack.push(JSON.stringify({ zones: studioState.zones, hardware: studioState.hardware }));
+      const next = JSON.parse(studioState.redoStack.pop());
+      studioState.zones = next.zones;
+      studioState.hardware = next.hardware;
+      const mat = hardwareMaterials[studioState.hardware];
+      hardwareMeshes.forEach(m => { m.material = mat; });
+      updateUndoUI();
+      applyAllZones();
+      syncStudioUI();
+      showToast('Redid change');
+    });
+
+    document.getElementById('btn-reset-zone').addEventListener('click', () => {
+      saveUndoSnapshot();
+      const k = studioState.selectedZone;
+      studioState.zones[k] = JSON.parse(JSON.stringify(studioState.defaultZones[k]));
+      updateZoneMaterial(k);
+      scheduleProbeBake();
+      syncStudioUI();
+      showToast('Zone reset to default');
+    });
+
+    document.getElementById('btn-reset-all').addEventListener('click', () => {
+      saveUndoSnapshot();
+      studioState.zones = JSON.parse(JSON.stringify(studioState.defaultZones));
+      applyAllZones();
+      syncStudioUI();
+      showToast('Entire 360° Sanctuary reset');
+    });
+
+    // GTAO Ultra Quality Toggle
+    const btnQuality = document.getElementById('btn-quality');
+    btnQuality.addEventListener('click', () => {
+      studioState.ultraQuality = !studioState.ultraQuality;
+      btnQuality.textContent = studioState.ultraQuality ? 'GTAO HQ' : '60FPS Perf';
+      btnQuality.classList.toggle('active', studioState.ultraQuality);
+      if (gtaoPass) gtaoPass.enabled = studioState.ultraQuality;
+      bloomPass.enabled = studioState.ultraQuality;
+      if (planarMirrorMesh) planarMirrorMesh.visible = studioState.ultraQuality;
+      scheduleProbeBake();
+      showToast(studioState.ultraQuality ? 'GTAO + Bloom + Planar Mirror Active' : 'Fast Performance Mode Active');
+    });
+
+    // Fullscreen Photo Mode
+    document.getElementById('btn-photo-mode').addEventListener('click', () => {
+      document.body.classList.add('photo-mode');
+    });
+    document.getElementById('btn-exit-photo').addEventListener('click', () => {
+      document.body.classList.remove('photo-mode');
+    });
+
+    // Capture Snapshot PNG
+    document.getElementById('btn-capture').addEventListener('click', () => {
+      if (studioState.ultraQuality) composer.render();
+      else renderer.render(scene, camera);
+      const link = document.createElement('a');
+      link.download = `Tessera360_InsideView_${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showToast('360° Interior Snapshot Saved');
+    });
+
+    // Architectural Schedule Modal
+    const specModal = document.getElementById('spec-modal');
+    document.getElementById('btn-spec').addEventListener('click', () => {
+      let rows = '';
+      Object.values(studioState.zones).forEach(z => {
+        if (z.mode === 'paint') {
+          const pl = PLASTER_PALETTE.find(p => p.id === z.plasterId) || PLASTER_PALETTE[0];
+          rows += `
+            <tr>
+              <td><strong>${z.name}</strong></td>
+              <td>${pl.sku}</td>
+              <td>${pl.name} (Matte Wall Paint)</td>
+              <td>Seamless Roller/Trowel</td>
+              <td>Matte Mineral</td>
+              <td>${z.area.toFixed(1)} m²</td>
+              <td>${(z.area / 8).toFixed(1)} L</td>
+            </tr>
+          `;
+        } else {
+          const t = HERO_TILES.find(x => x.id === z.tileId) || HERO_TILES[0];
+          const [wMm, hMm] = z.size.split('x').map(Number);
+          const pcs = Math.ceil((z.area * 1.10) / ((wMm / 1000) * (hMm / 1000)));
+          const g = GROUT_PALETTE.find(x => x.id === z.groutColor) || GROUT_PALETTE[1];
+          rows += `
+            <tr>
+              <td><strong>${z.name}</strong></td>
+              <td><span style="color:var(--accent); font-weight:700;">${t.sku}</span></td>
+              <td>${t.name}</td>
+              <td>${z.size} mm (${z.pattern.toUpperCase()})</td>
+              <td>${z.finish.toUpperCase()} • ${z.groutWidth}mm ${g.name}</td>
+              <td>${z.area.toFixed(1)} m²</td>
+              <td><strong>${pcs} pcs</strong></td>
+            </tr>
+          `;
+        }
+      });
+
+      document.getElementById('spec-modal-body').innerHTML = `
+        <table class="spec-table">
+          <thead>
+            <tr>
+              <th>360° Sanctuary Zone</th>
+              <th>SKU</th>
+              <th>Material Specification</th>
+              <th>Format &amp; Bond</th>
+              <th>Surface &amp; Joint</th>
+              <th>Net Area</th>
+              <th>Order Qty (+10%)</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+      specModal.classList.add('open');
+    });
+
+    document.getElementById('btn-close-spec').addEventListener('click', () => {
+      specModal.classList.remove('open');
+    });
+
+    // Keyboard Shortcuts (Arrow keys rotate 360° inside room, Esc exits modals)
+    window.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        document.body.classList.remove('photo-mode');
+        specModal.classList.remove('open');
+      } else if (e.key === 'ArrowLeft') {
+        rotateLookByAngle(Math.PI / 8);
+      } else if (e.key === 'ArrowRight') {
+        rotateLookByAngle(-Math.PI / 8);
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        document.getElementById('btn-undo').click();
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+        e.preventDefault();
+        document.getElementById('btn-redo').click();
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+      composer.setSize(w, h);
+    });
+
+    /* ============================================================================
+     * 11. MAIN ANIMATION & INSIDE-360° RENDER LOOP
+     * ============================================================================ */
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const dt = Math.min(0.05, clock.getDelta());
+      const elapsed = clock.getElapsedTime();
+
+      // Smoothly interpolate Optical Lens FOV (32° to 85°)
+      if (Math.abs(camera.fov - studioState.targetFov) > 0.05) {
+        camera.fov += (studioState.targetFov - camera.fov) * Math.min(1.0, dt * 10.0);
+        camera.updateProjectionMatrix();
+      }
+
+      // Smoothly transition between internal standing points or quick-turn angles
+      if (spotAnim.active) {
+        spotAnim.t = Math.min(1.0, spotAnim.t + dt * 2.4);
+        const ease = 1.0 - Math.pow(1.0 - spotAnim.t, 3);
+        controls.target.lerpVectors(spotAnim.startTarget, spotAnim.endTarget, ease);
+
+        const lerpedOffset = new THREE.Vector3().lerpVectors(spotAnim.startOffset, spotAnim.endOffset, ease);
+        lerpedOffset.setLength(0.01);
+        camera.position.copy(controls.target).add(lerpedOffset);
+
+        if (spotAnim.t >= 1.0) spotAnim.active = false;
+      } else if (studioState.autoPan) {
+        // Gentle 360° panoramic rotation around the standing point
+        const offset = camera.position.clone().sub(controls.target);
+        offset.applyAxisAngle(new THREE.Vector3(0, 1, 0), -dt * 0.25);
+        camera.position.copy(controls.target).add(offset);
+      }
+
+      // Pulse floor standing hotspot rings gently
+      const pulse = 0.85 + Math.sin(elapsed * 3.2) * 0.15;
+      hotspotMeshes.forEach(disc => {
+        disc.parent.scale.set(pulse, 1, pulse);
+      });
+
+      // Subtle organic candle flicker on the vanity
+      candleLight.intensity = 0.8 + Math.sin(elapsed * 11.0) * 0.08 + Math.cos(elapsed * 17.3) * 0.05;
+
+      controls.update();
+      updateCompassHUD();
+
+      if (studioState.ultraQuality) {
+        composer.render();
+      } else {
+        renderer.render(scene, camera);
+      }
+    }
+
+    window.onload = function () {
+      buildSpaSanctuaryRoom();
+      applyAllZones();
+      applyLightingMood('golden');
+      setInitialInsideView();
+      syncStudioUI();
+      showToast('Standing Inside Room Center — Drag 360° in Any Direction');
+      animate();
+    };
+  </script>
+</body>
+</html>
