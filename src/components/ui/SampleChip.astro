@@ -1,0 +1,171 @@
+---
+// Sample-chip swatch (brief signature touch 5): a square tile face with one 20px rounded corner,
+// thin beige border, name and code underneath. Hover/tap lifts it 4px; selected gets a gold bar.
+// Glossy/Polished finishes get the one-time FINISH SHEEN (signature touch 6).
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+
+interface Props {
+  name: string;
+  code?: string;
+  /** Flat tile-face image. */
+  image?: ImageMetadata;
+  /** Fallback face colour (or any CSS background) when there is no image yet. */
+  face?: string;
+  /** Chip edge in px. Brief: 160 desktop, 120 tablet on the Collection page. */
+  size?: number;
+  selected?: boolean;
+  /** Run the sheen sweep once on view. */
+  glossy?: boolean;
+  /** Hide the name and code (e.g. the Home hero's small "Try a floor" chips). */
+  compact?: boolean;
+  class?: string;
+  [key: `data-${string}`]: string | undefined;
+}
+
+const {
+  name,
+  code,
+  image,
+  face = 'var(--beige)',
+  size = 120,
+  selected = false,
+  glossy = false,
+  compact = false,
+  class: className,
+  ...data
+} = Astro.props;
+---
+
+<button
+  type="button"
+  class:list={['sample', { compact }, className]}
+  style={`--chip: ${size}px`}
+  aria-pressed={String(selected)}
+  aria-label={compact ? name : undefined}
+  data-sample
+  {...data}
+>
+  <span class:list={['face', { glossy }]} style={image ? undefined : `background: ${face}`} data-sheen={glossy ? '' : undefined}>
+    {image && <Image src={image} alt="" width={size} height={size} densities={[1, 2]} />}
+  </span>
+  {
+    !compact && (
+      <span class="meta">
+        <span class="name">{name}</span>
+        {code && <span class="code tabular">{code}</span>}
+      </span>
+    )
+  }
+</button>
+
+<style>
+  .sample {
+    display: grid;
+    justify-items: start;
+    gap: 10px;
+    width: var(--chip);
+    padding: 0;
+    border: 0;
+    background: none;
+    text-align: left;
+    color: var(--charcoal);
+  }
+
+  .face {
+    position: relative;
+    display: block;
+    width: var(--chip);
+    aspect-ratio: 1;
+    overflow: hidden;
+    border: var(--border);
+    border-radius: 0 var(--radius-card) 0 0;
+    transition:
+      transform var(--dur-ui-slow) var(--ease),
+      box-shadow var(--dur-ui-slow) var(--ease);
+  }
+
+  .face :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Gold underline bar for the selected chip. */
+  .face::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 2px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transition: transform var(--dur-ui) var(--ease);
+  }
+
+  .sample[aria-pressed='true'] .face::after {
+    transform: scaleX(1);
+  }
+
+  .sample:hover .face,
+  .sample:active .face {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lift);
+  }
+
+  .meta {
+    display: grid;
+    gap: 2px;
+    font-size: var(--fs-small);
+    line-height: 1.35;
+  }
+
+  .name {
+    font-weight: 500;
+    color: var(--green);
+  }
+
+  .code {
+    color: var(--muted);
+  }
+
+  /* Finish sheen: one diagonal light sweep, white 0% → 18% → 0%. */
+  .glossy::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0) 30%,
+      rgba(255, 255, 255, 0.18) 50%,
+      rgba(255, 255, 255, 0) 70%
+    );
+    transform: translateX(-110%);
+    pointer-events: none;
+  }
+
+  .glossy[data-sheen-run]::before {
+    animation: sheen 1400ms var(--ease) forwards;
+  }
+
+  @keyframes sheen {
+    to {
+      transform: translateX(110%);
+    }
+  }
+</style>
+
+<script>
+  // Run each glossy chip's sheen once, when it scrolls into view.
+  const sheens = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.setAttribute('data-sheen-run', '');
+        sheens.unobserve(entry.target);
+      });
+    },
+    { threshold: 0.6 },
+  );
+  document.querySelectorAll('[data-sheen]').forEach((el) => sheens.observe(el));
+</script>

@@ -1,0 +1,419 @@
+---
+// Internal styleguide: design tokens and shared components, for review during the build.
+// Kept out of search engines (noindex) and not linked from the site.
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/ui/Breadcrumbs.astro';
+import Button from '@/components/ui/Button.astro';
+import Chip from '@/components/ui/Chip.astro';
+import Field from '@/components/ui/Field.astro';
+import SampleChip from '@/components/ui/SampleChip.astro';
+import TrustFrame from '@/components/ui/TrustFrame.astro';
+import PhotoPlaceholder from '@/components/ui/PhotoPlaceholder.astro';
+import CollectionCard from '@/components/cards/CollectionCard.astro';
+import ProductCard from '@/components/cards/ProductCard.astro';
+import { business } from '@/config/site';
+
+const samples = [
+  { name: 'Ivory', code: 'SG-101', face: 'linear-gradient(135deg, #F4F0E8 0%, #DCD2C0 100%)', glossy: true },
+  { name: 'Warm Oak', code: 'SG-102', face: 'repeating-linear-gradient(90deg, #BF956A 0 12px, #A57C55 12px 14px)' },
+  { name: 'Grey Stone', code: 'SG-103', face: 'linear-gradient(135deg, #BEBCB6 0%, #93918B 100%)' },
+  { name: 'Nero', code: 'SG-104', face: 'linear-gradient(135deg, #50554F 0%, #2C302E 100%)', glossy: true },
+];
+
+const collections = [
+  {
+    id: 'sg-ivory-marble',
+    name: 'Ivory Marble',
+    brand: '[BRAND]',
+    colours: 6,
+    finishes: 2,
+    sizes: 3,
+    badge: 'New',
+    dots: ['#F2EEE6', '#E3D8C4', '#CFC3AD', '#B8AC97', '#8E8C87'],
+    tileFace: 'linear-gradient(118deg, #F4EFE6 0%, #E2D8C6 40%, #F1ECE2 55%, #D7CBB5 100%)',
+    roomLabel: 'living room with Ivory Marble floor',
+  },
+  {
+    id: 'sg-oak-plank',
+    name: 'Oak Plank',
+    brand: '[BRAND]',
+    colours: 8,
+    finishes: 1,
+    sizes: 2,
+    dots: ['#C9A27A', '#A57C55', '#7A5A3D'],
+    tileFace: 'repeating-linear-gradient(90deg, #BF956A 0 58px, #A57C55 58px 60px), #BF956A',
+    roomLabel: 'bedroom with Oak Plank floor',
+  },
+  {
+    id: 'sg-terrazzo-sand',
+    name: 'Terrazzo Sand',
+    brand: '[BRAND]',
+    colours: 1,
+    finishes: 1,
+    sizes: 1,
+    dots: ['#E8DFD0'],
+    tileFace:
+      'radial-gradient(circle at 3px 3px, #B9A687 2px, transparent 2.6px) 0 0 / 17px 17px, radial-gradient(circle at 9px 11px, #7E7B75 1.6px, transparent 2.2px) 0 0 / 23px 23px, #E8DFD0',
+    roomLabel: 'bathroom with Terrazzo Sand floor',
+  },
+];
+
+const colours = [
+  { name: 'Royal Forest Green', token: '--green', hex: '#123B32', ink: 'light' },
+  { name: 'Warm Ivory', token: '--ivory', hex: '#F8F6EF', ink: 'dark' },
+  { name: 'Champagne Gold', token: '--gold', hex: '#D4AF37', ink: 'dark' },
+  { name: 'Deep Charcoal Green', token: '--charcoal', hex: '#2E3A35', ink: 'light' },
+  { name: 'Stone Beige', token: '--beige', hex: '#E7E2D6', ink: 'dark' },
+];
+const tints = [
+  { name: 'Card surface', token: '--surface', hex: '#FFFDF8', ink: 'dark' },
+  { name: 'Muted on ivory', token: '--muted', hex: '#5B655F', ink: 'light' },
+  { name: 'Muted on green', token: '--muted-on-green', hex: '#C9D3CC', ink: 'dark' },
+  { name: 'Green hover', token: '--green-hover', hex: '#0E2F28', ink: 'light' },
+  { name: 'Gold hover', token: '--gold-hover', hex: '#C29E2C', ink: 'dark' },
+];
+const radii = [
+  { name: 'Card', token: '--radius-card', value: '20px' },
+  { name: 'Image', token: '--radius-image', value: '16px' },
+  { name: 'Button', token: '--radius-button', value: '12px' },
+  { name: 'Chip', token: '--radius-chip', value: '999px' },
+];
+---
+
+<BaseLayout title="Styleguide" description="Internal styleguide for the Sri Skanda Traders website." noindex>
+  <Fragment>
+    <section class="section">
+      <div class="container stack">
+        <p class="eyebrow rise">Internal · Styleguide</p>
+        <h1 class="rise" style="--i: 1">Tiles you'll love living with.</h1>
+        <p class="body-lg muted rise" style="--i: 2">
+          The {business.name} design tokens and shared components, in one place for review.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="colour-title">
+      <div class="container stack">
+        <p class="eyebrow">01 — Colour</p>
+        <h2 id="colour-title">Palette and allowed tints</h2>
+        <ul class="swatches">
+          {
+            [...colours, ...tints].map((c) => (
+              <li class="swatch" data-ink={c.ink} style={`background: var(${c.token})`}>
+                <span class="swatch-name">{c.name}</span>
+                <span class="small tabular">
+                  {c.hex} · <code>{c.token}</code>
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="type-title">
+      <div class="container stack">
+        <p class="eyebrow">02 — Type</p>
+        <h2 id="type-title">Poppins, four weights</h2>
+        <div class="type-scale">
+          <p class="display">Display H1 · 700</p>
+          <h2>Heading H2 · 700</h2>
+          <h3>Heading H3 · 600</h3>
+          <p class="body-lg">
+            Body large · 400. Floor and wall tiles, granite and bathware from brands you trust, chosen with honest
+            advice at our showroom in Sulur, Coimbatore.
+          </p>
+          <p>Body · 400. Paragraphs stay between 60 and 68 characters wide so they are easy to read.</p>
+          <p class="small muted">Small / meta · 400 · <span class="tabular">600 × 1200 mm</span></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section on-green" aria-labelledby="green-title">
+      <div class="container stack">
+        <p class="eyebrow">03 — On green</p>
+        <h2 id="green-title">See it in your home before you buy.</h2>
+        <p class="body-lg muted">
+          Ivory headings, muted body text and gold eyebrows on Royal Forest Green.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="shape-title">
+      <div class="container stack">
+        <p class="eyebrow">04 — Shape</p>
+        <h2 id="shape-title">Radii and the soft lift shadow</h2>
+        <ul class="radii">
+          {
+            radii.map((r) => (
+              <li class="radius" style={`border-radius: var(${r.token})`}>
+                <span class="small">
+                  {r.name} · <span class="tabular">{r.value}</span>
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="buttons-title">
+      <div class="container stack">
+        <p class="eyebrow">05 — Buttons</p>
+        <h2 id="buttons-title">Buttons and links</h2>
+        <div class="row">
+          <Button href="#" arrow>Explore Products</Button>
+          <Button variant="secondary" href="#">Try 3D Visualizer</Button>
+          <Button variant="secondary" size="sm">Enquire</Button>
+          <Button variant="text" href="#" arrow>View all collections</Button>
+          <Button disabled>Disabled</Button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section on-green" aria-labelledby="buttons-green-title">
+      <div class="container stack">
+        <p class="eyebrow">06 — On green</p>
+        <h2 id="buttons-green-title">Accent and light outline</h2>
+        <div class="row">
+          <Button variant="accent" href="#" arrow>Open the Visualizer</Button>
+          <Button variant="outline-light" href="#">Visit the showroom</Button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="chips-title">
+      <div class="container stack">
+        <p class="eyebrow">07 — Chips</p>
+        <h2 id="chips-title">Filter chips and sample chips</h2>
+        <div class="row" data-reveal>
+          <Chip>New arrivals</Chip>
+          <Chip selected>Floor</Chip>
+          <Chip>Wall</Chip>
+          <Chip removable aria-label="Remove filter: Marble">Marble</Chip>
+        </div>
+        <div class="row samples">
+          {samples.map((s, i) => <SampleChip {...s} selected={i === 0} />)}
+        </div>
+        <p class="small muted">Ivory and Nero are glossy, so they get the finish sheen once on view.</p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="forms-title">
+      <div class="container stack">
+        <p class="eyebrow">08 — Forms</p>
+        <h2 id="forms-title">Fields and breadcrumbs</h2>
+        <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Tiles', href: '/tiles' }, { label: 'Living Room Tiles' }]} />
+        <div class="form-grid">
+          <Field label="Name" name="sg-name" required autocomplete="name" />
+          <Field label="Phone" name="sg-phone" prefix="+91" type="tel" required inputmode="numeric" />
+          <Field label="Area / Location" name="sg-area" hint="For example: Sulur, Trichy Road" />
+          <Field label="Phone" name="sg-phone-error" prefix="+91" type="tel" required error="Please enter a 10-digit mobile number." />
+          <Field label="Message (optional)" name="sg-message" multiline class="span-2" />
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="frame-title">
+      <div class="container stack">
+        <p class="eyebrow">09 — Trust Frame</p>
+        <h2 id="frame-title">The frame draws itself on first view</h2>
+        <div class="frame-demo">
+          <TrustFrame label="Our showroom · Sulur, Coimbatore">
+            <div class="frame-photo"><PhotoPlaceholder label="living room with a calm, light floor" /></div>
+          </TrustFrame>
+        </div>
+      </div>
+    </section>
+
+    <section class="section on-green" aria-labelledby="frame-green-title">
+      <div class="container stack">
+        <p class="eyebrow">10 — Trust Frame on green</p>
+        <h2 id="frame-green-title">Gold label in the gap</h2>
+        <div class="frame-demo">
+          <TrustFrame label="Living room" tone="green">
+            <div class="frame-photo"><PhotoPlaceholder label="before / after slider" /></div>
+          </TrustFrame>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="cards-title">
+      <div class="container stack">
+        <p class="eyebrow">11 — Cards</p>
+        <h2 id="cards-title">Collection and product cards</h2>
+        <p class="muted">
+          Hover a collection card with a mouse to see the tile face. On touch screens, use the Room | Tile toggle.
+        </p>
+        <div class="card-grid">
+          {
+            collections.map((c, i) => (
+              <div data-reveal style={`--i: ${i}`}>
+                <CollectionCard {...c} href="#" />
+              </div>
+            ))
+          }
+        </div>
+        <div class="product-grid">
+          <ProductCard
+            id="sg-wall-hung"
+            href="#"
+            brand="Johnson"
+            name="Wall-hung WC"
+            code="[CODE]"
+            spec="Wall-hung · 520 × 360 mm"
+            authorised
+          />
+          <ProductCard id="sg-basin" href="#" brand="[BRAND]" name="Counter-top basin" code="[CODE]" spec="Counter-top · 600 × 400 mm" />
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="toast-title">
+      <div class="container stack">
+        <p class="eyebrow">12 — Toast</p>
+        <h2 id="toast-title">Confirmation toast</h2>
+        <div class="row">
+          <Button variant="secondary" data-demo-toast>Show toast</Button>
+        </div>
+      </div>
+    </section>
+  </Fragment>
+</BaseLayout>
+
+<script>
+  import { showToast } from '@/scripts/toast';
+
+  document.querySelector('[data-demo-toast]')?.addEventListener('click', () => {
+    showToast('Saved to My Selection', { label: 'View', href: '/my-selection' });
+  });
+</script>
+
+<style>
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .samples {
+    align-items: start;
+    gap: var(--space-3);
+  }
+
+  .form-grid {
+    display: grid;
+    gap: var(--space-3);
+    max-width: 720px;
+  }
+
+  @media (min-width: 768px) {
+    .form-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .form-grid :global(.span-2) {
+      grid-column: span 2;
+    }
+  }
+
+  .frame-demo {
+    max-width: 720px;
+  }
+
+  .frame-photo {
+    aspect-ratio: 7 / 5;
+    overflow: hidden;
+    border-radius: var(--radius-image);
+  }
+
+  .card-grid {
+    display: grid;
+    gap: var(--space-4) var(--gutter);
+  }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4) var(--gutter);
+    max-width: 640px;
+  }
+
+  @media (min-width: 768px) {
+    .card-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .card-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .stack {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .swatches {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--space-2);
+  }
+
+  .swatch {
+    display: grid;
+    align-content: end;
+    gap: 4px;
+    min-height: 140px;
+    padding: var(--space-2);
+    border: var(--border);
+    border-radius: var(--radius-card);
+  }
+
+  .swatch[data-ink='light'] {
+    color: var(--on-green);
+  }
+
+  .swatch[data-ink='dark'] {
+    color: var(--green);
+  }
+
+  .swatch-name {
+    font-weight: 600;
+  }
+
+  .type-scale {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .radii {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .radius {
+    display: grid;
+    place-items: center;
+    width: 180px;
+    height: 120px;
+    background: var(--surface);
+    border: var(--border);
+    transition:
+      transform var(--dur-ui-slow) var(--ease),
+      box-shadow var(--dur-ui-slow) var(--ease);
+  }
+
+  .radius:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lift);
+  }
+</style>

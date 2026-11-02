@@ -1,0 +1,121 @@
+---
+// Form field with an always-visible label (brief Prompt 00-I and 00-L).
+// 52px inputs, ivory surface, beige border, 2px green focus ring, friendly inline error text.
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends Omit<HTMLAttributes<'input'>, 'id' | 'name'> {
+  label: string;
+  name: string;
+  id?: string;
+  /** Multi-line message field. */
+  multiline?: boolean;
+  /** Fixed text before the input, e.g. "+91". */
+  prefix?: string;
+  hint?: string;
+  /** Error text; shown under the field and announced. */
+  error?: string;
+}
+
+const { label, name, id = `field-${name}`, multiline = false, prefix, hint, error, required, class: className, ...rest } =
+  Astro.props;
+const describedBy = [hint && `${id}-hint`, `${id}-error`].filter(Boolean).join(' ');
+---
+
+<div class:list={['field', className]} data-field data-invalid={error ? '' : undefined}>
+  <label for={id} class="field-label">
+    {label}
+    {required && <span class="required" aria-hidden="true">*</span>}
+  </label>
+  <div class="field-control">
+    {prefix && <span class="field-prefix tabular">{prefix}</span>}
+    {
+      multiline ? (
+        <textarea id={id} name={name} rows="4" required={required} aria-describedby={describedBy} {...(rest as object)} />
+      ) : (
+        <input id={id} name={name} required={required} aria-describedby={describedBy} {...rest} />
+      )
+    }
+  </div>
+  {hint && <p id={`${id}-hint`} class="field-hint small muted">{hint}</p>}
+  <p id={`${id}-error`} class="field-error small" aria-live="polite">{error}</p>
+</div>
+
+<style>
+  .field {
+    display: grid;
+    gap: 6px;
+  }
+
+  .field-label {
+    font-size: var(--fs-small);
+    font-weight: 500;
+    color: var(--green);
+  }
+
+  .required {
+    margin-left: 2px;
+    color: var(--green);
+  }
+
+  .field-control {
+    display: flex;
+    align-items: stretch;
+    border: var(--border);
+    border-radius: var(--radius-input);
+    background: var(--surface);
+    transition: box-shadow var(--dur-ui) var(--ease);
+  }
+
+  .field-control:focus-within {
+    box-shadow: 0 0 0 2px var(--green);
+    border-color: transparent;
+  }
+
+  [data-invalid] .field-control {
+    box-shadow: 0 0 0 2px var(--error);
+    border-color: transparent;
+  }
+
+  .field-prefix {
+    display: flex;
+    align-items: center;
+    padding-left: var(--space-2);
+    color: var(--muted);
+  }
+
+  input,
+  textarea {
+    flex: 1;
+    min-width: 0;
+    min-height: 52px;
+    padding: 0 var(--space-2);
+    border: 0;
+    border-radius: var(--radius-input);
+    background: transparent;
+    font-size: var(--fs-body);
+  }
+
+  .field-prefix + input {
+    padding-left: 10px;
+  }
+
+  textarea {
+    padding-block: 14px;
+    line-height: 1.5;
+    resize: vertical;
+  }
+
+  input:focus,
+  textarea:focus {
+    outline: none;
+  }
+
+  .field-error {
+    min-height: 0;
+    color: var(--error);
+  }
+
+  .field-error:empty {
+    display: none;
+  }
+</style>

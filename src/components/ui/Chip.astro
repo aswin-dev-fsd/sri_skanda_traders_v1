@@ -1,0 +1,70 @@
+---
+// Filter / choice chip (brief Prompt 00-I): beige with green text; selected is green with ivory text.
+// `removable` adds a small × for active-filter chips.
+import type { HTMLAttributes } from 'astro/types';
+import Icon from '@/components/ui/Icon.astro';
+
+interface Props extends HTMLAttributes<'button'> {
+  selected?: boolean;
+  removable?: boolean;
+}
+
+const { selected = false, removable = false, class: className, ...rest } = Astro.props;
+---
+
+<button
+  type="button"
+  class:list={['chip', { removable }, className]}
+  aria-pressed={removable ? undefined : String(selected)}
+  data-selected={selected || removable ? '' : undefined}
+  {...rest}
+>
+  <slot />
+  {removable && <Icon name="close" size={16} />}
+</button>
+
+<style>
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 40px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: var(--radius-chip);
+    background: var(--beige);
+    color: var(--green);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    transition:
+      background var(--dur-ui) var(--ease),
+      color var(--dur-ui) var(--ease);
+  }
+
+  /* Keeps the visual chip compact while the tap area meets the 48px minimum. */
+  .chip {
+    position: relative;
+  }
+
+  .chip::before {
+    content: '';
+    position: absolute;
+    inset: -4px 0;
+  }
+
+  .chip:hover {
+    background: color-mix(in srgb, var(--beige), var(--green) 6%);
+  }
+
+  .chip[aria-pressed='true'],
+  .chip[data-selected] {
+    background: var(--green);
+    color: var(--on-green);
+  }
+
+  .chip.removable {
+    padding-right: 12px;
+  }
+</style>

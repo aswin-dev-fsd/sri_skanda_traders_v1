@@ -1,0 +1,68 @@
+---
+// Breadcrumbs (brief Prompt 00-I): small, muted, "/" separators. The last item is the current page.
+interface Crumb {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  items: Crumb[];
+  /** Ivory text for use over photos or green. */
+  light?: boolean;
+}
+
+const { items, light = false } = Astro.props;
+---
+
+<nav aria-label="Breadcrumb" class:list={['crumbs', { light }]}>
+  <ol>
+    {
+      items.map((item, i) =>
+        i === items.length - 1 ? (
+          <li aria-current="page">{item.label}</li>
+        ) : (
+          <li>
+            <a href={item.href}>{item.label}</a>
+          </li>
+        ),
+      )
+    }
+  </ol>
+</nav>
+
+<style>
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0;
+    list-style: none;
+    font-size: var(--fs-small);
+    color: var(--muted);
+  }
+
+  li + li::before {
+    content: '/';
+    margin-right: 8px;
+    opacity: 0.7;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--green);
+    text-decoration: underline;
+  }
+
+  .light ol,
+  .light a:hover {
+    color: var(--on-green);
+  }
+
+  [aria-current='page'] {
+    font-weight: 500;
+  }
+</style>

@@ -1,0 +1,171 @@
+---
+// Buttons (brief Prompt 00-F). Renders a link when `href` is set, otherwise a <button>.
+//   primary   — green, ivory text (on ivory)
+//   accent    — gold, green text (on green backgrounds only)
+//   secondary — 1.5px green outline (on ivory)
+//   outline-light — 1.5px ivory outline (on green), e.g. "Visit the showroom"
+//   text      — green SemiBold link with a growing underline
+import type { HTMLAttributes } from 'astro/types';
+import Icon, { type IconName } from '@/components/ui/Icon.astro';
+
+type Variant = 'primary' | 'accent' | 'secondary' | 'outline-light' | 'text';
+
+interface Props extends Omit<HTMLAttributes<'a'> & HTMLAttributes<'button'>, 'type'> {
+  variant?: Variant;
+  /** `sm` is 44px tall, for card actions. Default 52px. */
+  size?: 'md' | 'sm';
+  href?: string;
+  type?: 'button' | 'submit';
+  /** Trailing arrow that nudges 4px right on hover. */
+  arrow?: boolean;
+  /** Leading icon. */
+  icon?: IconName;
+  /** Stretch to the container width. */
+  block?: boolean;
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  href,
+  type = 'button',
+  arrow = false,
+  icon,
+  block = false,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const classes = ['btn', `btn-${variant}`, `btn-${size}`, { 'btn-block': block }, className];
+---
+
+{
+  href ? (
+    <a href={href} class:list={classes} {...rest}>
+      {icon && <Icon name={icon} size={20} />}
+      <slot />
+      {arrow && <Icon name="arrow-right" size={18} class="btn-arrow" />}
+    </a>
+  ) : (
+    <button type={type} class:list={classes} {...rest}>
+      {icon && <Icon name={icon} size={20} />}
+      <slot />
+      {arrow && <Icon name="arrow-right" size={18} class="btn-arrow" />}
+    </button>
+  )
+}
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-width: var(--touch-min);
+    border: 1.5px solid transparent;
+    border-radius: var(--radius-button);
+    background: none;
+    font-family: var(--font);
+    font-size: var(--fs-button);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      background var(--dur-ui) var(--ease),
+      border-color var(--dur-ui) var(--ease),
+      color var(--dur-ui) var(--ease);
+  }
+
+  .btn-md {
+    height: 52px;
+    padding: 0 26px;
+  }
+
+  .btn-sm {
+    height: 44px;
+    padding: 0 18px;
+    font-size: 15px;
+  }
+
+  .btn-block {
+    width: 100%;
+  }
+
+  .btn :global(.btn-arrow) {
+    transition: transform var(--dur-ui) var(--ease);
+  }
+
+  .btn:hover :global(.btn-arrow) {
+    transform: translateX(4px);
+  }
+
+  .btn-primary {
+    background: var(--green);
+    color: var(--on-green);
+  }
+
+  .btn-primary:hover {
+    background: var(--green-hover);
+    color: var(--on-green);
+  }
+
+  .btn-accent {
+    background: var(--gold);
+    color: var(--green);
+  }
+
+  .btn-accent:hover {
+    background: var(--gold-hover);
+    color: var(--green);
+  }
+
+  .btn-accent:focus-visible,
+  .btn-outline-light:focus-visible {
+    outline-color: var(--gold);
+  }
+
+  .btn-secondary {
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(18, 59, 50, 0.06);
+  }
+
+  .btn-outline-light {
+    border-color: var(--on-green);
+    color: var(--on-green);
+  }
+
+  .btn-outline-light:hover {
+    background: rgba(248, 246, 239, 0.08);
+    color: var(--on-green);
+  }
+
+  .btn-text {
+    height: auto;
+    min-height: var(--touch-min);
+    padding: 0;
+    border: 0;
+    color: var(--green);
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0 1.5px;
+    background-repeat: no-repeat;
+    background-position: 0 calc(50% + 0.75em);
+    border-radius: 0;
+    transition: background-size var(--dur-ui) var(--ease);
+  }
+
+  .btn-text:hover {
+    background-size: 100% 1.5px;
+  }
+
+  .btn[disabled],
+  .btn[aria-disabled='true'] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+</style>

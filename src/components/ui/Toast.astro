@@ -1,0 +1,76 @@
+---
+// Site toast (brief Prompt 00-J). One per page, rendered by BaseLayout; call `showToast()` from
+// src/scripts/toast.ts to use it.
+---
+
+<div class="toast" role="status" aria-live="polite" data-toast>
+  <span data-toast-text></span>
+  <span class="toast-sep" aria-hidden="true">·</span>
+  <a class="toast-action" href="#" data-toast-action hidden></a>
+</div>
+
+<style>
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: var(--space-3);
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    max-width: calc(100vw - 2 * var(--page-x));
+    min-height: 52px;
+    padding: 12px var(--space-3);
+    border-radius: var(--radius-button);
+    background: var(--green);
+    color: var(--on-green);
+    font-size: 15px;
+    font-weight: 500;
+    box-shadow: 0 12px 32px rgba(14, 47, 40, 0.25);
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, 16px);
+    transition:
+      opacity var(--dur-ui-slow) var(--ease),
+      transform var(--dur-ui-slow) var(--ease),
+      visibility 0s linear var(--dur-ui-slow);
+  }
+
+  @media (max-width: 767px) {
+    .toast {
+      bottom: 92px; /* clear of the floating WhatsApp button */
+    }
+  }
+
+  .toast[data-open] {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+    transition:
+      opacity var(--dur-ui-slow) var(--ease),
+      transform var(--dur-ui-slow) var(--ease);
+  }
+
+  .toast-sep {
+    margin-inline: -8px;
+    color: var(--gold);
+  }
+
+  .toast-sep:has(+ [hidden]) {
+    display: none;
+  }
+
+  .toast-action {
+    color: var(--gold);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .toast-action:hover {
+    text-decoration: underline;
+  }
+
+  .toast-action:focus-visible {
+    outline-color: var(--gold);
+  }
+</style>

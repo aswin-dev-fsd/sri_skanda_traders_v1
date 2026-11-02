@@ -1,0 +1,186 @@
+---
+// The Trust Frame (brief signature touch 1): a 1.5px gold rounded frame, offset from its content,
+// open at the bottom where a small label sits in the gap. On first view the line draws itself
+// (900ms) from both sides of the gap, meeting at the top. Use at most 1–2 per screen.
+//
+// Without JavaScript it falls back to a plain CSS border behind the label.
+
+interface Props {
+  /** Text in the bottom gap, e.g. "Our showroom · Sulur, Coimbatore". */
+  label: string;
+  /** Background the frame sits on, so the label can mask the line. */
+  tone?: 'ivory' | 'green' | 'beige' | 'surface';
+  class?: string;
+}
+
+const { label, tone = 'ivory', class: className } = Astro.props;
+---
+
+<div class:list={['trust-frame', `tone-${tone}`, className]} data-trust-frame>
+  <svg class="frame-svg" aria-hidden="true" focusable="false">
+    <path class="frame-line" data-side="left"></path>
+    <path class="frame-line" data-side="right"></path>
+  </svg>
+  <div class="frame-content">
+    <slot />
+  </div>
+  <p class="frame-label">{label}</p>
+</div>
+
+<style>
+  .trust-frame {
+    --offset: 16px;
+    --frame-radius: calc(var(--radius-image) + var(--offset));
+    position: relative;
+    padding: var(--offset);
+  }
+
+  @media (max-width: 767px) {
+    .trust-frame {
+      --offset: 12px;
+    }
+  }
+
+  /* No-JS fallback: plain border; the label background masks the gap. */
+  .trust-frame::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1.5px solid var(--gold);
+    border-radius: var(--frame-radius);
+    pointer-events: none;
+  }
+
+  .trust-frame[data-ready]::before {
+    display: none;
+  }
+
+  .frame-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .frame-line {
+    fill: none;
+    stroke: var(--gold);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+  }
+
+  .frame-content {
+    position: relative;
+  }
+
+  .frame-label {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    z-index: 2;
+    max-width: calc(100% - 2 * var(--frame-radius));
+    padding: 0 16px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transform: translate(-50%, 50%);
+  }
+
+  .tone-ivory .frame-label {
+    background: var(--ivory);
+    color: var(--green);
+  }
+
+  .tone-surface .frame-label {
+    background: var(--surface);
+    color: var(--green);
+  }
+
+  .tone-beige .frame-label {
+    background: var(--beige);
+    color: var(--green);
+  }
+
+  .tone-green .frame-label {
+    background: var(--green);
+    color: var(--gold);
+  }
+
+  /* Once JS has measured the label, it leaves the gap open, so no mask is needed. */
+  .trust-frame[data-ready] .frame-label {
+    background: transparent;
+  }
+</style>
+
+<script>
+  const DRAW_MS = 900;
+  const GAP_PAD = 8;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  /** Path for one half of the frame: from the gap edge, round the bottom corner, up the side, across to top-centre. */
+  function halfPath(w: number, h: number, r: number, gapHalf: number, side: 'left' | 'right'): string {
+    const c = w / 2;
+    const i = 0.75; // half the stroke width, keeps the line inside the box
+    if (side === 'left') {
+      return `M ${c - gapHalf} ${h - i} H ${r} A ${r - i} ${r - i} 0 0 1 ${i} ${h - r} V ${r} A ${r - i} ${r - i} 0 0 1 ${r} ${i} H ${c}`;
+    }
+    return `M ${c + gapHalf} ${h - i} H ${w - r} A ${r - i} ${r - i} 0 0 0 ${w - i} ${h - r} V ${r} A ${r - i} ${r - i} 0 0 0 ${w - r} ${i} H ${c}`;
+  }
+
+  function layout(frame: HTMLElement) {
+    const { width: w, height: h } = frame.getBoundingClientRect();
+    const label = frame.querySelector<HTMLElement>('.frame-label');
+    const r = parseFloat(getComputedStyle(frame).getPropertyValue('--frame-radius')) || 32;
+    const gapHalf = Math.min((label?.offsetWidth ?? 0) / 2 + GAP_PAD, w / 2 - r);
+    frame.querySelectorAll<SVGPathElement>('.frame-line').forEach((path) => {
+      path.setAttribute('d', halfPath(w, h, r, gapHalf, path.dataset.side as 'left' | 'right'));
+    });
+  }
+
+  function draw(frame: HTMLElement) {
+    frame.querySelectorAll<SVGPathElement>('.frame-line').forEach((path) => {
+      const length = path.getTotalLength();
+      path.style.strokeDasharray = `${length}`;
+      path.animate([{ strokeDashoffset: length }, { strokeDashoffset: 0 }], {
+        duration: reduceMotion.matches ? 0 : DRAW_MS,
+        easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        fill: 'both',
+      });
+    });
+  }
+
+  const frames = [...document.querySelectorAll<HTMLElement>('[data-trust-frame]')];
+  const resizer = new ResizeObserver((entries) => entries.forEach((e) => layout(e.target as HTMLElement)));
+
+  const viewer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        draw(entry.target as HTMLElement);
+        viewer.unobserve(entry.target);
+      });
+    },
+    { threshold: 0.3 },
+  );
+
+  frames.forEach((frame) => {
+    layout(frame);
+    // Hide the lines until they draw, so nothing flashes before the animation.
+    frame.querySelectorAll<SVGPathElement>('.frame-line').forEach((path) => {
+      const length = path.getTotalLength();
+      path.style.strokeDasharray = `${length}`;
+      path.style.strokeDashoffset = `${length}`;
+    });
+    frame.setAttribute('data-ready', '');
+    resizer.observe(frame);
+    viewer.observe(frame);
+  });
+</script>

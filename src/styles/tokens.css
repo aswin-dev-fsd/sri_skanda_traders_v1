@@ -19,6 +19,7 @@
   --green-hover: #0e2f28;
   --gold-hover: #c29e2c;
   --on-green: #f8f6ef;
+  --error: #9b3b2a; /* form errors only; not in the brief palette, pending approval */
 
   /* Type */
   --font: 'Poppins', Arial, sans-serif;

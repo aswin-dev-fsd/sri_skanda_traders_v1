@@ -1,0 +1,65 @@
+---
+// Save-to-My-Selection star (brief signature touch 7), 44px hit area.
+// Carries the item as JSON in `data-item`; the toggle, pop, fly-to-header and toast arrive in task 5.
+import Icon from '@/components/ui/Icon.astro';
+import type { SelectionItem } from '@/lib/types';
+
+interface Props {
+  item: SelectionItem;
+  saved?: boolean;
+  class?: string;
+}
+
+const { item, saved = false, class: className } = Astro.props;
+---
+
+<button
+  type="button"
+  class:list={['save-star', className]}
+  aria-pressed={String(saved)}
+  aria-label={`Save ${item.name}${item.colour ? `, ${item.colour}` : ''} to My Selection`}
+  data-save
+  data-item={JSON.stringify(item)}
+>
+  <Icon name="star" size={22} class="star-outline" />
+  <Icon name="star" size={22} filled class="star-filled" />
+</button>
+
+<style>
+  .save-star {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 253, 248, 0.92);
+    color: var(--green);
+    box-shadow: 0 2px 8px rgba(18, 59, 50, 0.12);
+    transition: transform var(--dur-ui) var(--ease);
+  }
+
+  .save-star:hover {
+    transform: scale(1.06);
+  }
+
+  .save-star :global(svg) {
+    grid-area: 1 / 1;
+  }
+
+  .save-star :global(.star-filled) {
+    color: var(--gold);
+    opacity: 0;
+    transition: opacity var(--dur-ui) var(--ease);
+  }
+
+  .save-star[aria-pressed='true'] :global(.star-filled) {
+    opacity: 1;
+  }
+
+  .save-star[aria-pressed='true'] :global(.star-outline) {
+    color: var(--gold);
+  }
+</style>
