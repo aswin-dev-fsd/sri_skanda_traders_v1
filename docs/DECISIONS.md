@@ -28,7 +28,7 @@ When a decision changes, edit it here and note the change in that day's changelo
 | Catalogue format | One YAML file per collection/product, in Astro content collections, validated by a schema (a missing field fails the build). Tiles in `src/content/tiles/`, products in `src/content/products/`, brands in `src/content/brands.yaml`; allowed filter values in `src/config/catalogue.ts`. How-to: [`CATALOGUE.md`](CATALOGUE.md). |
 | Placeholder catalogue | 16 tile collections (4–6 colours each, spread across all spaces, looks and finishes), 8 bathware products (some Johnson, to show the "Authorised Dealer" tag), 4 granite, 2 JSW adhesives. All fictional names, marked `placeholder: true`; brands are `Brand A`–`Brand E` plus the real Johnson and JSW. The launch check lists every placeholder entry. |
 | Images | Stored in the repo and optimised by Astro at build time. |
-| Temporary images | AI-generated stand-ins for the Home hero "Try a floor" (one living room, 3 floor variants), the Home before/after slider, and 2–3 demo collections. Everything else uses grey labelled boxes, e.g. `[PHOTO: living room, light floor]`. The developer writes the prompts, the user generates the images. All temporary images live in `src/assets/_temp/`. |
+| Temporary images | Prompts and file names: [`IMAGE-PROMPTS.md`](IMAGE-PROMPTS.md); a missing file shows a placeholder. AI-generated stand-ins for the Home hero "Try a floor" (one living room, 3 floor variants), the Home before/after slider, and 2–3 demo collections. Everything else uses grey labelled boxes, e.g. `[PHOTO: living room, light floor]`. The developer writes the prompts, the user generates the images. All temporary images live in `src/assets/_temp/`. |
 | Business details | Phone, WhatsApp number, email, address, hours and map link are placeholders in `src/config/site.ts`. |
 | Launch guard | `scripts/check-launch.mjs` lists every `[PLACEHOLDER]` value in `src/config/site.ts` and every `_temp/` reference in `src/`. `npm run build` only warns. It fails with `npm run build:launch`, or when `LAUNCH_CHECK=strict` is set (add it to Vercel's Production environment at launch; see `DEPLOYMENT.md`). Changed 2026-11-02: it originally failed every Vercel production deploy, which blocked pre-launch deploys from `main`. |
 | Feature flags | One place: `src/config/site.ts`. |
@@ -58,6 +58,13 @@ All routes live in `routes` in `src/config/site.ts`.
 | Granite / Adhesives | `/granite`, `/adhesives` |
 | Tile collection / product detail | `/collection/[slug]`, `/product/[slug]` |
 | Other pages | `/visualizer`, `/my-selection`, `/gallery`, `/about`, `/contact`, `/privacy`, `/terms` |
+
+## Home page
+
+- The hero image sits inside the content width (as in the reference mockup) rather than bleeding to the right edge.
+- The hero is side by side from 1024px so the showroom tablet in landscape sees the headline without scrolling.
+- Brand links go to `/products?brand=<id>`; until logo files arrive, brands show as green wordmarks.
+- The Visit section's "Request a call back" sends a WhatsApp message, like every other form.
 
 ## Internal pages
 
@@ -108,8 +115,8 @@ Status is updated in the same commit that finishes each task (the commit hash is
 | 2 | Shared shell: header (with mega menu), footer, floating WhatsApp button | ✅ Done · `83f0927` |
 | 3 | Shared components: buttons, chips, cards, toast, Trust Frame | ✅ Done · `c30673b` |
 | 4 | Catalogue schema plus placeholder data | ✅ Done · `7ba9260` |
-| 5 | My Selection store and drawer, enquiry drawer | ✅ Done |
-| 6 | Home page, section by section | 🔨 In progress |
+| 5 | My Selection store and drawer, enquiry drawer | ✅ Done · `13c56eb` |
+| 6 | Home page, section by section | ✅ Done |
 | 7 | Products listing with filters | ⬜ To do |
 | 8 | Collection page, plus the bathware variant | ⬜ To do |
 | 9 | 3D Visualizer page | ⬜ To do |

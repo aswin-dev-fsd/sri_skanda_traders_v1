@@ -1,0 +1,300 @@
+---
+// Home 01 — Hero (brief Prompt 01). Text left, room photo right inside the Trust Frame, with the
+// "Try a floor" chips: tapping one cross-fades (600ms) the same room to that floor.
+import { Image } from 'astro:assets';
+import Button from '@/components/ui/Button.astro';
+import Icon from '@/components/ui/Icon.astro';
+import PhotoPlaceholder from '@/components/ui/PhotoPlaceholder.astro';
+import TileReveal from '@/components/ui/TileReveal.astro';
+import TrustFrame from '@/components/ui/TrustFrame.astro';
+import { heroFloors } from '@/config/home';
+import { features, routes } from '@/config/site';
+import { tempImage } from '@/lib/temp-images';
+
+const floors = heroFloors.map((f) => ({ ...f, src: tempImage(f.image) }));
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-inner container">
+    <div class="copy">
+      <p class="eyebrow rise">Tiles · Granite · Bathware</p>
+      <h1 id="hero-title" class="rise" style="--i: 1">Tiles you'll love living with.</h1>
+      <p class="body-lg rise" style="--i: 2">
+        Floor and wall tiles, granite and bathware from brands you trust, chosen with honest advice at our showroom in
+        Sulur, Coimbatore.
+      </p>
+      <div class="buttons rise" style="--i: 3">
+        <Button href={routes.products} arrow>Explore Products</Button>
+        {features.visualizer && <Button variant="secondary" href={routes.visualizer}>Try 3D Visualizer</Button>}
+      </div>
+      <p class="trust-line small rise" style="--i: 4">
+        <span>Every size, every brand</span>
+        <span class="dot" aria-hidden="true"></span>
+        <span>Free delivery</span>
+        <span class="dot" aria-hidden="true"></span>
+        <span>Laying support</span>
+      </p>
+    </div>
+
+    <div class="visual rise" style="--i: 2">
+      <TrustFrame label="Our showroom · Sulur, Coimbatore">
+        <TileReveal class="photo">
+          <div class="floors" data-hero-floors data-floor="0">
+            {
+              floors.map((f, i) => (
+                <div class="floor" data-floor-layer={i} aria-hidden={i === 0 ? undefined : 'true'}>
+                  {f.src ? (
+                    <Image
+                      src={f.src}
+                      alt={`Living room with a ${f.name} floor`}
+                      widths={[640, 960, 1280, 1600]}
+                      sizes="(min-width: 1200px) 760px, 100vw"
+                      loading={i === 0 ? 'eager' : 'lazy'}
+                      fetchpriority={i === 0 ? 'high' : 'auto'}
+                    />
+                  ) : (
+                    <PhotoPlaceholder label={`living room with a ${f.name} floor`} face={f.placeholder} />
+                  )}
+                </div>
+              ))
+            }
+          </div>
+
+          <div class="try" role="group" aria-label="Try a floor">
+            <span class="try-label">Try a floor</span>
+            <div class="try-chips">
+              {
+                floors.map((f, i) => (
+                  <button
+                    type="button"
+                    class="try-chip"
+                    style={`background: ${f.chip}`}
+                    aria-pressed={i === 0 ? 'true' : 'false'}
+                    aria-label={`${f.name} floor`}
+                    data-floor-chip={i}
+                  />
+                ))
+              }
+            </div>
+            {
+              features.visualizer && (
+                <a class="try-more" href={routes.visualizer} data-try-more>
+                  See more in 3D <Icon name="arrow-right" size={16} />
+                </a>
+              )
+            }
+          </div>
+        </TileReveal>
+      </TrustFrame>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-block: var(--space-6) var(--space-12);
+  }
+
+  .hero-inner {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .copy {
+    display: grid;
+    align-content: center;
+    gap: var(--space-3);
+    order: 2;
+  }
+
+  .visual {
+    order: 1;
+  }
+
+  /* Side by side from 1024px, so the showroom tablet (landscape) sees the headline at once. */
+  @media (min-width: 1024px) {
+    .hero {
+      display: grid;
+      align-items: center;
+      min-height: max(640px, calc(100vh - var(--header-h)));
+      padding-block: var(--space-6) var(--space-8);
+    }
+
+    .hero-inner {
+      grid-template-columns: 5fr 7fr;
+      align-items: center;
+      gap: var(--space-8);
+    }
+
+    .copy,
+    .visual {
+      order: 0;
+    }
+  }
+
+  .copy h1 {
+    max-width: 12ch;
+  }
+
+  .copy p {
+    max-width: 48ch;
+  }
+
+  .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .trust-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    color: var(--muted);
+  }
+
+  .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+
+  .visual :global(.photo) {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: var(--radius-image);
+  }
+
+  @media (min-width: 768px) {
+    .visual :global(.photo) {
+      aspect-ratio: 7 / 5;
+    }
+  }
+
+  .floors,
+  .floor {
+    position: absolute;
+    inset: 0;
+  }
+
+  .floor {
+    opacity: 0;
+    transition: opacity var(--dur-reveal) var(--ease);
+  }
+
+  .floor :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  [data-floor='0'] [data-floor-layer='0'],
+  [data-floor='1'] [data-floor-layer='1'],
+  [data-floor='2'] [data-floor-layer='2'] {
+    opacity: 1;
+  }
+
+  .try {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    z-index: 2;
+    display: grid;
+    gap: 8px;
+    padding: 12px;
+    border-radius: var(--radius-button);
+    background: rgba(255, 253, 248, 0.92);
+    box-shadow: 0 4px 16px rgba(18, 59, 50, 0.12);
+  }
+
+  @media (max-width: 767px) {
+    .try {
+      left: 10px;
+      bottom: 10px;
+      gap: 6px;
+      padding: 8px 10px;
+    }
+
+    .try-chip {
+      width: 40px !important;
+      height: 40px !important;
+    }
+  }
+
+  .try-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green);
+  }
+
+  .try-chips {
+    display: flex;
+    gap: 10px;
+  }
+
+  .try-chip {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 2px solid var(--surface);
+    border-radius: 0 12px 0 0;
+    box-shadow: 0 0 0 1px var(--beige);
+    transition:
+      transform var(--dur-ui) var(--ease),
+      box-shadow var(--dur-ui) var(--ease);
+  }
+
+  .try-chip:hover {
+    transform: translateY(-3px);
+  }
+
+  .try-chip[aria-pressed='true'] {
+    box-shadow: 0 0 0 2px var(--gold);
+  }
+
+  .try-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 32px;
+    color: var(--green);
+    font-size: var(--fs-small);
+    font-weight: 600;
+    text-decoration: none;
+    opacity: 0;
+    transform: translateY(4px);
+    pointer-events: none;
+    transition:
+      opacity var(--dur-ui-slow) var(--ease),
+      transform var(--dur-ui-slow) var(--ease);
+  }
+
+  :global([data-tried]) .try-more {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-hero-floors]').forEach((floors) => {
+    const photo = floors.parentElement;
+    photo?.querySelectorAll<HTMLButtonElement>('[data-floor-chip]').forEach((chip) => {
+      chip.addEventListener('click', () => {
+        const index = chip.dataset.floorChip ?? '0';
+        floors.dataset.floor = index;
+        floors.querySelectorAll<HTMLElement>('[data-floor-layer]').forEach((layer) => {
+          if (layer.dataset.floorLayer === index) layer.removeAttribute('aria-hidden');
+          else layer.setAttribute('aria-hidden', 'true');
+        });
+        photo.querySelectorAll('[data-floor-chip]').forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+        photo.setAttribute('data-tried', '');
+      });
+    });
+  });
+</script>

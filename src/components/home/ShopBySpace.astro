@@ -1,0 +1,242 @@
+---
+// Home 03 — Shop by space: horizontal scroller of 7 portrait cards on the grout-line grid, with
+// prev/next buttons and a thin gold progress line. Each card opens tiles for that space.
+import Icon from '@/components/ui/Icon.astro';
+import PhotoPlaceholder from '@/components/ui/PhotoPlaceholder.astro';
+import { routes, spaces } from '@/config/site';
+import { countBySpace } from '@/lib/catalogue';
+
+const counts = await countBySpace();
+const faces: Record<string, string> = {
+  'living-room': 'linear-gradient(118deg, #F3EEE5 0%, #E1D7C5 45%, #EFE9DE 60%, #D6CAB3 100%)',
+  bedroom: 'repeating-linear-gradient(90deg, #C29A72 0 46px, #A98059 46px 48px)',
+  kitchen: 'repeating-linear-gradient(0deg, #F2EFE8 0 26px, #D8D1C3 26px 28px)',
+  bathroom: 'linear-gradient(#D3CDBF 2px, transparent 2px) 0 0 / 40px 40px, linear-gradient(90deg, #D3CDBF 2px, transparent 2px) 0 0 / 40px 40px, #ECE9E2',
+  parking: 'linear-gradient(#8A8984 2px, transparent 2px) 0 0 / 80px 80px, linear-gradient(90deg, #8A8984 2px, transparent 2px) 0 0 / 80px 80px, #A3A29D',
+  elevation: 'repeating-linear-gradient(0deg, #B9AE9A 0 18px, #A39782 18px 20px)',
+  outdoor: 'linear-gradient(#9C7E62 2px, transparent 2px) 0 0 / 60px 60px, linear-gradient(90deg, #9C7E62 2px, transparent 2px) 0 0 / 60px 60px, #B79A7A',
+};
+---
+
+<section class="section grout-bg" aria-labelledby="space-title">
+  <div class="container">
+    <div class="head" data-reveal>
+      <div class="head-text">
+        <p class="eyebrow">03 — Shop by space</p>
+        <h2 id="space-title">Find tiles for every room.</h2>
+      </div>
+      <div class="controls">
+        <button type="button" class="nav-btn" aria-label="Previous rooms" data-space-prev>
+          <Icon name="arrow-right" size={20} class="flip" />
+        </button>
+        <button type="button" class="nav-btn" aria-label="Next rooms" data-space-next>
+          <Icon name="arrow-right" size={20} />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroller" data-space-scroller tabindex="0" aria-label="Rooms">
+    <ul class="track">
+      {
+        spaces.map((space) => (
+          <li class="space-card">
+            <a href={`${routes.tiles}/${space.slug}`} class="space-link">
+              <span class="photo">
+                <PhotoPlaceholder label={`${space.name.toLowerCase()} with tiles`} face={faces[space.slug]} />
+              </span>
+              <span class="text">
+                <span class="name">{space.name}</span>
+                <span class="count small">
+                  {counts[space.slug] ?? 0} {counts[space.slug] === 1 ? 'collection' : 'collections'}
+                </span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <div class="container">
+    <div class="progress" aria-hidden="true"><span data-space-progress></span></div>
+  </div>
+</section>
+
+<style>
+  /* Grout-line grid (signature touch 2): 1px Stone Beige at 40%, 96px squares. */
+  .grout-bg {
+    background-color: var(--ivory);
+    background-image:
+      linear-gradient(rgba(231, 226, 214, 0.4) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(231, 226, 214, 0.4) 1px, transparent 1px);
+    background-size: 96px 96px;
+  }
+
+  .head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);
+  }
+
+  .head-text {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .controls {
+    display: none;
+    gap: 12px;
+  }
+
+  @media (min-width: 768px) {
+    .controls {
+      display: flex;
+    }
+  }
+
+  .nav-btn {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border: 1.5px solid var(--green);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--green);
+    transition: background var(--dur-ui) var(--ease);
+  }
+
+  .nav-btn:hover {
+    background: rgba(18, 59, 50, 0.06);
+  }
+
+  .nav-btn[disabled] {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  .nav-btn :global(.flip) {
+    transform: rotate(180deg);
+  }
+
+  .scroller {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: max(var(--page-x), calc((100vw - var(--content-max)) / 2));
+    scrollbar-width: none;
+  }
+
+  .scroller::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scroller:focus-visible {
+    outline-offset: -2px;
+  }
+
+  .track {
+    display: flex;
+    gap: var(--gutter);
+    width: max-content;
+    margin: 0;
+    padding: 4px max(var(--page-x), calc((100vw - var(--content-max)) / 2));
+    list-style: none;
+  }
+
+  .space-card {
+    width: clamp(220px, 70vw, 280px);
+    scroll-snap-align: start;
+  }
+
+  .space-link {
+    position: relative;
+    display: block;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    border-radius: var(--radius-image);
+    color: var(--on-green);
+    text-decoration: none;
+  }
+
+  .photo {
+    position: absolute;
+    inset: 0;
+    transition: transform var(--dur-reveal) var(--ease);
+  }
+
+  .space-link:hover .photo {
+    transform: scale(1.04);
+  }
+
+  .space-link::after {
+    content: '';
+    position: absolute;
+    inset: 45% 0 0;
+    background: linear-gradient(180deg, rgba(18, 59, 50, 0) 0%, rgba(18, 59, 50, 0.7) 100%);
+  }
+
+  .text {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 1;
+    display: grid;
+    gap: 2px;
+    padding: var(--space-3);
+  }
+
+  .name {
+    font-size: var(--fs-h3);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .count {
+    color: var(--muted-on-green);
+  }
+
+  .progress {
+    height: 2px;
+    margin-top: var(--space-4);
+    background: var(--beige);
+    overflow: hidden;
+  }
+
+  .progress span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--gold);
+    transform-origin: left;
+    transform: scaleX(0.2);
+    transition: transform 120ms linear;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-space-scroller]').forEach((scroller) => {
+    const section = scroller.closest('section');
+    const bar = section?.querySelector<HTMLElement>('[data-space-progress]');
+    const prev = section?.querySelector<HTMLButtonElement>('[data-space-prev]');
+    const next = section?.querySelector<HTMLButtonElement>('[data-space-next]');
+    const step = () => (scroller.querySelector('.space-card')?.getBoundingClientRect().width ?? 280) + 24;
+
+    const update = () => {
+      const max = scroller.scrollWidth - scroller.clientWidth;
+      const visible = scroller.clientWidth / scroller.scrollWidth;
+      const progress = max > 0 ? scroller.scrollLeft / max : 1;
+      if (bar) bar.style.transform = `scaleX(${visible + (1 - visible) * progress})`;
+      if (prev) prev.disabled = scroller.scrollLeft <= 2;
+      if (next) next.disabled = scroller.scrollLeft >= max - 2;
+    };
+
+    prev?.addEventListener('click', () => scroller.scrollBy({ left: -step(), behavior: 'smooth' }));
+    next?.addEventListener('click', () => scroller.scrollBy({ left: step(), behavior: 'smooth' }));
+    scroller.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  });
+</script>

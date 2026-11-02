@@ -1,0 +1,200 @@
+---
+// Home 05 — Trending: tabs (New arrivals · Floor · Wall · Bathroom) over 8 collection cards.
+// 4 x 2 on desktop, 2 columns on tablet, a horizontal swipe row on phones. Tabs fade (250ms).
+import Button from '@/components/ui/Button.astro';
+import CollectionCard from '@/components/cards/CollectionCard.astro';
+import { routes } from '@/config/site';
+import { getTiles, type TileSummary } from '@/lib/catalogue';
+
+const all = await getTiles();
+const trendingFirst = (list: TileSummary[]) =>
+  [...list].sort((a, b) => Number(b.entry.data.isTrending) - Number(a.entry.data.isTrending)).slice(0, 8);
+
+const tabs = [
+  { id: 'new', label: 'New arrivals', items: trendingFirst(all.filter((t) => t.entry.data.isNew)) },
+  { id: 'floor', label: 'Floor', items: trendingFirst(all.filter((t) => t.entry.data.categories.includes('floor'))) },
+  { id: 'wall', label: 'Wall', items: trendingFirst(all.filter((t) => t.entry.data.categories.includes('wall'))) },
+  { id: 'bathroom', label: 'Bathroom', items: trendingFirst(all.filter((t) => t.entry.data.spaces.includes('bathroom'))) },
+];
+const roomName = (slug: string) => slug.replace('-', ' ');
+---
+
+<section class="section" aria-labelledby="trending-title">
+  <div class="container">
+    <div class="head" data-reveal>
+      <p class="eyebrow">05 — Trending</p>
+      <h2 id="trending-title">Collections people are choosing now.</h2>
+      <div class="tabs" role="tablist" aria-label="Trending collections">
+        {
+          tabs.map((tab, i) => (
+            <button
+              type="button"
+              role="tab"
+              class="tab"
+              id={`trend-tab-${tab.id}`}
+              aria-controls={`trend-panel-${tab.id}`}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              tabindex={i === 0 ? 0 : -1}
+              data-trend-tab
+            >
+              {tab.label}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+
+    {
+      tabs.map((tab, i) => (
+        <div
+          class="panel"
+          role="tabpanel"
+          id={`trend-panel-${tab.id}`}
+          aria-labelledby={`trend-tab-${tab.id}`}
+          hidden={i !== 0}
+          data-trend-panel
+        >
+          <ul class="grid">
+            {tab.items.map((t, n) => (
+              <li data-reveal style={`--i: ${n % 4}`}>
+                <CollectionCard
+                  id={t.entry.id}
+                  href={t.href}
+                  brand={t.brand.name}
+                  name={t.entry.data.name}
+                  colours={t.colours}
+                  finishes={t.finishes}
+                  sizes={t.sizes}
+                  dots={t.dots}
+                  tileFace={t.dots[0]}
+                  badge={t.entry.data.isNew ? 'New' : t.entry.data.isTrending ? 'Trending' : undefined}
+                  roomLabel={`${roomName(t.entry.data.spaces[0])} with ${t.entry.data.name} tiles`}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+
+    <div class="more">
+      <Button variant="text" href={routes.tiles} arrow>View all collections</Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .head {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: var(--space-2);
+  }
+
+  .tab {
+    min-height: 44px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: var(--radius-chip);
+    background: var(--beige);
+    color: var(--green);
+    font-size: 15px;
+    font-weight: 500;
+    transition:
+      background var(--dur-ui) var(--ease),
+      color var(--dur-ui) var(--ease);
+  }
+
+  .tab[aria-selected='true'] {
+    background: var(--green);
+    color: var(--on-green);
+  }
+
+  .panel:not([hidden]) {
+    animation: panel-in 250ms var(--ease);
+  }
+
+  @keyframes panel-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  .grid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(260px, 78vw);
+    gap: var(--gutter);
+    margin: 0 calc(-1 * var(--page-x));
+    padding: 4px var(--page-x) var(--space-2);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--page-x);
+    list-style: none;
+    scrollbar-width: none;
+  }
+
+  .grid > li {
+    scroll-snap-align: start;
+  }
+
+  @media (min-width: 768px) {
+    .grid {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-columns: auto;
+      row-gap: var(--space-6);
+      margin: 0;
+      padding: 0;
+      overflow: visible;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .more {
+    margin-top: var(--space-4);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[role="tablist"]').forEach((list) => {
+    const tabs = [...list.querySelectorAll<HTMLButtonElement>('[data-trend-tab]')];
+    if (!tabs.length) return;
+
+    const select = (tab: HTMLButtonElement) => {
+      tabs.forEach((t) => {
+        const on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        const panel = document.getElementById(t.getAttribute('aria-controls') ?? '');
+        if (panel) {
+          panel.hidden = !on;
+          // Cards in a newly shown panel skip the scroll reveal: the tab fade is enough.
+          if (on) panel.querySelectorAll('[data-reveal]').forEach((el) => el.setAttribute('data-revealed', ''));
+        }
+      });
+    };
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => select(tab));
+      tab.addEventListener('keydown', (event) => {
+        const move = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
+        if (!move) return;
+        const next = tabs[(i + move + tabs.length) % tabs.length];
+        next.focus();
+        select(next);
+      });
+    });
+  });
+</script>

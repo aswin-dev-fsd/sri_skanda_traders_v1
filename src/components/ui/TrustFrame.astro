@@ -39,6 +39,12 @@ const { label, tone = 'ivory', class: className } = Astro.props;
     .trust-frame {
       --offset: 12px;
     }
+
+    .trust-frame .frame-label {
+      padding: 0 10px;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+    }
   }
 
   /* No-JS fallback: plain border; the label background masks the gap. */

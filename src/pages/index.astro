@@ -1,16 +1,29 @@
 ---
-// Temporary Home: replaced by the real Home page in task 6.
+// Home (brief Prompt 01): exactly 9 sections, then the shared footer.
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import Button from '@/components/ui/Button.astro';
+import Hero from '@/components/home/Hero.astro';
+import ShopByCategory from '@/components/home/ShopByCategory.astro';
+import ShopBySpace from '@/components/home/ShopBySpace.astro';
+import VisualizerBand from '@/components/home/VisualizerBand.astro';
+import Trending from '@/components/home/Trending.astro';
+import WhySriSkanda from '@/components/home/WhySriSkanda.astro';
+import Brands from '@/components/home/Brands.astro';
+import RealHomes from '@/components/home/RealHomes.astro';
+import VisitShowroom from '@/components/home/VisitShowroom.astro';
+import { features } from '@/config/site';
 ---
 
-<BaseLayout description="Tiles, granite and bathware showroom in Sulur, Coimbatore." noindex>
-  <section class="section">
-    <div class="container" style="display: grid; gap: var(--space-3)">
-      <p class="eyebrow">Tiles · Granite · Bathware</p>
-      <h1>Tiles you'll love living with.</h1>
-      <p class="body-lg muted">The Home page is built in task 6. Until then, the styleguide shows the shared parts.</p>
-      <div><Button href="/styleguide" arrow>Open the styleguide</Button></div>
-    </div>
-  </section>
+<BaseLayout
+  description="Floor and wall tiles, granite and bathware from brands you trust, with honest advice at our showroom in Sulur, Coimbatore."
+  whatsappTopic="your tiles and bathware"
+>
+  <Hero />
+  <ShopByCategory />
+  <ShopBySpace />
+  {features.visualizer && <VisualizerBand />}
+  <Trending />
+  <WhySriSkanda />
+  <Brands />
+  <RealHomes />
+  <VisitShowroom />
 </BaseLayout>

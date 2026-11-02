@@ -1,0 +1,185 @@
+---
+// Home 09 — Visit our showroom (Stone Beige band): map left, showroom card in the Trust Frame
+// right, with a 3-field "Request a call back" form that sends over WhatsApp.
+import Button from '@/components/ui/Button.astro';
+import Field from '@/components/ui/Field.astro';
+import PhotoPlaceholder from '@/components/ui/PhotoPlaceholder.astro';
+import TrustFrame from '@/components/ui/TrustFrame.astro';
+import { business } from '@/config/site';
+import { interests } from '@/lib/enquiry';
+import { hrefOrHash, whatsappUrl } from '@/lib/links';
+---
+
+<section class="section visit" aria-labelledby="visit-title">
+  <div class="inner container">
+    <div class="map" data-reveal>
+      <PhotoPlaceholder label="MAP: muted styled map of Sulur with a green pin" face="#DCD7CB" />
+    </div>
+
+    <div data-reveal style="--i: 1">
+      <TrustFrame label={business.location} tone="beige">
+        <div class="card">
+          <h3 id="visit-title">Visit our showroom</h3>
+          <dl class="details">
+            <div>
+              <dt class="visually-hidden">Address</dt>
+              <dd>{business.address}, {business.location}</dd>
+            </div>
+            <div>
+              <dt class="visually-hidden">Opening hours</dt>
+              <dd>{business.hours}</dd>
+            </div>
+            <div>
+              <dt class="visually-hidden">Phone</dt>
+              <dd class="tabular">{business.phone}</dd>
+            </div>
+          </dl>
+          <div class="buttons">
+            <Button href={hrefOrHash(business.mapsUrl)} arrow>Get directions</Button>
+            <Button variant="secondary" href={whatsappUrl('visiting your showroom')} icon="whatsapp" target="_blank" rel="noopener">
+              WhatsApp us
+            </Button>
+          </div>
+
+          <form class="callback" novalidate data-callback>
+            <p class="callback-title">Or we'll call you</p>
+            <Field label="Name" name="name" id="cb-name" required autocomplete="name" />
+            <Field label="Phone" name="phone" id="cb-phone" type="tel" prefix="+91" required autocomplete="tel-national" />
+            <div class="select-field">
+              <label for="cb-interest">Interested in</label>
+              <select id="cb-interest" name="interest">
+                <option value="">Anything</option>
+                {interests.map((i) => <option>{i}</option>)}
+              </select>
+            </div>
+            <Button type="submit" block>Request a call back</Button>
+            <p class="small muted" data-callback-done hidden role="status"></p>
+          </form>
+        </div>
+      </TrustFrame>
+    </div>
+  </div>
+</section>
+
+<style>
+  .visit {
+    background: var(--beige);
+  }
+
+  .inner {
+    display: grid;
+    gap: var(--space-6);
+    align-items: stretch;
+  }
+
+  @media (min-width: 1200px) {
+    .inner {
+      grid-template-columns: 7fr 5fr;
+      gap: var(--space-8);
+    }
+  }
+
+  .map {
+    min-height: 320px;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+  }
+
+  .card {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border-radius: var(--radius-card);
+    background: var(--ivory);
+  }
+
+  .details {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+  }
+
+  .details dd {
+    margin: 0;
+  }
+
+  .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .callback {
+    display: grid;
+    gap: var(--space-2);
+    padding-top: var(--space-3);
+    border-top: var(--border);
+  }
+
+  .callback-title {
+    font-weight: 600;
+    color: var(--green);
+  }
+
+  .select-field {
+    display: grid;
+    gap: 6px;
+  }
+
+  .select-field label {
+    font-size: var(--fs-small);
+    font-weight: 500;
+    color: var(--green);
+  }
+
+  select {
+    height: 52px;
+    padding: 0 var(--space-2);
+    border: var(--border);
+    border-radius: var(--radius-input);
+    background: var(--surface);
+    font-size: var(--fs-body);
+  }
+
+  select:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 0;
+  }
+
+  [data-callback-done]:not([hidden]) {
+    color: var(--green);
+  }
+</style>
+
+<script>
+  import { buildEnquiryMessage, validateEnquiry, whatsappLink } from '@/lib/enquiry';
+
+  document.querySelectorAll<HTMLFormElement>('[data-callback]').forEach((form) => {
+    const setError = (id: string, message?: string) => {
+      document.getElementById(id)?.closest('[data-field]')?.toggleAttribute('data-invalid', !!message);
+      const error = document.getElementById(`${id}-error`);
+      if (error) error.textContent = message ?? '';
+    };
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const data = new FormData(form);
+      const enquiry = {
+        name: String(data.get('name') ?? ''),
+        phone: String(data.get('phone') ?? ''),
+        interests: data.get('interest') ? [String(data.get('interest'))] : [],
+        message: 'Please call me back.',
+      };
+      const errors = validateEnquiry(enquiry);
+      setError('cb-name', errors.name);
+      setError('cb-phone', errors.phone);
+      if (errors.name || errors.phone) return;
+      window.open(whatsappLink(buildEnquiryMessage(enquiry)), '_blank', 'noopener');
+      const done = form.querySelector<HTMLElement>('[data-callback-done]');
+      if (done) {
+        done.hidden = false;
+        done.textContent = `Thank you, ${enquiry.name.trim().split(/\s+/)[0]}. Press send in WhatsApp and we'll call you soon.`;
+      }
+    });
+  });
+</script>

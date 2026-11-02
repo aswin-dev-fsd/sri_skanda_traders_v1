@@ -1,0 +1,244 @@
+---
+// Home 02 — Shop by category: a 4-column bento "laid like tiles", with 8px Stone Beige grout gaps.
+import Icon from '@/components/ui/Icon.astro';
+import PhotoPlaceholder from '@/components/ui/PhotoPlaceholder.astro';
+import { routes } from '@/config/site';
+
+const cards = [
+  {
+    title: 'Tiles',
+    href: routes.tiles,
+    size: 'large',
+    photo: 'living room with large-format floor tiles',
+    face: '#DCD2C0',
+    links: [
+      { label: 'Floor', href: routes.floorTiles },
+      { label: 'Wall', href: routes.wallTiles },
+      { label: 'Vitrified', href: routes.vitrifiedTiles },
+    ],
+  },
+  {
+    title: 'Bathware',
+    href: routes.bathware,
+    size: 'wide',
+    sub: 'Sanitary ware, faucets, accessories',
+    photo: 'bathroom with wall-hung WC and basin',
+    face: '#D7DCDB',
+  },
+  { title: 'Granite', href: routes.granite, size: 'small', photo: 'granite kitchen top', face: '#6E6A64' },
+  {
+    title: 'Adhesives',
+    href: routes.adhesives,
+    size: 'small',
+    photo: 'tile adhesive being applied',
+    face: '#BDB7AC',
+    tag: 'JSW Authorised Dealer',
+  },
+];
+---
+
+<section class="section" aria-labelledby="category-title">
+  <div class="container">
+    <div class="head" data-reveal>
+      <p class="eyebrow">02 — Shop by category</p>
+      <h2 id="category-title">Start with what you need.</h2>
+    </div>
+
+    <div class="bento">
+      {
+        cards.map((card, i) => (
+          <article class:list={['cell', card.size]} data-reveal style={`--i: ${i}`}>
+            <div class="photo">
+              <PhotoPlaceholder label={card.photo} face={card.face} />
+            </div>
+            {card.tag && <span class="tag">{card.tag}</span>}
+            <div class="text">
+              <h3>
+                <a href={card.href} class="cell-link">
+                  {card.title}
+                  <Icon name="arrow-right" size={22} class="arrow" />
+                </a>
+              </h3>
+              {card.sub && <p class="small sub">{card.sub}</p>}
+              {card.links && (
+                <ul class="links">
+                  {card.links.map((link) => (
+                    <li>
+                      <a href={link.href}>{link.label}</a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .head {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+  }
+
+  .bento {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 8px;
+    border-radius: var(--radius-card);
+    background: var(--beige);
+  }
+
+  .cell {
+    position: relative;
+    overflow: hidden;
+    min-height: 220px;
+    border-radius: 14px;
+    background: var(--beige);
+  }
+
+  .large {
+    grid-column: span 2;
+    min-height: 360px;
+  }
+
+  .wide {
+    grid-column: span 2;
+  }
+
+  @media (min-width: 900px) {
+    .bento {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-auto-rows: 260px;
+    }
+
+    .large {
+      grid-row: span 2;
+      min-height: 0;
+    }
+
+    .cell {
+      min-height: 0;
+    }
+  }
+
+  .photo {
+    position: absolute;
+    inset: 0;
+    transition: transform var(--dur-reveal) var(--ease);
+  }
+
+  .cell:hover .photo {
+    transform: scale(1.04);
+  }
+
+  /* Soft green gradient for legible text on photos (#123B32 0% → 70%). */
+  .cell::after {
+    content: '';
+    position: absolute;
+    inset: 40% 0 0;
+    background: linear-gradient(180deg, rgba(18, 59, 50, 0) 0%, rgba(18, 59, 50, 0.7) 100%);
+    pointer-events: none;
+  }
+
+  .text {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 1;
+    display: grid;
+    gap: 10px;
+    padding: var(--space-3);
+    color: var(--on-green);
+  }
+
+  h3 {
+    color: var(--on-green);
+    font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+  }
+
+  .large h3 {
+    font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem);
+  }
+
+  .cell-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .cell-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .cell-link :global(.arrow) {
+    transition: transform var(--dur-ui) var(--ease);
+  }
+
+  .cell:hover .cell-link :global(.arrow) {
+    transform: translateX(4px);
+  }
+
+  .cell-link:focus-visible {
+    outline-color: var(--gold);
+  }
+
+  .sub {
+    color: var(--muted-on-green);
+  }
+
+  .links {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 16px;
+    border: 1px solid rgba(248, 246, 239, 0.5);
+    border-radius: var(--radius-chip);
+    background: rgba(18, 59, 50, 0.35);
+    color: var(--on-green);
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background var(--dur-ui) var(--ease);
+  }
+
+  .links a:hover {
+    background: var(--green);
+  }
+
+  .links a:focus-visible {
+    outline-color: var(--gold);
+  }
+
+  .tag {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    z-index: 2;
+    padding: 6px 10px;
+    border: 1px solid var(--gold);
+    border-radius: var(--radius-chip);
+    background: var(--green);
+    color: var(--gold);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+  }
+</style>

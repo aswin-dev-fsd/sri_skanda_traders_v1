@@ -1,0 +1,151 @@
+---
+// Home 07 — Brands we carry: a slow one-way marquee (40s loop, pauses on hover/focus) and the two
+// Authorised Dealer badges. Until logo files arrive, brands show as green wordmarks.
+import { getCollection } from 'astro:content';
+import { routes } from '@/config/site';
+
+const brands = (await getCollection('brands')).map((b) => ({ id: b.id, ...b.data }));
+const dealers = brands.filter((b) => b.authorised);
+---
+
+<section class="section brands" aria-labelledby="brands-title">
+  <div class="container head" data-reveal>
+    <p class="eyebrow">07 — Brands we carry</p>
+    <h3 id="brands-title">Trusted brands, all in one showroom.</h3>
+  </div>
+
+  <div class="marquee" data-reveal>
+    <div class="marquee-track">
+      {
+        [0, 1].map((copy) => (
+          <ul class="marquee-list" aria-hidden={copy === 1 ? 'true' : undefined}>
+            {brands.map((b) => (
+              <li>
+                <a
+                  href={`${routes.products}?brand=${b.id}`}
+                  class="logo-word"
+                  tabindex={copy === 1 ? -1 : undefined}
+                >
+                  {b.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="container">
+    <ul class="badges" data-reveal>
+      {
+        dealers.map((d) => (
+          <li class="badge">
+            Authorised Dealer · {d.name} {d.range && `(${d.range})`}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .brands {
+    padding-block: var(--space-12);
+  }
+
+  .head {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+
+  .marquee {
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 40s linear infinite;
+  }
+
+  .marquee:hover .marquee-track,
+  .marquee:focus-within .marquee-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .marquee-list {
+    display: flex;
+    gap: var(--space-8);
+    margin: 0;
+    padding: var(--space-2) var(--space-4);
+    list-style: none;
+  }
+
+  .logo-word {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-min);
+    color: var(--green);
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    opacity: 0.6;
+    white-space: nowrap;
+    transition: opacity var(--dur-ui) var(--ease);
+  }
+
+  .logo-word:hover,
+  .logo-word:focus-visible {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee {
+      mask-image: none;
+    }
+
+    .marquee-track {
+      width: auto;
+      animation: none;
+    }
+
+    .marquee-list {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .marquee-list[aria-hidden] {
+      display: none;
+    }
+  }
+
+  .badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  .badge {
+    padding: 10px 16px;
+    border: 1px solid var(--gold);
+    border-radius: var(--radius-chip);
+    background: var(--surface);
+    color: var(--green);
+    font-size: var(--fs-small);
+    font-weight: 500;
+  }
+</style>

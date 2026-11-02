@@ -1,0 +1,197 @@
+---
+// Home 04 — 3D Visualizer band (green, grout grid at 6% white): copy left, a before/after slider
+// right inside a gold Trust Frame. Drag the handle (or use the arrow keys) to compare.
+import { Image } from 'astro:assets';
+import Button from '@/components/ui/Button.astro';
+import PhotoPlaceholder from '@/components/ui/PhotoPlaceholder.astro';
+import TrustFrame from '@/components/ui/TrustFrame.astro';
+import { beforeAfter } from '@/config/home';
+import { routes } from '@/config/site';
+import { tempImage } from '@/lib/temp-images';
+
+const sides = [beforeAfter.before, beforeAfter.after].map((s) => ({ ...s, src: tempImage(s.image) }));
+---
+
+<section class="section on-green band" aria-labelledby="viz-title">
+  <div class="inner container">
+    <div class="copy" data-reveal>
+      <p class="eyebrow">04 — 3D Visualizer</p>
+      <h2 id="viz-title">See it in your home before you buy.</h2>
+      <p class="body-lg muted">
+        Pick a room, tap the floor or a wall, and try any tile in seconds. Use it at home, or on the tablet in our
+        showroom.
+      </p>
+      <div><Button variant="accent" href={routes.visualizer} arrow>Open the Visualizer</Button></div>
+    </div>
+
+    <div class="visual" data-reveal style="--i: 1">
+      <TrustFrame label="Living room" tone="green">
+        <div class="compare" data-compare style="--split: 50%">
+          {
+            sides.map((side, i) => (
+              <div class:list={['layer', i === 0 ? 'before' : 'after']}>
+                {side.src ? (
+                  <Image src={side.src} alt={`Living room, ${side.label.toLowerCase()}`} widths={[640, 960, 1280]} sizes="(min-width: 1200px) 720px, 100vw" />
+                ) : (
+                  <PhotoPlaceholder label={`living room, ${side.label.toLowerCase()} floor`} face={side.placeholder} />
+                )}
+                <span class="side-chip">{side.label}</span>
+              </div>
+            ))
+          }
+          <span class="handle" aria-hidden="true"><span class="grip"></span></span>
+          <input
+            class="range"
+            type="range"
+            min="0"
+            max="100"
+            value="50"
+            aria-label="Compare before and after: drag to reveal the new floor"
+            data-compare-range
+          />
+        </div>
+      </TrustFrame>
+    </div>
+  </div>
+</section>
+
+<style>
+  .band {
+    background-color: var(--green);
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-size: 96px 96px;
+  }
+
+  .inner {
+    display: grid;
+    gap: var(--space-8);
+    align-items: center;
+  }
+
+  @media (min-width: 1200px) {
+    .inner {
+      grid-template-columns: 5fr 7fr;
+    }
+  }
+
+  .copy {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .copy p {
+    max-width: 44ch;
+  }
+
+  .compare {
+    position: relative;
+    aspect-ratio: 7 / 5;
+    overflow: hidden;
+    border-radius: var(--radius-image);
+    touch-action: pan-y;
+  }
+
+  .layer {
+    position: absolute;
+    inset: 0;
+  }
+
+  .layer :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* The "after" image shows to the right of the handle. */
+  .after {
+    clip-path: inset(0 0 0 var(--split));
+  }
+
+  .side-chip {
+    position: absolute;
+    top: 14px;
+    padding: 6px 12px;
+    border-radius: var(--radius-chip);
+    background: rgba(18, 59, 50, 0.75);
+    color: var(--on-green);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .before .side-chip {
+    left: 14px;
+  }
+
+  .after .side-chip {
+    right: 14px;
+  }
+
+  .handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--split);
+    width: 2px;
+    margin-left: -1px;
+    background: var(--gold);
+    pointer-events: none;
+  }
+
+  .grip {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    background: var(--green);
+    transform: translate(-50%, -50%);
+  }
+
+  .grip::before,
+  .grip::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 0;
+    height: 0;
+    border: 5px solid transparent;
+    transform: translateY(-50%);
+  }
+
+  .grip::before {
+    left: 7px;
+    border-right-color: var(--gold);
+  }
+
+  .grip::after {
+    right: 7px;
+    border-left-color: var(--gold);
+  }
+
+  /* A full-size invisible range input: drag, swipe and arrow keys all work. */
+  .range {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: ew-resize;
+  }
+
+  .compare:has(.range:focus-visible) .grip {
+    outline: 2px solid var(--on-green);
+    outline-offset: 3px;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-compare]').forEach((compare) => {
+    const range = compare.querySelector<HTMLInputElement>('[data-compare-range]');
+    range?.addEventListener('input', () => compare.style.setProperty('--split', `${range.value}%`));
+  });
+</script>

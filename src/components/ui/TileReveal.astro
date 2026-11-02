@@ -1,0 +1,71 @@
+---
+// Tile reveal (brief signature touch 3): a large image appears tile by tile, as a 4 x 3 grid of
+// squares fades away with a 35ms stagger (under 700ms in all). Hero images and the first large
+// image of a page only. Without JavaScript or with reduced motion the image simply shows.
+interface Props {
+  class?: string;
+  /** Colour of the covering tiles: the background the image sits on. */
+  cover?: string;
+}
+
+const { class: className, cover = 'var(--ivory)' } = Astro.props;
+const order = [0, 5, 2, 7, 10, 1, 8, 3, 6, 11, 4, 9];
+---
+
+<div class:list={['tile-reveal', className]} data-tile-reveal style={`--cover: ${cover}`}>
+  <slot />
+  <div class="tiles" aria-hidden="true">
+    {order.map((n) => <span style={`--n: ${n}`} />)}
+  </div>
+</div>
+
+<style>
+  .tile-reveal {
+    position: relative;
+  }
+
+  .tiles {
+    position: absolute;
+    inset: -1px;
+    display: none;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    pointer-events: none;
+  }
+
+  :global(.js) .tiles {
+    display: grid;
+  }
+
+  .tiles span {
+    background: var(--cover);
+    /* Hairline gaps read like grout while the tiles lift. */
+    box-shadow: inset 0 0 0 0.5px var(--beige);
+  }
+
+  [data-revealed] .tiles span {
+    opacity: 0;
+    transition: opacity 280ms var(--ease);
+    transition-delay: calc(var(--n) * 35ms);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tiles {
+      display: none !important;
+    }
+  }
+</style>
+
+<script>
+  const tiles = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.setAttribute('data-revealed', '');
+        tiles.unobserve(entry.target);
+      });
+    },
+    { threshold: 0.2 },
+  );
+  document.querySelectorAll('[data-tile-reveal]').forEach((el) => tiles.observe(el));
+</script>

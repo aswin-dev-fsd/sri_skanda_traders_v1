@@ -1,0 +1,92 @@
+---
+// Home 06 — Why Sri Skanda: showroom photo in the Trust Frame, and four numbered rows divided
+// by beige lines (no icon cards). Rows fade up in sequence.
+import PhotoPlaceholder from '@/components/ui/PhotoPlaceholder.astro';
+import TrustFrame from '@/components/ui/TrustFrame.astro';
+import { reasons } from '@/config/home';
+---
+
+<section class="section" aria-labelledby="why-title">
+  <div class="inner container">
+    <div class="visual" data-reveal>
+      <TrustFrame label="People's Trust">
+        <div class="photo"><PhotoPlaceholder label="our team with a customer in the showroom" /></div>
+      </TrustFrame>
+    </div>
+
+    <div class="copy">
+      <div class="head" data-reveal>
+        <p class="eyebrow">06 — Why Sri Skanda</p>
+        <h2 id="why-title">Choose with people you can trust.</h2>
+      </div>
+      <ol class="rows">
+        {
+          reasons.map((r, i) => (
+            <li class="row" data-reveal style={`--i: ${i}`}>
+              <span class="num tabular">{String(i + 1).padStart(2, '0')}</span>
+              <div>
+                <h3>{r.title}</h3>
+                <p class="muted">{r.body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .inner {
+    display: grid;
+    gap: var(--space-8);
+    align-items: center;
+  }
+
+  @media (min-width: 1200px) {
+    .inner {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-12);
+    }
+  }
+
+  .photo {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: var(--radius-image);
+  }
+
+  .head {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+
+  .rows {
+    padding: 0;
+    list-style: none;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: var(--space-2);
+    padding-block: var(--space-3);
+    border-top: var(--border);
+  }
+
+  .row:last-child {
+    border-bottom: var(--border);
+  }
+
+  .num {
+    padding-top: 2px;
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  .row h3 {
+    margin-bottom: 4px;
+    font-size: 20px;
+  }
+</style>

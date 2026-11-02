@@ -1,5 +1,5 @@
 import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
-import { label } from '@/config/catalogue';
+import { bathwareTypes, label } from '@/config/catalogue';
 
 export type TileEntry = CollectionEntry<'tiles'>;
 export type ProductEntry = CollectionEntry<'products'>;
@@ -114,7 +114,6 @@ export async function getProducts(
   category?: ProductEntry['data']['category'],
   group?: 'sanitary-ware' | 'faucets' | 'accessories',
 ): Promise<ProductSummary[]> {
-  const { bathwareTypes } = await import('@/config/catalogue');
   const typesInGroup = group ? bathwareTypes.filter((t) => t.group === group).map((t) => t.value as string) : null;
   const entries = await getCollection('products', ({ data }) => {
     if (category && data.category !== category) return false;
