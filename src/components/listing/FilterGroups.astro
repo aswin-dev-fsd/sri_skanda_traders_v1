@@ -1,0 +1,262 @@
+---
+// Filter groups (brief Prompt 02): accordions, first two open, each showing how many values are
+// selected. Rendered twice per page (desktop sidebar and touch bottom sheet), told apart by `scope`.
+import type { FilterGroup } from '@/lib/listing-data';
+
+interface Props {
+  groups: FilterGroup[];
+  /** "sidebar" or "sheet": keeps input ids unique and tells the script which set it is. */
+  scope: 'sidebar' | 'sheet';
+}
+
+const { groups, scope } = Astro.props;
+
+/** Size icon drawn to scale: the longer side is 24px. */
+const sizeBox = (mm: { w: number; h: number }) => {
+  const scale = 24 / Math.max(mm.w, mm.h);
+  return `width: ${Math.max(4, Math.round(mm.w * scale))}px; height: ${Math.max(4, Math.round(mm.h * scale))}px`;
+};
+---
+
+<div class="groups" data-filter-scope={scope}>
+  {
+    groups.map((g) => (
+      <details class="group" open={g.open} data-filter-group={g.key}>
+        <summary class="summary">
+          <span class="group-label">{g.label}</span>
+          <span class="group-count tabular" data-group-count hidden />
+          <span class="chevron" aria-hidden="true" />
+        </summary>
+        <fieldset class:list={['options', `style-${g.style}`]}>
+          <legend class="visually-hidden">{g.label}</legend>
+          {g.options.map((o) => (
+            <label class="option">
+              <input type="checkbox" name={g.key} value={o.value} data-filter-input />
+              {g.style === 'look' && <span class="look-face" style={`background: ${o.swatch}`} aria-hidden="true" />}
+              {g.style === 'dot' && <span class="dot" style={`background: ${o.swatch}`} aria-hidden="true" />}
+              {g.style === 'size' && o.mm && (
+                <span class="size-icon" aria-hidden="true">
+                  <span style={sizeBox(o.mm)} />
+                </span>
+              )}
+              <span class:list={['option-label', { tabular: g.style === 'size', sheen: o.sheen }]}>{o.label}</span>
+            </label>
+          ))}
+        </fieldset>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  .group {
+    border-bottom: var(--border);
+  }
+
+  .summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 56px;
+    color: var(--green);
+    font-weight: 600;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .group-label {
+    flex: 1;
+  }
+
+  .group-count {
+    display: grid;
+    place-items: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 7px;
+    border-radius: var(--radius-chip);
+    background: var(--green);
+    color: var(--on-green);
+    font-size: 12px;
+  }
+
+  .group-count[hidden] {
+    display: none;
+  }
+
+  .chevron {
+    width: 9px;
+    height: 9px;
+    margin: 0 4px 4px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform var(--dur-ui) var(--ease);
+  }
+
+  [open] .chevron {
+    transform: translateY(3px) rotate(-135deg);
+  }
+
+  .options {
+    display: grid;
+    gap: 4px;
+    margin: 0;
+    padding: 0 0 var(--space-2);
+    border: 0;
+  }
+
+  .option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    cursor: pointer;
+  }
+
+  .option input {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    accent-color: var(--green);
+  }
+
+  /* Look & feel: sample-chip thumbnails, two per row. */
+  .style-look {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .style-look .option,
+  .style-dot .option,
+  .style-chip .option {
+    gap: 8px;
+  }
+
+  .style-look input,
+  .style-dot input,
+  .style-chip input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .look-face {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border: var(--border);
+    border-radius: 0 10px 0 0;
+    transition: box-shadow var(--dur-ui) var(--ease);
+  }
+
+  .style-look input:checked ~ .look-face {
+    box-shadow: 0 0 0 2px var(--gold);
+  }
+
+  .style-look input:checked ~ .option-label {
+    font-weight: 600;
+    color: var(--green);
+  }
+
+  /* Colour: 28px dots with names under; selected gets a gold ring. */
+  .style-dot {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px 6px;
+  }
+
+  .style-dot .option {
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: 0;
+    padding: 4px 0;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .dot {
+    width: 28px;
+    height: 28px;
+    border: 1px solid rgba(46, 58, 53, 0.15);
+    border-radius: 50%;
+    transition: box-shadow var(--dur-ui) var(--ease);
+  }
+
+  .style-dot input:checked ~ .dot {
+    box-shadow:
+      0 0 0 2px var(--surface),
+      0 0 0 4px var(--gold);
+  }
+
+  /* Finish: chips. Glossy and polished get the subtle finish sheen. */
+  .style-chip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .style-chip .option-label {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 16px;
+    border-radius: var(--radius-chip);
+    background: var(--beige);
+    color: var(--green);
+    font-size: 15px;
+    font-weight: 500;
+    transition:
+      background var(--dur-ui) var(--ease),
+      color var(--dur-ui) var(--ease);
+  }
+
+  .style-chip input:checked ~ .option-label {
+    background: var(--green);
+    color: var(--on-green);
+  }
+
+  .sheen::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%);
+    transform: translateX(-110%);
+    animation: sheen 1400ms var(--ease) 600ms forwards;
+  }
+
+  @keyframes sheen {
+    to {
+      transform: translateX(110%);
+    }
+  }
+
+  .style-look input:focus-visible ~ .look-face,
+  .style-dot input:focus-visible ~ .dot,
+  .style-chip input:focus-visible ~ .option-label {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+  }
+
+  /* Size: to-scale rectangle next to each size. */
+  .size-icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 28px;
+    height: 28px;
+  }
+
+  .size-icon span {
+    display: block;
+    border: 1.5px solid var(--green);
+    border-radius: 2px;
+  }
+</style>

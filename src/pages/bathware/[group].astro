@@ -1,0 +1,16 @@
+---
+// /bathware/sanitary-ware, /bathware/faucets, /bathware/accessories.
+import ListingPage from '@/components/listing/ListingPage.astro';
+import { listings, type Listing } from '@/config/listings';
+import { routes } from '@/config/site';
+
+export function getStaticPaths() {
+  return listings
+    .filter((l) => l.path.startsWith(`${routes.bathware}/`))
+    .map((listing) => ({ params: { group: listing.path.split('/').pop() }, props: { listing } }));
+}
+
+const { listing } = Astro.props as { listing: Listing };
+---
+
+<ListingPage listing={listing} />

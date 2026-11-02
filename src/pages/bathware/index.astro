@@ -1,0 +1,7 @@
+---
+import ListingPage from '@/components/listing/ListingPage.astro';
+import { listingFor } from '@/config/listings';
+import { routes } from '@/config/site';
+---
+
+<ListingPage listing={listingFor(routes.bathware)} />

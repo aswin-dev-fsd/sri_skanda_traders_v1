@@ -66,6 +66,16 @@ All routes live in `routes` in `src/config/site.ts`.
 - Brand links go to `/products?brand=<id>`; until logo files arrive, brands show as green wordmarks.
 - The Visit section's "Request a call back" sends a WhatsApp message, like every other form.
 
+## Product listings
+
+- One template (`src/components/listing/ListingPage.astro`) serves every listing in `src/config/listings.ts`. Filtering runs in the browser on cards built at build time; the logic is pure functions in `src/lib/filters.ts`.
+- Filters are shared through the URL: `?look=marble,stone&colour=white&sort=az`. Values are AND across groups, OR within a group.
+- A space page (`/tiles/bathroom`) or tile type page (`/tiles/floor`) fixes that filter; its group is not shown in the sidebar.
+- `/products` shows all tiles, with a canonical link to `/tiles`. `/products?brand=<id>` sends a brand with no tiles (Johnson, JSW) to the listing where it has products.
+- Sidebar filters apply instantly on desktop; below 1200px a bottom sheet applies them with "Show N results".
+- Skipped from the brief: skeleton loading cards (the cards are already in the page, so nothing loads) and brand search (only needed above 8 brands).
+- `vercel.json` turns on `cleanUrls`, so `/tiles` serves `tiles.html` on Vercel.
+
 ## Internal pages
 
 `/styleguide` shows every token and shared component for review. It is `noindex` and not linked from the menus.
@@ -116,8 +126,8 @@ Status is updated in the same commit that finishes each task (the commit hash is
 | 3 | Shared components: buttons, chips, cards, toast, Trust Frame | ✅ Done · `c30673b` |
 | 4 | Catalogue schema plus placeholder data | ✅ Done · `7ba9260` |
 | 5 | My Selection store and drawer, enquiry drawer | ✅ Done · `13c56eb` |
-| 6 | Home page, section by section | ✅ Done |
-| 7 | Products listing with filters | ⬜ To do |
+| 6 | Home page, section by section | ✅ Done · `ac26f44` |
+| 7 | Products listing with filters | ✅ Done |
 | 8 | Collection page, plus the bathware variant | ⬜ To do |
 | 9 | 3D Visualizer page | ⬜ To do |
 | 10 | My Selection page, plus the print view | ⬜ To do |
