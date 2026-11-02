@@ -1,0 +1,139 @@
+---
+// Collection 04 — Textures: square close-ups, 3–4 per row. With a mouse, a 180px circular
+// magnifier follows the cursor; on touch, a tap opens the lightbox (pinch to zoom).
+import type { ColourView } from '@/lib/collection-data';
+
+interface Props {
+  colours: ColourView[];
+}
+
+const { colours } = Astro.props;
+---
+
+<section class="section" aria-labelledby="textures-title">
+  <div class="container">
+    <div class="head" data-reveal>
+      <p class="eyebrow">Textures</p>
+      <h2 id="textures-title">See the surface up close.</h2>
+    </div>
+    <ul class="grid">
+      {
+        colours.map((c, i) => (
+          <li data-reveal style={`--i: ${i % 4}`}>
+            <button
+              type="button"
+              class="texture"
+              style={`background: ${c.texture}`}
+              data-texture
+              data-lightbox
+              data-lightbox-group="textures"
+              data-lightbox-face={c.texture}
+              data-lightbox-src={c.textureSrc}
+              data-lightbox-caption={`${c.name} · ${c.code}, close-up`}
+              aria-label={`${c.name} close-up, open larger`}
+            >
+              {!c.textureSrc && <span class="ph small">[PHOTO: {c.name} close-up]</span>}
+              <span class="lens" aria-hidden="true" style={`background: ${c.texture}`}></span>
+            </button>
+            <p class="small caption">
+              {c.name} <span class="muted tabular">{c.code}</span>
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .head {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3) var(--gutter);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 768px) {
+    .grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .texture {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    padding: 0;
+    border: var(--border);
+    border-radius: var(--radius-image);
+    cursor: zoom-in;
+  }
+
+  .ph {
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: rgba(255, 253, 248, 0.85);
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .caption {
+    margin-top: 8px;
+    color: var(--green);
+    font-weight: 500;
+  }
+
+  /* Magnifier: the same surface at 2.5x inside a 180px circle that follows the cursor. */
+  .lens {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 180px;
+    height: 180px;
+    border: 2px solid var(--surface);
+    border-radius: 50%;
+    box-shadow: var(--shadow-lift);
+    background-size: 250% 250% !important;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--dur-ui) var(--ease);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .texture:hover .lens {
+      opacity: 1;
+    }
+  }
+</style>
+
+<script>
+  if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    document.querySelectorAll<HTMLElement>('[data-texture]').forEach((texture) => {
+      const lens = texture.querySelector<HTMLElement>('.lens');
+      if (!lens) return;
+      texture.addEventListener('pointermove', (event) => {
+        const box = texture.getBoundingClientRect();
+        const x = event.clientX - box.left;
+        const y = event.clientY - box.top;
+        lens.style.transform = `translate(${x - 90}px, ${y - 90}px)`;
+        lens.style.backgroundPosition = `${(x / box.width) * 100}% ${(y / box.height) * 100}%`;
+      });
+    });
+  }
+</script>

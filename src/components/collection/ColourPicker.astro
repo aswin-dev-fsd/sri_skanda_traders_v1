@@ -1,0 +1,299 @@
+---
+// Collection 02 — Colours: large sample-chip swatches. Picking one fills the detail panel (beside
+// the grid on desktop, below it on touch) with a 200ms slide: tile face (tap to zoom), code, sizes,
+// finishes, use, thickness, and Save / Enquire / Try in 3D for that colour.
+import Button from '@/components/ui/Button.astro';
+import SaveStar from '@/components/ui/SaveStar.astro';
+import SampleChip from '@/components/ui/SampleChip.astro';
+import { features, routes } from '@/config/site';
+import type { ColourView } from '@/lib/collection-data';
+
+interface Props {
+  colours: ColourView[];
+}
+
+const { colours } = Astro.props;
+const first = colours[0];
+// The browser only needs what the panel shows.
+const clientColours = colours.map(({ name, code, face, faceSrc, finishes, sizes, application, thickness, item }) => ({
+  name,
+  code,
+  face,
+  faceSrc,
+  finishes: finishes.map((f) => f.label).join(', '),
+  sizes: sizes.join(', '),
+  application,
+  thickness,
+  item,
+}));
+---
+
+<section class="section" aria-labelledby="colours-title" data-colour-picker data-colours={JSON.stringify(clientColours)}>
+  <div class="container">
+    <div class="head" data-reveal>
+      <p class="eyebrow">Colours</p>
+      <h2 id="colours-title">Pick your colour.</h2>
+    </div>
+
+    <div class="layout">
+      <div class="chips" role="group" aria-label="Colours">
+        {
+          colours.map((c, i) => (
+            <SampleChip
+              name={c.name}
+              code={c.code}
+              face={c.face}
+              size={160}
+              selected={i === 0}
+              glossy={c.finishes.some((f) => f.sheen)}
+              class="colour-chip"
+              data-colour-index={String(i)}
+              id={`colour-${c.code}`}
+            />
+          ))
+        }
+      </div>
+
+      <div class="panel" aria-live="polite" data-colour-panel>
+        <button
+          type="button"
+          class="panel-face"
+          style={`background: ${first.face}`}
+          data-lightbox
+          data-lightbox-face={first.face}
+          data-lightbox-src={first.faceSrc}
+          data-lightbox-caption={`${first.name} · ${first.code}`}
+          data-panel-face
+          aria-label="Zoom tile face"
+        ></button>
+        <div class="panel-info">
+          <h3 data-panel-name>{first.name}</h3>
+          <dl class="specs">
+            <div><dt>Code</dt><dd class="tabular" data-panel-code>{first.code}</dd></div>
+            <div><dt>Sizes</dt><dd class="tabular" data-panel-sizes>{first.sizes.join(', ')}</dd></div>
+            <div><dt>Finishes</dt><dd data-panel-finishes>{first.finishes.map((f) => f.label).join(', ')}</dd></div>
+            <div><dt>Use</dt><dd data-panel-use>{first.application}</dd></div>
+            <div data-panel-thickness-row hidden={!first.thickness}><dt>Thickness</dt><dd class="tabular" data-panel-thickness>{first.thickness}</dd></div>
+          </dl>
+          <div class="panel-actions">
+            <span class="save-wrap">
+              <SaveStar item={first.item} class="panel-star" />
+              <span class="small">Save this colour</span>
+            </span>
+            <Button variant="secondary" size="sm" href={routes.contact} data-enquire data-item={JSON.stringify(first.item)} data-panel-enquire>
+              Enquire about this colour
+            </Button>
+            {features.visualizer && <Button variant="text" href={routes.visualizer} arrow>Try in 3D</Button>}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .head {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+  }
+
+  .layout {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 1200px) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr) 440px;
+      align-items: start;
+    }
+  }
+
+  .chips {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: var(--space-4) var(--space-3);
+  }
+
+  @media (min-width: 1200px) {
+    .chips {
+      grid-template-columns: repeat(auto-fill, 160px);
+    }
+  }
+
+  /* 120px chips on tablet and phone, 160px on desktop (brief). */
+  @media (max-width: 1199px) {
+    .chips :global(.colour-chip) {
+      --chip: 120px !important;
+    }
+  }
+
+  .panel {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border: var(--border);
+    border-radius: var(--radius-card);
+    background: var(--surface);
+  }
+
+  @media (min-width: 768px) and (max-width: 1199px) {
+    .panel {
+      grid-template-columns: 280px 1fr;
+      align-items: start;
+    }
+  }
+
+  .panel[data-changing] {
+    animation: slide 200ms var(--ease);
+  }
+
+  @keyframes slide {
+    from {
+      opacity: 0;
+      transform: translateX(12px);
+    }
+  }
+
+  @media (max-width: 1199px) {
+    @keyframes slide {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+    }
+  }
+
+  .panel-face {
+    width: 100%;
+    aspect-ratio: 1;
+    max-height: 42vh;
+    padding: 0;
+    border: var(--border);
+    border-radius: 0 var(--radius-card) 0 0;
+    cursor: zoom-in;
+  }
+
+  .panel-info {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .specs {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+  }
+
+  .specs div {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 8px;
+    font-size: var(--fs-small);
+  }
+
+  .specs div[hidden] {
+    display: none;
+  }
+
+  .specs dt {
+    color: var(--muted);
+  }
+
+  .specs dd {
+    margin: 0;
+    color: var(--charcoal);
+  }
+
+  .panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px var(--space-2);
+  }
+
+  .save-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--green);
+    font-weight: 500;
+  }
+
+  .save-wrap :global(.panel-star) {
+    border: var(--border);
+    box-shadow: none;
+  }
+</style>
+
+<script>
+  import { $selection } from '@/stores/selection';
+
+  interface ClientColour {
+    name: string;
+    code: string;
+    face: string;
+    faceSrc?: string;
+    finishes: string;
+    sizes: string;
+    application: string;
+    thickness?: string;
+    item: { id: string };
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-colour-picker]').forEach((picker) => {
+    const colours: ClientColour[] = JSON.parse(picker.dataset.colours ?? '[]');
+    const panel = picker.querySelector<HTMLElement>('[data-colour-panel]')!;
+    const set = (sel: string, text: string) => {
+      const el = panel.querySelector(sel);
+      if (el) el.textContent = text;
+    };
+
+    const select = (index: number, { scroll = false } = {}) => {
+      const c = colours[index];
+      if (!c) return;
+      picker.querySelectorAll('[data-colour-index]').forEach((chip) => {
+        chip.setAttribute('aria-pressed', String(chip.getAttribute('data-colour-index') === String(index)));
+      });
+      const face = panel.querySelector<HTMLElement>('[data-panel-face]')!;
+      face.style.background = c.face;
+      face.dataset.lightboxFace = c.face;
+      face.dataset.lightboxCaption = `${c.name} · ${c.code}`;
+      if (c.faceSrc) face.dataset.lightboxSrc = c.faceSrc;
+      else delete face.dataset.lightboxSrc;
+      set('[data-panel-name]', c.name);
+      set('[data-panel-code]', c.code);
+      set('[data-panel-sizes]', c.sizes);
+      set('[data-panel-finishes]', c.finishes);
+      set('[data-panel-use]', c.application);
+      set('[data-panel-thickness]', c.thickness ?? '');
+      const thicknessRow = panel.querySelector<HTMLElement>('[data-panel-thickness-row]');
+      if (thicknessRow) thicknessRow.hidden = !c.thickness;
+
+      // Save and Enquire now act on this colour.
+      const itemJson = JSON.stringify(c.item);
+      panel.querySelectorAll<HTMLElement>('[data-save], [data-panel-enquire]').forEach((el) => (el.dataset.item = itemJson));
+      const star = panel.querySelector('[data-save]');
+      star?.setAttribute('aria-pressed', String($selection.get().some((i) => i.id === c.item.id)));
+      star?.setAttribute('aria-label', `Save ${c.item.id.split(':')[0]}, ${c.name} to My Selection`);
+
+      // The sticky bar shows the chosen colour, and its Enquire is about it.
+      document.querySelectorAll('[data-bar-colour]').forEach((el) => (el.textContent = c.name));
+      document.querySelectorAll<HTMLElement>('[data-bar-enquire]').forEach((el) => (el.dataset.item = itemJson));
+
+      panel.removeAttribute('data-changing');
+      void panel.offsetWidth;
+      panel.setAttribute('data-changing', '');
+      if (scroll && matchMedia('(max-width: 1199px)').matches) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    };
+
+    picker.querySelectorAll<HTMLElement>('[data-colour-index]').forEach((chip) => {
+      chip.addEventListener('click', () => select(Number(chip.dataset.colourIndex), { scroll: true }));
+    });
+
+    // Links to a colour (#colour-IM-101, e.g. from My Selection) open with it picked.
+    const fromHash = colours.findIndex((c) => `#colour-${c.code}` === location.hash);
+    if (fromHash > 0) select(fromHash);
+  });
+</script>

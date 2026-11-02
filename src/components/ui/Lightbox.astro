@@ -1,0 +1,214 @@
+---
+// Full-screen lightbox (one per page). Any element with `data-lightbox` opens it, showing:
+//   data-lightbox-src="…"   an image URL, or
+//   data-lightbox-face="…"  a CSS background (stand-in until photos arrive)
+//   data-lightbox-caption="…"
+// Elements sharing a `data-lightbox-group` value get previous/next arrows and swipe.
+// Pinch-zoom works because the image sits in a scrollable, zoomable layer.
+import Icon from '@/components/ui/Icon.astro';
+---
+
+<dialog class="lightbox" data-lightbox-dialog aria-label="Image viewer">
+  <div class="stage" data-lightbox-stage>
+    <div class="lb-face" data-lightbox-face-el hidden></div>
+  </div>
+  <p class="lb-caption" data-lightbox-caption></p>
+  <p class="lb-counter tabular" data-lightbox-counter></p>
+  <button type="button" class="lb-btn lb-close" aria-label="Close" data-lightbox-close><Icon name="close" size={26} /></button>
+  <button type="button" class="lb-btn lb-prev" aria-label="Previous image" data-lightbox-prev>
+    <Icon name="arrow-right" size={24} class="flip" />
+  </button>
+  <button type="button" class="lb-btn lb-next" aria-label="Next image" data-lightbox-next>
+    <Icon name="arrow-right" size={24} />
+  </button>
+</dialog>
+
+<style>
+  .lightbox {
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgba(14, 47, 40, 0.96);
+    color: var(--on-green);
+  }
+
+  .lightbox::backdrop {
+    background: transparent;
+  }
+
+  .lightbox[open] {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    animation: lb-in 250ms var(--ease);
+  }
+
+  @keyframes lb-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  .stage {
+    display: grid;
+    place-items: center;
+    min-height: 0;
+    padding: 72px var(--page-x) 8px;
+    overflow: auto;
+    touch-action: pinch-zoom pan-x pan-y;
+  }
+
+  .stage :global(.lb-img),
+  .lb-face {
+    max-width: min(1200px, 100%);
+    max-height: 100%;
+    border-radius: var(--radius-image);
+  }
+
+  .lb-face {
+    width: min(900px, 90vw);
+    aspect-ratio: 1;
+    max-height: 75dvh;
+  }
+
+  .stage :global(.lb-img[hidden]),
+  .lb-face[hidden] {
+    display: none;
+  }
+
+  .lb-caption {
+    justify-self: center;
+    max-width: 60ch;
+    padding: 8px var(--page-x) var(--space-3);
+    color: var(--muted-on-green);
+    text-align: center;
+  }
+
+  .lb-counter {
+    position: absolute;
+    top: 22px;
+    left: var(--page-x);
+    color: var(--muted-on-green);
+  }
+
+  .lb-btn {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border: 1.5px solid rgba(248, 246, 239, 0.4);
+    border-radius: 50%;
+    background: rgba(18, 59, 50, 0.6);
+    color: var(--on-green);
+  }
+
+  .lb-btn:hover {
+    border-color: var(--gold);
+  }
+
+  .lb-btn:focus-visible {
+    outline-color: var(--gold);
+  }
+
+  .lb-btn[hidden] {
+    display: none;
+  }
+
+  .lb-close {
+    top: 10px;
+    right: var(--page-x);
+  }
+
+  .lb-prev,
+  .lb-next {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .lb-prev {
+    left: var(--page-x);
+  }
+
+  .lb-next {
+    right: var(--page-x);
+  }
+
+  .lb-prev :global(.flip) {
+    transform: rotate(180deg);
+  }
+</style>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-lightbox-dialog]');
+  if (dialog) {
+    // Created here rather than in the markup, so the page never ships an image tag with no source.
+    const img = document.createElement('img');
+    img.className = 'lb-img';
+    img.hidden = true;
+    dialog.querySelector('[data-lightbox-stage]')!.prepend(img);
+    const face = dialog.querySelector<HTMLElement>('[data-lightbox-face-el]')!;
+    const caption = dialog.querySelector<HTMLElement>('[data-lightbox-caption]')!;
+    const counter = dialog.querySelector<HTMLElement>('[data-lightbox-counter]')!;
+    const prev = dialog.querySelector<HTMLButtonElement>('[data-lightbox-prev]')!;
+    const next = dialog.querySelector<HTMLButtonElement>('[data-lightbox-next]')!;
+    let group: HTMLElement[] = [];
+    let index = 0;
+    let opener: HTMLElement | null = null;
+
+    const show = (i: number) => {
+      index = (i + group.length) % group.length;
+      const item = group[index];
+      const src = item.dataset.lightboxSrc;
+      img.hidden = !src;
+      face.hidden = !!src;
+      if (src) {
+        img.src = src;
+        img.alt = item.dataset.lightboxCaption ?? '';
+      } else {
+        face.style.background = item.dataset.lightboxFace ?? 'var(--beige)';
+        face.setAttribute('role', 'img');
+        face.setAttribute('aria-label', item.dataset.lightboxCaption ?? '');
+      }
+      caption.textContent = item.dataset.lightboxCaption ?? '';
+      const many = group.length > 1;
+      prev.hidden = next.hidden = !many;
+      counter.textContent = many ? `${index + 1} / ${group.length}` : '';
+    };
+
+    document.addEventListener('click', (event) => {
+      const trigger = (event.target as HTMLElement).closest<HTMLElement>('[data-lightbox]');
+      if (!trigger) return;
+      event.preventDefault();
+      const name = trigger.dataset.lightboxGroup;
+      group = name ? [...document.querySelectorAll<HTMLElement>(`[data-lightbox][data-lightbox-group="${name}"]`)] : [trigger];
+      opener = trigger;
+      show(group.indexOf(trigger));
+      dialog.showModal();
+      document.documentElement.dataset.overlay = 'lightbox';
+    });
+
+    prev.addEventListener('click', () => show(index - 1));
+    next.addEventListener('click', () => show(index + 1));
+    dialog.querySelector('[data-lightbox-close]')?.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('close', () => {
+      delete document.documentElement.dataset.overlay;
+      opener?.focus();
+    });
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft' && group.length > 1) show(index - 1);
+      if (event.key === 'ArrowRight' && group.length > 1) show(index + 1);
+    });
+
+    // Swipe left/right between images (ignored while pinch-zooming).
+    let startX = 0;
+    dialog.addEventListener('touchstart', (e) => (startX = e.touches.length === 1 ? e.touches[0].clientX : NaN), { passive: true });
+    dialog.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - startX;
+      if (group.length > 1 && Math.abs(dx) > 60 && window.visualViewport?.scale === 1) show(index + (dx < 0 ? 1 : -1));
+    });
+  }
+</script>

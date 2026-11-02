@@ -76,6 +76,15 @@ All routes live in `routes` in `src/config/site.ts`.
 - Skipped from the brief: skeleton loading cards (the cards are already in the page, so nothing loads) and brand search (only needed above 8 brands).
 - `vercel.json` turns on `cleanUrls`, so `/tiles` serves `tiles.html` on Vercel.
 
+## Collection and product pages
+
+- `/collection/<id>` follows the brief's section order. Saving from the colour panel saves that colour (`<collection>:<code>`); the hero, sticky bar and Actions panel save the whole collection.
+- Links to `/collection/<id>#colour-<code>` open with that colour picked (My Selection uses this).
+- Until photos arrive, colours, textures and room slides use flat stand-ins built from each colour's hex; the room gallery shows one placeholder slide per colour (up to 4).
+- The colour panel sits beside the swatches on desktop but is not sticky: on a 1280 × 800 tablet it would be taller than the screen.
+- `/product/<id>` serves bathware, granite and adhesives with the brief's bathware layout. Spec values still set to a `[PLACEHOLDER]` (e.g. warranty) are left out of the table, as the brief says "[if supplied]".
+- Below a product: "Pairs well with" (same category) and tiles for the matching room (bathroom for bathware, kitchen for granite).
+
 ## Internal pages
 
 `/styleguide` shows every token and shared component for review. It is `noindex` and not linked from the menus.
@@ -127,8 +136,8 @@ Status is updated in the same commit that finishes each task (the commit hash is
 | 4 | Catalogue schema plus placeholder data | ✅ Done · `7ba9260` |
 | 5 | My Selection store and drawer, enquiry drawer | ✅ Done · `13c56eb` |
 | 6 | Home page, section by section | ✅ Done · `ac26f44` |
-| 7 | Products listing with filters | ✅ Done |
-| 8 | Collection page, plus the bathware variant | ⬜ To do |
+| 7 | Products listing with filters | ✅ Done · `0e7d8c6` |
+| 8 | Collection page, plus the bathware variant | ✅ Done |
 | 9 | 3D Visualizer page | ⬜ To do |
 | 10 | My Selection page, plus the print view | ⬜ To do |
 | 11 | Contact page | ⬜ To do |

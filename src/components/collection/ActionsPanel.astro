@@ -1,0 +1,139 @@
+---
+// Collection 06 — Actions: a green panel inside the ivory page with four large touch buttons.
+import Icon from '@/components/ui/Icon.astro';
+import { features, routes } from '@/config/site';
+import { whatsappUrl } from '@/lib/links';
+import type { SelectionItem } from '@/lib/types';
+
+interface Props {
+  item: SelectionItem;
+}
+
+const { item } = Astro.props;
+---
+
+<section class="section" aria-labelledby="actions-title">
+  <div class="container">
+    <div class="panel on-green" data-reveal>
+      <h2 id="actions-title">Like this collection?</h2>
+      <p class="body-lg muted">Try it in a room, save it for later, or ask us for samples and availability.</p>
+      <div class="buttons">
+        {
+          features.visualizer && (
+            <a href={routes.visualizer} class="big gold">
+              <Icon name="cube" size={26} />
+              Try in 3D Visualizer
+            </a>
+          )
+        }
+        <button type="button" class="big" data-save data-item={JSON.stringify(item)} aria-pressed="false">
+          <Icon name="star" size={26} class="star" />
+          <span data-save-label>Save to My Selection</span>
+        </button>
+        <a href={routes.contact} class="big" data-enquire data-item={JSON.stringify(item)}>
+          <Icon name="arrow-right" size={26} />
+          Send an enquiry
+        </a>
+        <a href={whatsappUrl(item.name)} class="big" target="_blank" rel="noopener">
+          <Icon name="whatsapp" size={26} />
+          WhatsApp us
+        </a>
+      </div>
+      <p class="small muted note">Prices and availability on enquiry. Our team replies within a few hours.</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .panel {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-6) var(--space-4);
+    border-radius: var(--radius-card);
+  }
+
+  @media (min-width: 768px) {
+    .panel {
+      padding: var(--space-8);
+    }
+  }
+
+  .buttons {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: var(--space-1);
+  }
+
+  @media (min-width: 600px) {
+    .buttons {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .buttons {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .big {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 64px;
+    padding: 0 var(--space-3);
+    border: 1.5px solid rgba(248, 246, 239, 0.4);
+    border-radius: var(--radius-button);
+    background: transparent;
+    color: var(--on-green);
+    font-size: 16px;
+    font-weight: 600;
+    text-align: left;
+    text-decoration: none;
+    transition:
+      background var(--dur-ui) var(--ease),
+      border-color var(--dur-ui) var(--ease);
+  }
+
+  .big:hover {
+    border-color: var(--gold);
+    background: rgba(248, 246, 239, 0.06);
+  }
+
+  .big:focus-visible {
+    outline-color: var(--gold);
+  }
+
+  .gold {
+    border-color: var(--gold);
+    background: var(--gold);
+    color: var(--green);
+  }
+
+  .gold:hover {
+    background: var(--gold-hover);
+  }
+
+  [aria-pressed='true'] :global(.star) {
+    color: var(--gold);
+    fill: var(--gold);
+  }
+
+  .note {
+    margin-top: var(--space-1);
+  }
+</style>
+
+<script>
+  import { $selection } from '@/stores/selection';
+
+  // "Save to My Selection" reads "Saved" once the collection is in the list.
+  document.querySelectorAll<HTMLElement>('[data-save] [data-save-label]').forEach((label) => {
+    const button = label.closest<HTMLElement>('[data-save]')!;
+    const id = JSON.parse(button.dataset.item ?? '{}').id;
+    $selection.subscribe((items) => {
+      label.textContent = items.some((i) => i.id === id) ? 'Saved to My Selection' : 'Save to My Selection';
+    });
+  });
+</script>

@@ -1,0 +1,151 @@
+---
+// Collection sticky action bar (brief Prompt 03): after the hero scrolls away, a slim ivory bar
+// sticks under the header (top on desktop, docked to the bottom on phones) with the collection,
+// the selected colour, Try in 3D · Save · Enquire · WhatsApp.
+import Button from '@/components/ui/Button.astro';
+import Icon from '@/components/ui/Icon.astro';
+import SaveStar from '@/components/ui/SaveStar.astro';
+import { features, routes } from '@/config/site';
+import { whatsappUrl } from '@/lib/links';
+import type { SelectionItem } from '@/lib/types';
+
+interface Props {
+  name: string;
+  brand: string;
+  item: SelectionItem;
+  /** First colour, shown until another is picked. */
+  colour: string;
+}
+
+const { name, brand, item, colour } = Astro.props;
+---
+
+<div class="bar" data-sticky-bar aria-hidden="true" inert>
+  <div class="bar-inner container">
+    <p class="who">
+      <strong>{name}</strong>
+      <span class="small muted"><span>{brand}</span> · <span data-bar-colour>{colour}</span></span>
+    </p>
+    <div class="actions">
+      {
+        features.visualizer && (
+          <Button variant="secondary" size="sm" href={routes.visualizer} class="hide-sm">
+            Try in 3D
+          </Button>
+        )
+      }
+      <SaveStar item={item} class="bar-star" />
+      <Button size="sm" href={routes.contact} data-enquire data-item={JSON.stringify(item)} data-bar-enquire>Enquire</Button>
+      <a class="wa" href={whatsappUrl(name)} target="_blank" rel="noopener" aria-label={`Ask about ${name} on WhatsApp`}>
+        <Icon name="whatsapp" size={22} />
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .bar {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 45;
+    border-top: var(--border);
+    background: rgba(248, 246, 239, 0.97);
+    box-shadow: 0 -4px 16px rgba(18, 59, 50, 0.08);
+    transform: translateY(100%);
+    transition: transform var(--dur-ui-slow) var(--ease);
+  }
+
+  @media (min-width: 768px) {
+    .bar {
+      inset: var(--header-h-compact) 0 auto;
+      border-top: 0;
+      border-bottom: var(--border);
+      box-shadow: none;
+      transform: translateY(-100%);
+      opacity: 0;
+      transition:
+        transform var(--dur-ui-slow) var(--ease),
+        opacity var(--dur-ui) var(--ease);
+    }
+  }
+
+  .bar[data-shown] {
+    transform: none;
+    opacity: 1;
+  }
+
+  .bar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    min-height: 64px;
+    padding-block: 8px calc(8px + env(safe-area-inset-bottom));
+  }
+
+  .who {
+    display: grid;
+    min-width: 0;
+    line-height: 1.3;
+  }
+
+  .who strong {
+    overflow: hidden;
+    color: var(--green);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .actions :global(.bar-star) {
+    box-shadow: none;
+    border: var(--border);
+  }
+
+  @media (max-width: 767px) {
+    .actions :global(.hide-sm) {
+      display: none;
+    }
+  }
+
+  .wa {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1.5px solid var(--green);
+    border-radius: 50%;
+    color: var(--green);
+  }
+
+  .wa:hover {
+    background: rgba(18, 59, 50, 0.06);
+  }
+
+  /* On phones the bar has its own WhatsApp button; lift the floating one clear of it. */
+  @media (max-width: 767px) {
+    :global(:root[data-bar-visible] .wa-float) {
+      bottom: 92px;
+    }
+  }
+</style>
+
+<script>
+  const bar = document.querySelector<HTMLElement>('[data-sticky-bar]');
+  const hero = document.querySelector('[data-collection-hero]');
+  if (bar && hero) {
+    new IntersectionObserver(([entry]) => {
+      const show = !entry.isIntersecting;
+      bar.toggleAttribute('data-shown', show);
+      bar.inert = !show;
+      bar.setAttribute('aria-hidden', String(!show));
+      document.documentElement.toggleAttribute('data-bar-visible', show);
+    }).observe(hero);
+  }
+</script>

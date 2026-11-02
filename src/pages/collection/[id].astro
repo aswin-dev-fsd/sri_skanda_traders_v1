@@ -1,0 +1,213 @@
+---
+// Collection page (brief Prompt 03), one per tile collection. Section order is the brief's:
+// 01 Hero · 02 Colours · 03 Features · 04 Textures · 05 Finishes & sizes · 06 Actions ·
+// 07 Room gallery · 08 Decor · 09 Similar collections.
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import StickyBar from '@/components/collection/StickyBar.astro';
+import CollectionHero from '@/components/collection/CollectionHero.astro';
+import ColourPicker from '@/components/collection/ColourPicker.astro';
+import FeaturesRow from '@/components/collection/FeaturesRow.astro';
+import Textures from '@/components/collection/Textures.astro';
+import FinishesSizes from '@/components/collection/FinishesSizes.astro';
+import ActionsPanel from '@/components/collection/ActionsPanel.astro';
+import RoomGallery from '@/components/collection/RoomGallery.astro';
+import CollectionCard from '@/components/cards/CollectionCard.astro';
+import Button from '@/components/ui/Button.astro';
+import PhotoPlaceholder from '@/components/ui/PhotoPlaceholder.astro';
+import SaveStar from '@/components/ui/SaveStar.astro';
+import { routes, spaces } from '@/config/site';
+import { formatSize } from '@/lib/catalogue';
+import { buildCollection } from '@/lib/collection-data';
+import type { SelectionItem } from '@/lib/types';
+
+export async function getStaticPaths() {
+  return (await getCollection('tiles')).map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props as { entry: CollectionEntry<'tiles'> };
+const view = await buildCollection(entry);
+const { data } = entry;
+const brand = view.summary.brand.name;
+const collectionItem: SelectionItem = {
+  id: entry.id,
+  kind: 'collection',
+  name: data.name,
+  brand,
+  href: view.summary.href,
+  swatch: view.colours[0].hex,
+  thumb: view.colours[0].faceSrc,
+};
+const spaceName = (slug: string) => spaces.find((s) => s.slug === slug)?.name ?? slug;
+const roomLabel = `${spaceName(data.spaces[0]).toLowerCase()} with ${data.name} tiles`;
+const allFinishes = [...new Map(view.colours.flatMap((c) => c.finishes).map((f) => [f.value, f])).values()];
+const facts = [
+  `${view.colours.length} colours`,
+  `${allFinishes.length} ${allFinishes.length === 1 ? 'finish' : 'finishes'}`,
+  `Sizes: ${view.allSizes.map((s) => formatSize(s).replace(' mm', '')).join(', ')} mm`,
+];
+
+// Room photos from the catalogue, or one placeholder per colour (up to 4) until they arrive.
+const slides =
+  data.roomImages.length > 0
+    ? data.roomImages.map((r) => ({ image: r.image, caption: r.caption, face: view.colours[0].face }))
+    : view.colours.slice(0, 4).map((c, i) => ({
+        caption: `${spaceName(data.spaces[i % data.spaces.length])} in ${c.name}`,
+        face: `linear-gradient(180deg, #EFEAE0 0 58%, ${c.hex} 58% 100%)`,
+      }));
+---
+
+<BaseLayout title={data.name} description={`${data.name} by ${brand}: ${data.description} See colours, sizes and finishes, and enquire at Sri Skanda Traders, Coimbatore.`} whatsappTopic={data.name}>
+  <StickyBar name={data.name} brand={brand} item={collectionItem} colour={view.colours[0].name} />
+
+  <CollectionHero
+    name={data.name}
+    brand={brand}
+    description={data.description}
+    image={data.heroImage}
+    face={`linear-gradient(180deg, #EFEAE0 0 55%, ${view.colours[0].hex} 55% 100%)`}
+    roomLabel={roomLabel}
+    facts={facts}
+    item={collectionItem}
+  />
+  <ColourPicker colours={view.colours} />
+  <FeaturesRow features={view.features} />
+  <Textures colours={view.colours} />
+  <FinishesSizes face={view.colours[0].face} finishes={allFinishes} sizes={view.allSizes} />
+  <ActionsPanel item={collectionItem} />
+  <RoomGallery slides={slides} />
+
+  {
+    data.decor.length > 0 && (
+      <section class="section" aria-labelledby="decor-title">
+        <div class="container">
+          <div class="head" data-reveal>
+            <p class="eyebrow">Decor & highlighters</p>
+            <h3 id="decor-title">Pair it with</h3>
+          </div>
+          <ul class="decor-grid">
+            {data.decor.map((d, i) => {
+              const item: SelectionItem = {
+                id: `${entry.id}:${d.code}`,
+                kind: 'collection',
+                name: d.name,
+                code: d.code,
+                size: formatSize(d.size),
+                brand,
+                href: view.summary.href,
+                swatch: view.colours[0].hex,
+              };
+              return (
+                <li class="decor" data-reveal style={`--i: ${i}`}>
+                  <div class="decor-media">
+                    <PhotoPlaceholder label={`${d.name} decor tile`} face={view.colours[0].face} />
+                    <SaveStar item={item} class="decor-star" />
+                  </div>
+                  <h4>{d.name}</h4>
+                  <p class="small muted tabular">
+                    {d.code} · {formatSize(d.size)}
+                  </p>
+                  <Button variant="secondary" size="sm" href={routes.contact} data-enquire data-item={JSON.stringify(item)}>
+                    Enquire
+                  </Button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section similar" aria-labelledby="similar-title">
+    <div class="container">
+      <h3 id="similar-title" class="similar-title" data-reveal>You may also like</h3>
+      <ul class="similar-grid">
+        {
+          view.similar.map((t, i) => (
+            <li data-reveal style={`--i: ${i}`}>
+              <CollectionCard
+                id={t.entry.id}
+                href={t.href}
+                brand={t.brand.name}
+                name={t.entry.data.name}
+                colours={t.colours}
+                finishes={t.finishes}
+                sizes={t.sizes}
+                dots={t.dots}
+                tileFace={t.dots[0]}
+                roomLabel={`${spaceName(t.entry.data.spaces[0]).toLowerCase()} with ${t.entry.data.name} tiles`}
+              />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .head {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+
+  .decor-grid,
+  .similar-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4) var(--gutter);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 1200px) {
+    .decor-grid,
+    .similar-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 599px) {
+    .similar-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .decor {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: 6px;
+  }
+
+  .decor-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    margin-bottom: 8px;
+    border-radius: var(--radius-image);
+  }
+
+  .decor-media :global(.decor-star) {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+  }
+
+  .decor h4 {
+    color: var(--green);
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  .similar {
+    border-top: var(--border);
+  }
+
+  .similar-title {
+    margin-bottom: var(--space-4);
+  }
+</style>

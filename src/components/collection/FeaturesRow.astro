@@ -1,0 +1,124 @@
+---
+// Collection 03 — Features: one calm row of the features the brand states, with line icons.
+// Hover or tap shows a one-line, plain-English explanation.
+import Icon, { type IconName } from '@/components/ui/Icon.astro';
+
+interface Props {
+  features: { value: string; label: string; icon: string; explain: string }[];
+}
+
+const { features } = Astro.props;
+---
+
+{
+  features.length > 0 && (
+    <section class="section features" aria-labelledby="features-title">
+      <div class="container">
+        <p class="eyebrow" id="features-title" data-reveal>
+          Features
+        </p>
+        <ul class="row" data-reveal>
+          {features.map((f) => (
+            <li class="feature">
+              <button type="button" class="feature-btn" aria-expanded="false" aria-describedby={`feature-${f.value}`} data-feature>
+                <Icon name={f.icon as IconName} size={32} />
+                <span class="feature-label">{f.label}</span>
+              </button>
+              <p class="explain small" id={`feature-${f.value}`} role="tooltip">
+                <strong>{f.label}:</strong> {f.explain.charAt(0).toLowerCase() + f.explain.slice(1)}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .features {
+    padding-block: var(--space-8);
+    border-block: var(--border);
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    margin-top: var(--space-3);
+    padding: 0;
+    list-style: none;
+  }
+
+  .feature {
+    position: relative;
+  }
+
+  .feature-btn {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    min-width: 112px;
+    padding: 8px;
+    border: 0;
+    border-radius: var(--radius-button);
+    background: none;
+    color: var(--green);
+  }
+
+  .feature-btn:hover,
+  .feature-btn[aria-expanded='true'] {
+    background: rgba(18, 59, 50, 0.05);
+  }
+
+  .feature-label {
+    font-size: var(--fs-small);
+    font-weight: 600;
+  }
+
+  .explain {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    z-index: 5;
+    width: max-content;
+    max-width: 240px;
+    padding: 10px 14px;
+    border-radius: var(--radius-button);
+    background: var(--green);
+    color: var(--on-green);
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, 4px);
+    transition:
+      opacity var(--dur-ui) var(--ease),
+      transform var(--dur-ui) var(--ease),
+      visibility 0s linear var(--dur-ui);
+    pointer-events: none;
+  }
+
+  .feature:hover .explain,
+  .feature-btn:focus-visible + .explain,
+  .feature-btn[aria-expanded='true'] + .explain {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+    transition:
+      opacity var(--dur-ui) var(--ease),
+      transform var(--dur-ui) var(--ease);
+  }
+</style>
+
+<script>
+  // Tap toggles the explanation on touch screens; only one open at a time.
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-feature]')];
+  buttons.forEach((button) =>
+    button.addEventListener('click', () => {
+      const open = button.getAttribute('aria-expanded') !== 'true';
+      buttons.forEach((b) => b.setAttribute('aria-expanded', String(b === button && open)));
+    }),
+  );
+  document.addEventListener('click', (event) => {
+    if (!(event.target as HTMLElement).closest('[data-feature]')) buttons.forEach((b) => b.setAttribute('aria-expanded', 'false'));
+  });
+</script>

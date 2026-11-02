@@ -1,0 +1,263 @@
+---
+// Collection 05 — Finishes & sizes. Left: finish toggle chips that show the same tile face with or
+// without the finish sheen, plus where each finish works best. Right: every size drawn to true
+// proportion beside a standard 2100 mm door; tapping a size highlights its rectangle.
+import { formatSize } from '@/lib/catalogue';
+
+interface Props {
+  face: string;
+  finishes: { value: string; label: string; sheen: boolean; tip: string }[];
+  sizes: string[];
+}
+
+const { face, finishes, sizes } = Astro.props;
+
+// Size-to-scale drawing, in millimetres.
+const DOOR = { w: 900, h: 2100 };
+const GAP = 200;
+const rects = sizes.map((s) => {
+  const [a, b] = s.split('x').map(Number);
+  return { size: s, w: Math.min(a, b), h: Math.max(a, b) };
+});
+let x = DOOR.w + GAP;
+const placed = rects.map((r) => {
+  const out = { ...r, x };
+  x += r.w + GAP;
+  return out;
+});
+const height = Math.max(DOOR.h, ...rects.map((r) => r.h)) + 160;
+const width = x - GAP + 40;
+---
+
+<section class="section" aria-labelledby="finish-title">
+  <div class="container cols">
+    <div class="finishes" data-reveal data-finishes>
+      <p class="eyebrow">Finishes</p>
+      <h2 id="finish-title">Feel the difference.</h2>
+      <div class="toggle" role="group" aria-label="Finish">
+        {
+          finishes.map((f, i) => (
+            <button
+              type="button"
+              class="toggle-btn"
+              aria-pressed={i === 0 ? 'true' : 'false'}
+              data-finish={f.value}
+              data-sheen={f.sheen ? '' : undefined}
+              data-tip={f.tip}
+            >
+              {f.label}
+            </button>
+          ))
+        }
+      </div>
+      <div class="face" style={`background: ${face}`} data-finish-face data-gloss={finishes[0]?.sheen ? '' : undefined}>
+        <span class="gloss" aria-hidden="true"></span>
+      </div>
+      <p class="tip" data-finish-tip>{finishes[0]?.tip}</p>
+    </div>
+
+    <div class="sizes" data-reveal style="--i: 1" data-sizes>
+      <p class="eyebrow">Sizes</p>
+      <h2>See the real size.</h2>
+      <div class="toggle" role="group" aria-label="Size">
+        {
+          sizes.map((s, i) => (
+            <button type="button" class="toggle-btn tabular" aria-pressed={i === sizes.length - 1 ? 'true' : 'false'} data-size={s}>
+              {formatSize(s)}
+            </button>
+          ))
+        }
+      </div>
+      <svg class="scale" viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Tile sizes drawn to scale next to a 2100 mm door">
+        <line x1="0" y1={height - 80} x2={width} y2={height - 80} class="floor-line" />
+        <g transform={`translate(0 ${height - 80 - DOOR.h})`}>
+          <rect x="0" y="0" width={DOOR.w} height={DOOR.h} class="door" />
+          <rect x="70" y="70" width={DOOR.w - 140} height={DOOR.h - 140} class="door-panel" />
+          <circle cx={DOOR.w - 110} cy={DOOR.h / 2 + 60} r="22" class="door-knob" />
+        </g>
+        <text x={DOOR.w / 2} y={height - 24} class="label">Door 2100 mm</text>
+        {
+          placed.map((r, i) => (
+            <g data-size-rect={r.size} class:list={['tile-rect', { on: i === placed.length - 1 }]}>
+              <rect x={r.x} y={height - 80 - r.h} width={r.w} height={r.h} />
+              <text x={r.x + r.w / 2} y={height - 24} class="label">
+                {r.w}×{r.h}
+              </text>
+            </g>
+          ))
+        }
+      </svg>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cols {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  @media (min-width: 1200px) {
+    .cols {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-12);
+    }
+  }
+
+  .finishes,
+  .sizes {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+  }
+
+  .toggle {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-block: 4px var(--space-1);
+  }
+
+  .toggle-btn {
+    min-height: 44px;
+    padding: 0 18px;
+    border: 1.5px solid var(--green);
+    border-radius: var(--radius-chip);
+    background: transparent;
+    color: var(--green);
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .toggle-btn[aria-pressed='true'] {
+    background: var(--green);
+    color: var(--on-green);
+  }
+
+  .face {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    max-width: 480px;
+    overflow: hidden;
+    border: var(--border);
+    border-radius: 0 var(--radius-card) 0 0;
+  }
+
+  /* Matt stays still. Glossy/polished: a soft static highlight plus one sweep on switch. */
+  .gloss {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.22), transparent 60%);
+    opacity: 0;
+    transition: opacity var(--dur-ui-slow) var(--ease);
+  }
+
+  .gloss::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.18) 50%, transparent 70%);
+    transform: translateX(-110%);
+  }
+
+  [data-gloss] .gloss {
+    opacity: 1;
+  }
+
+  [data-gloss][data-sweep] .gloss::before {
+    animation: sweep 1200ms var(--ease) forwards;
+  }
+
+  @keyframes sweep {
+    to {
+      transform: translateX(110%);
+    }
+  }
+
+  .tip {
+    max-width: 44ch;
+    color: var(--muted);
+  }
+
+  .scale {
+    width: 100%;
+    max-width: 560px;
+    height: auto;
+    max-height: 360px;
+  }
+
+  .floor-line {
+    stroke: var(--beige);
+    stroke-width: 12;
+  }
+
+  .door,
+  .door-panel {
+    fill: none;
+    stroke: var(--muted);
+    stroke-width: 14;
+  }
+
+  .door-panel {
+    stroke-width: 8;
+    opacity: 0.5;
+  }
+
+  .door-knob {
+    fill: var(--muted);
+  }
+
+  .label {
+    fill: var(--muted);
+    font-family: var(--font);
+    font-size: 64px;
+    text-anchor: middle;
+  }
+
+  .tile-rect rect {
+    fill: var(--beige);
+    stroke: var(--green);
+    stroke-width: 12;
+    transition: fill var(--dur-ui) var(--ease);
+  }
+
+  .tile-rect.on rect {
+    fill: var(--green);
+  }
+
+  .tile-rect.on .label {
+    fill: var(--green);
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-finishes]').forEach((box) => {
+    const face = box.querySelector<HTMLElement>('[data-finish-face]');
+    const tip = box.querySelector<HTMLElement>('[data-finish-tip]');
+    box.querySelectorAll<HTMLButtonElement>('[data-finish]').forEach((button) => {
+      button.addEventListener('click', () => {
+        box.querySelectorAll('[data-finish]').forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+        if (tip) tip.textContent = button.dataset.tip ?? '';
+        if (!face) return;
+        const gloss = button.hasAttribute('data-sheen');
+        face.toggleAttribute('data-gloss', gloss);
+        face.removeAttribute('data-sweep');
+        void face.offsetWidth;
+        if (gloss) face.setAttribute('data-sweep', '');
+      });
+    });
+  });
+
+  document.querySelectorAll<HTMLElement>('[data-sizes]').forEach((box) => {
+    box.querySelectorAll<HTMLButtonElement>('[data-size]').forEach((button) => {
+      button.addEventListener('click', () => {
+        box.querySelectorAll('[data-size]').forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+        box.querySelectorAll('[data-size-rect]').forEach((r) =>
+          r.classList.toggle('on', r.getAttribute('data-size-rect') === button.dataset.size),
+        );
+      });
+    });
+  });
+</script>

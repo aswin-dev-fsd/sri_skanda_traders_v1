@@ -36,22 +36,23 @@ export const colourFamilies = [
   { value: 'special', label: 'Special', hex: 'conic-gradient(#B98F66, #6F8F87, #C9B79C, #B98F66)' },
 ] as const;
 
+/** `tip` is the one line on the Collection page about where each finish works best. */
 export const tileFinishes = [
-  { value: 'glossy', label: 'Glossy', sheen: true },
-  { value: 'matt', label: 'Matt', sheen: false },
-  { value: 'satin', label: 'Satin', sheen: false },
-  { value: 'polished', label: 'Polished', sheen: true },
-  { value: 'rustic', label: 'Rustic / Carving', sheen: false },
+  { value: 'glossy', label: 'Glossy', sheen: true, tip: 'Reflects light and makes rooms feel brighter. Best on walls and low-traffic floors.' },
+  { value: 'matt', label: 'Matt', sheen: false, tip: 'Hides marks and gives better grip. Best for busy floors, bathrooms and outdoors.' },
+  { value: 'satin', label: 'Satin', sheen: false, tip: 'A soft glow that is easier to keep clean than glossy.' },
+  { value: 'polished', label: 'Polished', sheen: true, tip: 'A deep, mirror-like shine for living rooms and feature walls.' },
+  { value: 'rustic', label: 'Rustic / Carving', sheen: false, tip: 'Textured for grip and character. Best outdoors and on elevations.' },
 ] as const;
 
 /** Features shown on the Collection page, with the one-line explanation from the brief's style. */
 export const tileFeatures = [
-  { value: 'anti-skid', label: 'Anti-skid', explain: 'Better grip, safer for bathrooms and outdoors.' },
-  { value: 'stain-resistant', label: 'Stain resistant', explain: 'Spills wipe off without leaving marks.' },
-  { value: 'scratch-resistant', label: 'Scratch resistant', explain: 'Stands up to furniture and daily footfall.' },
-  { value: 'easy-to-clean', label: 'Easy to clean', explain: 'A quick mop keeps it looking new.' },
-  { value: 'frost-resistant', label: 'Frost resistant', explain: 'Handles cold and wet without cracking.' },
-  { value: 'heat-resistant', label: 'Heat resistant', explain: 'Suits sunny terraces and kitchen walls.' },
+  { value: 'anti-skid', label: 'Anti-skid', icon: 'grip', explain: 'Better grip, safer for bathrooms and outdoors.' },
+  { value: 'stain-resistant', label: 'Stain resistant', icon: 'drop', explain: 'Spills wipe off without leaving marks.' },
+  { value: 'scratch-resistant', label: 'Scratch resistant', icon: 'shield', explain: 'Stands up to furniture and daily footfall.' },
+  { value: 'easy-to-clean', label: 'Easy to clean', icon: 'sparkle', explain: 'A quick mop keeps it looking new.' },
+  { value: 'frost-resistant', label: 'Frost resistant', icon: 'snowflake', explain: 'Handles cold and wet without cracking.' },
+  { value: 'heat-resistant', label: 'Heat resistant', icon: 'sun', explain: 'Suits sunny terraces and kitchen walls.' },
 ] as const;
 
 export const applications = [

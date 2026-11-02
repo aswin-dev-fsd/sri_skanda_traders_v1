@@ -1,0 +1,462 @@
+---
+// Product page (brief Prompt 03, bathware variant), also used for granite and adhesives:
+// image gallery left, sticky details right, then "Pairs well with" and matching tiles.
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { Image, getImage } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import CollectionCard from '@/components/cards/CollectionCard.astro';
+import ProductCard from '@/components/cards/ProductCard.astro';
+import Breadcrumbs from '@/components/ui/Breadcrumbs.astro';
+import Button from '@/components/ui/Button.astro';
+import PhotoPlaceholder from '@/components/ui/PhotoPlaceholder.astro';
+import SaveStar from '@/components/ui/SaveStar.astro';
+import { bathwareTypes, label } from '@/config/catalogue';
+import { isPlaceholder, routes, spaces } from '@/config/site';
+import { getProducts, getTiles, productHref } from '@/lib/catalogue';
+import { whatsappUrl } from '@/lib/links';
+import type { SelectionItem } from '@/lib/types';
+
+export async function getStaticPaths() {
+  return (await getCollection('products')).map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props as { entry: CollectionEntry<'products'> };
+const { data } = entry;
+const brand = (await getCollection('brands')).find((b) => b.id === data.brand.id)!.data;
+
+const group = data.bathwareType ? bathwareTypes.find((t) => t.value === data.bathwareType)!.group : undefined;
+const categoryRoute = routes[data.category];
+const crumbs = [
+  { label: 'Home', href: routes.home },
+  { label: label.productCategory[data.category], href: categoryRoute },
+  ...(group ? [{ label: label.bathwareGroup[group], href: `${routes.bathware}/${group}` }] : []),
+  { label: data.name },
+];
+
+const typeLabel = data.bathwareType ? label.bathwareType[data.bathwareType] : data.adhesiveType ? label.adhesiveType[data.adhesiveType] : undefined;
+const finishLabel = (f: string) =>
+  data.category === 'bathware' ? label.bathwareFinish[f as keyof typeof label.bathwareFinish] : label.graniteFinish[f as keyof typeof label.graniteFinish];
+const useLabel = (u: string) =>
+  data.category === 'granite' ? label.graniteUse[u as keyof typeof label.graniteUse] : label.adhesiveUse[u as keyof typeof label.adhesiveUse];
+const finishSwatch: Record<string, string> = { chrome: 'linear-gradient(135deg, #E4E6E8, #A9ADB1)', 'matt-black': '#2B2D2C', white: '#F4F3EF' };
+
+// Spec table: type first, then the catalogue specs; values the client has not supplied are left out.
+const specs = [
+  ...(typeLabel ? [['Type', typeLabel]] : []),
+  ...Object.entries(data.specs).filter(([, v]) => !isPlaceholder(v)),
+  ...(data.uses.length ? [['Use', data.uses.map(useLabel).join(', ')]] : []),
+];
+
+const views = data.images.length
+  ? await Promise.all(data.images.map(async (img) => ({ img, src: (await getImage({ src: img, width: 1400 })).src, label: data.name })))
+  : ['front view', 'side view', 'detail', 'in a room'].map((v) => ({ img: undefined, src: undefined, label: `${data.name}, ${v}` }));
+
+const item: SelectionItem = {
+  id: entry.id,
+  kind: 'product',
+  name: data.name,
+  brand: brand.name,
+  code: data.code,
+  href: productHref(entry.id),
+  swatch: data.hex,
+  thumb: views[0].src,
+};
+
+const pairs = (await getProducts(data.category)).filter((p) => p.entry.id !== entry.id).slice(0, 4);
+const tileSpace = data.category === 'bathware' ? 'bathroom' : data.category === 'granite' ? 'kitchen' : 'living-room';
+const tiles = (await getTiles({ space: tileSpace })).slice(0, 4);
+const spaceName = spaces.find((s) => s.slug === tileSpace)!.name.toLowerCase();
+const tilesTitle = data.category === 'adhesives' ? 'Tiles you can lay with it' : `Tiles for your ${spaceName}`;
+---
+
+<BaseLayout title={data.name} description={`${data.name} (${data.code}) by ${brand.name}. ${data.keySpec}. Enquire at Sri Skanda Traders, Coimbatore.`} whatsappTopic={`${data.name} (${data.code})`}>
+  <section class="section product">
+    <div class="container">
+      <Breadcrumbs items={crumbs} />
+      <div class="cols">
+        <div class="gallery" data-product-gallery>
+          <button
+            type="button"
+            class="main"
+            data-lightbox
+            data-lightbox-group="product"
+            data-lightbox-src={views[0].src}
+            data-lightbox-face="var(--surface)"
+            data-lightbox-caption={views[0].label}
+            data-gallery-main
+            aria-label="Zoom image"
+          >
+            {
+              views.map((v, i) => (
+                <span class="view" data-view={i} hidden={i !== 0}>
+                  {v.img ? <Image src={v.img} alt={v.label} widths={[480, 800, 1200]} sizes="(min-width: 1200px) 720px, 100vw" /> : <PhotoPlaceholder label={v.label} face="var(--surface)" />}
+                </span>
+              ))
+            }
+          </button>
+          <ul class="thumbs">
+            {
+              views.map((v, i) => (
+                <li>
+                  <button type="button" class="thumb" aria-label={`Show ${v.label}`} aria-current={i === 0 ? 'true' : undefined} data-thumb={i} data-src={v.src} data-caption={v.label}>
+                    {v.img ? <Image src={v.img} alt="" width={120} height={120} /> : <span class="thumb-ph tabular">{i + 1}</span>}
+                  </button>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div class="details">
+          <div class="brand-row">
+            <p class="eyebrow">{brand.name}</p>
+            {brand.authorised && <span class="tag">Authorised Dealer</span>}
+          </div>
+          <h1>{data.name}</h1>
+          <p class="code tabular muted">{data.code}</p>
+          <p class="body-lg key">{data.keySpec}</p>
+
+          <table class="specs">
+            <caption class="visually-hidden">Specifications</caption>
+            <tbody>
+              {
+                specs.map(([k, v]) => (
+                  <tr>
+                    <th scope="row">{k}</th>
+                    <td class="tabular">{v}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+
+          {
+            data.finishes.length > 0 && (
+              <div class="finishes">
+                <p class="label">Finish</p>
+                <ul>
+                  {data.finishes.map((f) => (
+                    <li>
+                      {data.category === 'bathware' ? (
+                        <span class="swatch" style={`background: ${finishSwatch[f] ?? 'var(--beige)'}`} aria-hidden="true" />
+                      ) : null}
+                      <span>{finishLabel(f)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
+
+          {
+            data.features.length > 0 && (
+              <ul class="features">
+                {data.features.map((f) => <li>{f}</li>)}
+              </ul>
+            )
+          }
+
+          <div class="buttons">
+            <SaveStar item={item} class="detail-star" />
+            <Button href={routes.contact} data-enquire data-item={JSON.stringify(item)}>Enquire</Button>
+            <Button variant="secondary" href={whatsappUrl(`${data.name} (${data.code})`)} icon="whatsapp" target="_blank" rel="noopener">WhatsApp</Button>
+          </div>
+          <p class="small muted">Prices and availability on enquiry. Our team replies within a few hours.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {
+    pairs.length > 0 && (
+      <section class="section more" aria-labelledby="pairs-title">
+        <div class="container">
+          <h3 id="pairs-title" class="more-title">Pairs well with</h3>
+          <ul class="grid products">
+            {pairs.map((p) => (
+              <li>
+                <ProductCard
+                  id={p.entry.id}
+                  href={p.href}
+                  brand={p.brand.name}
+                  name={p.entry.data.name}
+                  code={p.entry.data.code}
+                  spec={p.entry.data.keySpec}
+                  authorised={p.brand.authorised}
+                  swatch={p.entry.data.hex}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section more" aria-labelledby="tiles-title">
+    <div class="container">
+      <h3 id="tiles-title" class="more-title">{tilesTitle}</h3>
+      <ul class="grid tiles">
+        {
+          tiles.map((t) => (
+            <li>
+              <CollectionCard
+                id={t.entry.id}
+                href={t.href}
+                brand={t.brand.name}
+                name={t.entry.data.name}
+                colours={t.colours}
+                finishes={t.finishes}
+                sizes={t.sizes}
+                dots={t.dots}
+                tileFace={t.dots[0]}
+                roomLabel={`${spaceName} with ${t.entry.data.name} tiles`}
+              />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .product {
+    padding-top: var(--space-4);
+  }
+
+  .cols {
+    display: grid;
+    gap: var(--space-6);
+    margin-top: var(--space-3);
+  }
+
+  @media (min-width: 1024px) {
+    .cols {
+      grid-template-columns: 7fr 5fr;
+      gap: var(--space-8);
+      align-items: start;
+    }
+
+    .details {
+      position: sticky;
+      top: calc(var(--header-h-compact) + var(--space-3));
+    }
+  }
+
+  .main {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    padding: 0;
+    border: var(--border);
+    border-radius: var(--radius-card);
+    background: var(--surface);
+    cursor: zoom-in;
+  }
+
+  .view {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .view[hidden] {
+    display: none;
+  }
+
+  .view :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 6%;
+  }
+
+  .thumbs {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .thumb {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    overflow: hidden;
+    padding: 0;
+    border: 2px solid var(--beige);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--muted);
+  }
+
+  .thumb[aria-current='true'] {
+    border-color: var(--gold);
+  }
+
+  .thumb :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .details {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .brand-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .tag {
+    padding: 5px 10px;
+    border: 1px solid var(--gold);
+    border-radius: var(--radius-chip);
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 1.6rem + 1.6vw, 2.75rem);
+  }
+
+  .code {
+    margin-top: -8px;
+  }
+
+  .specs {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--fs-small);
+  }
+
+  .specs th,
+  .specs td {
+    padding: 10px 0;
+    border-bottom: var(--border);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .specs th {
+    width: 40%;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .label {
+    margin-bottom: 8px;
+    font-size: var(--fs-small);
+    font-weight: 600;
+    color: var(--green);
+  }
+
+  .finishes ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .finishes li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--fs-small);
+  }
+
+  .swatch {
+    width: 28px;
+    height: 28px;
+    border: 1px solid rgba(46, 58, 53, 0.2);
+    border-radius: 50%;
+  }
+
+  .features {
+    display: grid;
+    gap: 6px;
+    padding-left: 1.2em;
+    color: var(--charcoal);
+  }
+
+  .features li::marker {
+    color: var(--gold);
+  }
+
+  .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: var(--space-1);
+  }
+
+  .buttons :global(.detail-star) {
+    width: 52px;
+    height: 52px;
+    border: var(--border);
+    box-shadow: none;
+  }
+
+  .more {
+    border-top: var(--border);
+  }
+
+  .more-title {
+    margin-bottom: var(--space-4);
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--space-4) var(--gutter);
+    padding: 0;
+    list-style: none;
+  }
+
+  .products {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tiles {
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 600px) {
+    .tiles {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .products,
+    .tiles {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>
+
+<script>
+  // Thumbnails switch the main view; the main view zooms into the lightbox.
+  document.querySelectorAll<HTMLElement>('[data-product-gallery]').forEach((gallery) => {
+    const main = gallery.querySelector<HTMLElement>('[data-gallery-main]')!;
+    gallery.querySelectorAll<HTMLButtonElement>('[data-thumb]').forEach((thumb) => {
+      thumb.addEventListener('click', () => {
+        const i = thumb.dataset.thumb;
+        gallery.querySelectorAll<HTMLElement>('[data-view]').forEach((v) => (v.hidden = v.dataset.view !== i));
+        gallery.querySelectorAll('[data-thumb]').forEach((t) => (t === thumb ? t.setAttribute('aria-current', 'true') : t.removeAttribute('aria-current')));
+        if (thumb.dataset.src) main.dataset.lightboxSrc = thumb.dataset.src;
+        main.dataset.lightboxCaption = thumb.dataset.caption ?? '';
+      });
+    });
+  });
+</script>
