@@ -1,0 +1,14 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Oval Counter-top Basin"
+code: "BRA-CT-104"
+brand: "brand-a"
+category: "bathware"
+bathwareType: "counter-top-basin"
+finishes: ["white", "matt-black"]
+keySpec: "Counter-top · 600 × 400 mm"
+specs:
+  Dimensions: "600 × 400 × 140 mm"
+  Mounting: "Counter-top"
+  Material: "Ceramic"
+hex: "#EFEDE8"
+placeholder: true

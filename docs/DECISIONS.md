@@ -25,8 +25,8 @@ When a decision changes, edit it here and note the change in that day's changelo
 | Area | Decision |
 |---|---|
 | Catalogue owner | The developer loads and updates all catalogue data. No CMS. |
-| Catalogue format | One YAML file per collection/product, in Astro content collections, validated by a schema (a missing field fails the build). |
-| Placeholder catalogue | 16 tile collections (4–6 colours each, spread across all spaces, looks and finishes), 8 bathware products (some Johnson, to show the "Authorised Dealer" tag), 4 granite, 2 JSW adhesives. All fictional names. |
+| Catalogue format | One YAML file per collection/product, in Astro content collections, validated by a schema (a missing field fails the build). Tiles in `src/content/tiles/`, products in `src/content/products/`, brands in `src/content/brands.yaml`; allowed filter values in `src/config/catalogue.ts`. How-to: [`CATALOGUE.md`](CATALOGUE.md). |
+| Placeholder catalogue | 16 tile collections (4–6 colours each, spread across all spaces, looks and finishes), 8 bathware products (some Johnson, to show the "Authorised Dealer" tag), 4 granite, 2 JSW adhesives. All fictional names, marked `placeholder: true`; brands are `Brand A`–`Brand E` plus the real Johnson and JSW. The launch check lists every placeholder entry. |
 | Images | Stored in the repo and optimised by Astro at build time. |
 | Temporary images | AI-generated stand-ins for the Home hero "Try a floor" (one living room, 3 floor variants), the Home before/after slider, and 2–3 demo collections. Everything else uses grey labelled boxes, e.g. `[PHOTO: living room, light floor]`. The developer writes the prompts, the user generates the images. All temporary images live in `src/assets/_temp/`. |
 | Business details | Phone, WhatsApp number, email, address, hours and map link are placeholders in `src/config/site.ts`. |

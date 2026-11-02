@@ -1,0 +1,14 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Arc Basin Mixer"
+code: "JSN-FT-105"
+brand: "johnson"
+category: "bathware"
+bathwareType: "faucet"
+finishes: ["chrome", "matt-black"]
+keySpec: "Single-lever · 165 mm spout"
+specs:
+  Spout reach: "165 mm"
+  Operation: "Single lever"
+  Cartridge: "Ceramic disc"
+hex: "#C9CCCF"
+placeholder: true

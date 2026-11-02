@@ -1,5 +1,6 @@
-// Launch guard: lists placeholder business details in src/config/site.ts and
-// references to temporary images (src/assets/_temp/) anywhere in src/.
+// Launch guard: lists placeholder business details in src/config/site.ts, references to
+// temporary images (src/assets/_temp/) anywhere in src/, and catalogue entries marked
+// `placeholder: true` in src/content/.
 //
 // Strict (exits 1 when anything is found) with `--strict` or when the environment variable
 // LAUNCH_CHECK=strict is set (add it to Vercel's Production environment at launch).
@@ -45,18 +46,35 @@ async function findTempImageRefs() {
   return refs;
 }
 
+/** Lists catalogue files (relative paths) that are marked `placeholder: true`. */
+async function findPlaceholderContent() {
+  const contentDir = path.join(srcDir, 'content');
+  const files = [];
+  const entries = await readdir(contentDir, { recursive: true, withFileTypes: true }).catch(() => []);
+  for (const entry of entries) {
+    if (!entry.isFile() || !/\.ya?ml$/.test(entry.name)) continue;
+    const file = path.join(entry.parentPath, entry.name);
+    if (/^\s*-?\s*placeholder:\s*true\b/m.test(await readFile(file, 'utf8'))) files.push(path.relative(root, file));
+  }
+  return files;
+}
+
 const site = await import(pathToFileURL(path.join(srcDir, 'config', 'site.ts')).href);
 const placeholders = findPlaceholders(site.business, 'business', []);
 const tempRefs = await findTempImageRefs();
+const placeholderContent = await findPlaceholderContent();
 
-if (placeholders.length === 0 && tempRefs.length === 0) {
-  console.log('Launch check: no placeholders or temporary images.');
+if (placeholders.length === 0 && tempRefs.length === 0 && placeholderContent.length === 0) {
+  console.log('Launch check: no placeholders, temporary images or placeholder catalogue entries.');
   process.exit(0);
 }
 
 const report = [
   ...(placeholders.length ? ['Placeholder business details (src/config/site.ts):', ...placeholders.map((p) => `  - ${p}`)] : []),
   ...(tempRefs.length ? ['Temporary image references:', ...tempRefs.map((r) => `  - ${r}`)] : []),
+  ...(placeholderContent.length
+    ? [`Placeholder catalogue entries (${placeholderContent.length} files with placeholder: true):`, ...placeholderContent.map((f) => `  - ${f}`)]
+    : []),
 ].join('\n');
 
 if (strict) {

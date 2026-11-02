@@ -1,0 +1,14 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "JSW Stone Adhesive S2"
+code: "JSW-SA-02"
+brand: "jsw"
+category: "adhesives"
+adhesiveType: "stone-adhesive"
+uses: ["floor", "wall", "exterior", "wet-area"]
+keySpec: "20 kg bag · large format & stone"
+specs:
+  Pack: "20 kg"
+  Coverage: "[COVERAGE]"
+  Use: "Large-format tiles, granite and stone"
+hex: "#A9A39A"
+placeholder: true

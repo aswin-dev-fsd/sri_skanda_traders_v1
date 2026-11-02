@@ -1,0 +1,13 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Sira Grey"
+code: "GR-203"
+brand: "brand-d"
+category: "granite"
+colourFamily: "grey"
+finishes: ["polished", "flamed"]
+uses: ["flooring", "elevation", "staircase"]
+keySpec: "Flamed · 18 mm slab"
+specs:
+  Thickness: "18 mm"
+hex: "#8E8C88"
+placeholder: true

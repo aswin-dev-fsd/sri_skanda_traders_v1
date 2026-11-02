@@ -1,0 +1,45 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Kitchen Mosaic"
+brand: "brand-e"
+description: "Small-format mosaics that make kitchen backsplashes easy."
+categories: ["wall"]
+spaces: ["kitchen", "bathroom"]
+looks: ["decor"]
+features: ["stain-resistant", "easy-to-clean", "heat-resistant"]
+colours:
+  - name: "White Hex"
+    code: "KM-1501"
+    family: "white"
+    hex: "#F3F1EC"
+    finishes: ["glossy", "matt"]
+    sizes: ["300x300"]
+    application: "wall"
+    thickness: "9 mm"
+  - name: "Grey Hex"
+    code: "KM-1502"
+    family: "grey"
+    hex: "#B7B6B1"
+    finishes: ["glossy"]
+    sizes: ["300x300"]
+    application: "wall"
+    thickness: "9 mm"
+  - name: "Forest Hex"
+    code: "KM-1503"
+    family: "special"
+    hex: "#2F5A4C"
+    finishes: ["glossy", "matt"]
+    sizes: ["300x300"]
+    application: "wall"
+    thickness: "9 mm"
+  - name: "Sand Hex"
+    code: "KM-1504"
+    family: "beige"
+    hex: "#D8C8AC"
+    finishes: ["glossy"]
+    sizes: ["300x300"]
+    application: "wall"
+    thickness: "9 mm"
+decor: []
+isNew: true
+isTrending: false
+placeholder: true

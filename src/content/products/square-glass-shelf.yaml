@@ -1,0 +1,13 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Square Glass Shelf"
+code: "JSN-AC-108"
+brand: "johnson"
+category: "bathware"
+bathwareType: "accessory"
+finishes: ["chrome"]
+keySpec: "Glass shelf · 450 mm"
+specs:
+  Width: "450 mm"
+  Material: "Toughened glass, brass brackets"
+hex: "#D7DCDB"
+placeholder: true

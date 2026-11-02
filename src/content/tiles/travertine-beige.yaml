@@ -1,0 +1,45 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Travertine Beige"
+brand: "brand-b"
+description: "Layered travertine that feels warm under bare feet."
+categories: ["floor", "wall"]
+spaces: ["living-room", "bathroom", "elevation"]
+looks: ["stone"]
+features: ["anti-skid"]
+colours:
+  - name: "Beige"
+    code: "TB-701"
+    family: "beige"
+    hex: "#E3D5BD"
+    finishes: ["matt", "rustic"]
+    sizes: ["600x1200", "300x600"]
+    application: "both"
+    thickness: "9 mm"
+  - name: "Noce"
+    code: "TB-702"
+    family: "brown"
+    hex: "#B39C79"
+    finishes: ["matt"]
+    sizes: ["600x1200", "300x600"]
+    application: "both"
+    thickness: "9 mm"
+  - name: "Silver"
+    code: "TB-703"
+    family: "grey"
+    hex: "#CDC8BE"
+    finishes: ["matt", "rustic"]
+    sizes: ["600x1200"]
+    application: "both"
+    thickness: "9 mm"
+  - name: "Ivory"
+    code: "TB-704"
+    family: "cream"
+    hex: "#EEE6D6"
+    finishes: ["matt"]
+    sizes: ["600x1200", "300x600"]
+    application: "both"
+    thickness: "9 mm"
+decor: []
+isNew: false
+isTrending: true
+placeholder: true

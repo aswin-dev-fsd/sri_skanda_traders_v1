@@ -1,0 +1,48 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Calacatta Gold"
+brand: "brand-a"
+description: "Bold marble with a gentle gold vein for feature walls."
+categories: ["wall", "vitrified"]
+spaces: ["living-room", "bathroom"]
+looks: ["marble"]
+features: ["stain-resistant"]
+colours:
+  - name: "Gold Vein"
+    code: "CA-901"
+    family: "white"
+    hex: "#F1EDE4"
+    finishes: ["polished"]
+    sizes: ["800x1600", "1200x2400"]
+    application: "both"
+    thickness: "6 mm"
+  - name: "Grey Vein"
+    code: "CA-902"
+    family: "white"
+    hex: "#ECEAE5"
+    finishes: ["polished"]
+    sizes: ["800x1600", "1200x2400"]
+    application: "both"
+    thickness: "6 mm"
+  - name: "Viola"
+    code: "CA-903"
+    family: "special"
+    hex: "#E7DDDB"
+    finishes: ["polished"]
+    sizes: ["800x1600"]
+    application: "both"
+    thickness: "6 mm"
+  - name: "Warm"
+    code: "CA-904"
+    family: "cream"
+    hex: "#EFE6D5"
+    finishes: ["polished"]
+    sizes: ["800x1600", "1200x2400"]
+    application: "both"
+    thickness: "6 mm"
+decor:
+  - name: "Calacatta Strip"
+    code: "CA-D1"
+    size: "100x1200"
+isNew: false
+isTrending: true
+placeholder: true

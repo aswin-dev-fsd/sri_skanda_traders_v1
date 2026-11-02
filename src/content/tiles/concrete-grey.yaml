@@ -1,0 +1,45 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Concrete Grey"
+brand: "brand-c"
+description: "A quiet, modern concrete look for busy floors."
+categories: ["floor", "vitrified"]
+spaces: ["living-room", "kitchen", "parking"]
+looks: ["concrete"]
+features: ["anti-skid", "scratch-resistant"]
+colours:
+  - name: "Light Grey"
+    code: "CG-301"
+    family: "grey"
+    hex: "#C9C7C1"
+    finishes: ["matt"]
+    sizes: ["600x600", "600x1200"]
+    application: "floor"
+    thickness: "9 mm"
+  - name: "Mid Grey"
+    code: "CG-302"
+    family: "grey"
+    hex: "#A9A7A1"
+    finishes: ["matt"]
+    sizes: ["600x600", "600x1200"]
+    application: "floor"
+    thickness: "9 mm"
+  - name: "Graphite"
+    code: "CG-303"
+    family: "black"
+    hex: "#6F716E"
+    finishes: ["matt"]
+    sizes: ["600x600"]
+    application: "floor"
+    thickness: "9 mm"
+  - name: "Warm Grey"
+    code: "CG-304"
+    family: "beige"
+    hex: "#B4ADA2"
+    finishes: ["matt"]
+    sizes: ["600x600", "600x1200"]
+    application: "floor"
+    thickness: "9 mm"
+decor: []
+isNew: true
+isTrending: false
+placeholder: true

@@ -1,0 +1,45 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Parking Shield"
+brand: "brand-e"
+description: "Heavy-duty, anti-skid tiles made for car parks and drives."
+categories: ["floor", "vitrified"]
+spaces: ["parking", "outdoor"]
+looks: ["concrete", "plain"]
+features: ["anti-skid", "scratch-resistant", "frost-resistant"]
+colours:
+  - name: "Grey"
+    code: "PS-1101"
+    family: "grey"
+    hex: "#9A9893"
+    finishes: ["matt", "rustic"]
+    sizes: ["300x300", "400x400", "600x600"]
+    application: "floor"
+    thickness: "9 mm"
+  - name: "Charcoal"
+    code: "PS-1102"
+    family: "black"
+    hex: "#55585A"
+    finishes: ["matt"]
+    sizes: ["300x300", "400x400", "600x600"]
+    application: "floor"
+    thickness: "9 mm"
+  - name: "Red Oxide"
+    code: "PS-1103"
+    family: "special"
+    hex: "#8C4A3B"
+    finishes: ["matt", "rustic"]
+    sizes: ["300x300"]
+    application: "floor"
+    thickness: "9 mm"
+  - name: "Sand"
+    code: "PS-1104"
+    family: "beige"
+    hex: "#C8B79B"
+    finishes: ["matt"]
+    sizes: ["300x300", "400x400", "600x600"]
+    application: "floor"
+    thickness: "9 mm"
+decor: []
+isNew: false
+isTrending: true
+placeholder: true

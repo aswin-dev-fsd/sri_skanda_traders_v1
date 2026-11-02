@@ -1,0 +1,53 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Terrazzo Sand"
+brand: "brand-d"
+description: "Speckled terrazzo with a playful, handmade feel."
+categories: ["floor", "wall"]
+spaces: ["bathroom", "kitchen", "living-room"]
+looks: ["decor", "stone"]
+features: ["easy-to-clean"]
+colours:
+  - name: "Sand"
+    code: "TS-501"
+    family: "cream"
+    hex: "#E8DFD0"
+    finishes: ["matt", "satin"]
+    sizes: ["600x600", "800x800"]
+    application: "both"
+    thickness: "9 mm"
+  - name: "Pebble"
+    code: "TS-502"
+    family: "grey"
+    hex: "#C6C1B8"
+    finishes: ["matt"]
+    sizes: ["600x600", "800x800"]
+    application: "both"
+    thickness: "9 mm"
+  - name: "Terracotta"
+    code: "TS-503"
+    family: "special"
+    hex: "#C98F72"
+    finishes: ["matt", "satin"]
+    sizes: ["600x600"]
+    application: "both"
+    thickness: "9 mm"
+  - name: "Sage"
+    code: "TS-504"
+    family: "special"
+    hex: "#AEB8AD"
+    finishes: ["matt"]
+    sizes: ["600x600", "800x800"]
+    application: "both"
+    thickness: "9 mm"
+  - name: "Night"
+    code: "TS-505"
+    family: "black"
+    hex: "#4A4D4B"
+    finishes: ["matt", "satin"]
+    sizes: ["600x600", "800x800"]
+    application: "both"
+    thickness: "9 mm"
+decor: []
+isNew: true
+isTrending: true
+placeholder: true

@@ -1,0 +1,53 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Statuario White"
+brand: "brand-a"
+description: "Crisp white marble with a bold grey vein."
+categories: ["floor", "vitrified"]
+spaces: ["living-room", "bedroom", "bathroom"]
+looks: ["marble"]
+features: ["stain-resistant", "scratch-resistant"]
+colours:
+  - name: "Statuario"
+    code: "ST-1601"
+    family: "white"
+    hex: "#F5F4F0"
+    finishes: ["polished", "glossy"]
+    sizes: ["800x800", "800x1600", "1200x2400"]
+    application: "floor"
+    thickness: "6 mm"
+  - name: "Venato"
+    code: "ST-1602"
+    family: "white"
+    hex: "#EEEDEA"
+    finishes: ["polished"]
+    sizes: ["800x800", "800x1600", "1200x2400"]
+    application: "floor"
+    thickness: "6 mm"
+  - name: "Grey Vein"
+    code: "ST-1603"
+    family: "grey"
+    hex: "#DAD8D3"
+    finishes: ["polished", "glossy"]
+    sizes: ["800x800"]
+    application: "floor"
+    thickness: "6 mm"
+  - name: "Warm White"
+    code: "ST-1604"
+    family: "cream"
+    hex: "#F1ECE2"
+    finishes: ["polished"]
+    sizes: ["800x800", "800x1600", "1200x2400"]
+    application: "floor"
+    thickness: "6 mm"
+  - name: "Silk"
+    code: "ST-1605"
+    family: "white"
+    hex: "#F0EEE8"
+    finishes: ["polished", "glossy"]
+    sizes: ["800x800", "800x1600", "1200x2400"]
+    application: "floor"
+    thickness: "6 mm"
+decor: []
+isNew: true
+isTrending: true
+placeholder: true

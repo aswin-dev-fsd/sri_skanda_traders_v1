@@ -1,0 +1,56 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Linea Wall"
+brand: "brand-b"
+description: "Fine fluted lines that give plain walls quiet texture."
+categories: ["wall"]
+spaces: ["living-room", "bedroom", "bathroom"]
+looks: ["decor", "plain"]
+features: ["easy-to-clean"]
+colours:
+  - name: "Chalk"
+    code: "LW-1201"
+    family: "white"
+    hex: "#F1EFE9"
+    finishes: ["satin", "matt"]
+    sizes: ["300x600", "300x900"]
+    application: "wall"
+    thickness: "9 mm"
+  - name: "Oat"
+    code: "LW-1202"
+    family: "cream"
+    hex: "#DCD0BC"
+    finishes: ["satin"]
+    sizes: ["300x600", "300x900"]
+    application: "wall"
+    thickness: "9 mm"
+  - name: "Greige"
+    code: "LW-1203"
+    family: "grey"
+    hex: "#B9B2A7"
+    finishes: ["satin", "matt"]
+    sizes: ["300x600"]
+    application: "wall"
+    thickness: "9 mm"
+  - name: "Sage"
+    code: "LW-1204"
+    family: "special"
+    hex: "#A9B4A6"
+    finishes: ["satin"]
+    sizes: ["300x600", "300x900"]
+    application: "wall"
+    thickness: "9 mm"
+  - name: "Ink"
+    code: "LW-1205"
+    family: "black"
+    hex: "#2F3533"
+    finishes: ["satin", "matt"]
+    sizes: ["300x600", "300x900"]
+    application: "wall"
+    thickness: "9 mm"
+decor:
+  - name: "Linea Feature"
+    code: "LW-D1"
+    size: "300x900"
+isNew: true
+isTrending: false
+placeholder: true

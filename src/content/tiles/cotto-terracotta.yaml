@@ -1,0 +1,45 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Cotto Terracotta"
+brand: "brand-d"
+description: "Sun-baked terracotta tones for verandas and courtyards."
+categories: ["floor"]
+spaces: ["outdoor", "elevation"]
+looks: ["rustic"]
+features: ["anti-skid", "frost-resistant", "heat-resistant"]
+colours:
+  - name: "Cotto"
+    code: "CT-1001"
+    family: "special"
+    hex: "#B5694B"
+    finishes: ["rustic", "matt"]
+    sizes: ["300x300", "400x400"]
+    application: "floor"
+    thickness: "9 mm"
+  - name: "Clay"
+    code: "CT-1002"
+    family: "brown"
+    hex: "#9E5B43"
+    finishes: ["rustic"]
+    sizes: ["300x300", "400x400"]
+    application: "floor"
+    thickness: "9 mm"
+  - name: "Sand"
+    code: "CT-1003"
+    family: "beige"
+    hex: "#D2B28F"
+    finishes: ["rustic", "matt"]
+    sizes: ["300x300"]
+    application: "floor"
+    thickness: "9 mm"
+  - name: "Brick"
+    code: "CT-1004"
+    family: "brown"
+    hex: "#8A4B36"
+    finishes: ["rustic"]
+    sizes: ["300x300", "400x400"]
+    application: "floor"
+    thickness: "9 mm"
+decor: []
+isNew: false
+isTrending: false
+placeholder: true

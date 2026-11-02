@@ -1,0 +1,64 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Ivory Marble"
+brand: "brand-a"
+description: "Soft veined marble that keeps large rooms calm and bright."
+categories: ["floor", "vitrified"]
+spaces: ["living-room", "bedroom"]
+looks: ["marble"]
+features: ["stain-resistant", "easy-to-clean"]
+colours:
+  - name: "Ivory"
+    code: "IM-101"
+    family: "white"
+    hex: "#F2EEE6"
+    finishes: ["glossy", "matt"]
+    sizes: ["600x1200", "800x1600", "1200x2400"]
+    application: "floor"
+    thickness: "6 mm"
+  - name: "Crema"
+    code: "IM-102"
+    family: "cream"
+    hex: "#E9DFC9"
+    finishes: ["glossy"]
+    sizes: ["600x1200", "800x1600", "1200x2400"]
+    application: "floor"
+    thickness: "6 mm"
+  - name: "Sand Vein"
+    code: "IM-103"
+    family: "beige"
+    hex: "#D9CCB4"
+    finishes: ["glossy", "matt"]
+    sizes: ["600x1200"]
+    application: "floor"
+    thickness: "6 mm"
+  - name: "Silver Vein"
+    code: "IM-104"
+    family: "grey"
+    hex: "#CFCBC3"
+    finishes: ["glossy"]
+    sizes: ["600x1200", "800x1600", "1200x2400"]
+    application: "floor"
+    thickness: "6 mm"
+  - name: "Gold Vein"
+    code: "IM-105"
+    family: "special"
+    hex: "#E3D3AE"
+    finishes: ["glossy", "matt"]
+    sizes: ["600x1200", "800x1600", "1200x2400"]
+    application: "floor"
+    thickness: "6 mm"
+  - name: "Ash"
+    code: "IM-106"
+    family: "grey"
+    hex: "#B8B4AC"
+    finishes: ["glossy"]
+    sizes: ["600x1200"]
+    application: "floor"
+    thickness: "6 mm"
+decor:
+  - name: "Ivory Marble Border"
+    code: "IM-D1"
+    size: "300x600"
+isNew: true
+isTrending: true
+placeholder: true

@@ -1,0 +1,45 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Elevation Stack"
+brand: "brand-d"
+description: "Stacked-stone cladding that weathers well outdoors."
+categories: ["wall"]
+spaces: ["elevation", "outdoor"]
+looks: ["stone", "rustic"]
+features: ["frost-resistant", "heat-resistant"]
+colours:
+  - name: "Desert"
+    code: "ES-1401"
+    family: "beige"
+    hex: "#C9B596"
+    finishes: ["rustic"]
+    sizes: ["150x600", "300x600"]
+    application: "wall"
+    thickness: "9 mm"
+  - name: "Slate"
+    code: "ES-1402"
+    family: "grey"
+    hex: "#7F817C"
+    finishes: ["rustic"]
+    sizes: ["150x600", "300x600"]
+    application: "wall"
+    thickness: "9 mm"
+  - name: "Autumn"
+    code: "ES-1403"
+    family: "brown"
+    hex: "#93745A"
+    finishes: ["rustic"]
+    sizes: ["150x600"]
+    application: "wall"
+    thickness: "9 mm"
+  - name: "Ivory"
+    code: "ES-1404"
+    family: "cream"
+    hex: "#E2D7C3"
+    finishes: ["rustic"]
+    sizes: ["150x600", "300x600"]
+    application: "wall"
+    thickness: "9 mm"
+decor: []
+isNew: false
+isTrending: true
+placeholder: true

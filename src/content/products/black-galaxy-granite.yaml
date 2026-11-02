@@ -1,0 +1,13 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Black Galaxy"
+code: "GR-202"
+brand: "brand-c"
+category: "granite"
+colourFamily: "black"
+finishes: ["polished"]
+uses: ["kitchen-top", "staircase"]
+keySpec: "Polished · 20 mm slab"
+specs:
+  Thickness: "20 mm"
+hex: "#1F2022"
+placeholder: true

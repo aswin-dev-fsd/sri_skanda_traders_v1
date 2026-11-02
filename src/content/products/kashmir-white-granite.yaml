@@ -1,0 +1,13 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Kashmir White"
+code: "GR-204"
+brand: "brand-d"
+category: "granite"
+colourFamily: "white"
+finishes: ["polished", "leather"]
+uses: ["kitchen-top", "flooring"]
+keySpec: "Polished · 18 mm slab"
+specs:
+  Thickness: "18 mm"
+hex: "#E7E3DC"
+placeholder: true

@@ -1,0 +1,14 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Nova Wash Basin"
+code: "JSN-WB-103"
+brand: "johnson"
+category: "bathware"
+bathwareType: "wash-basin"
+finishes: ["white"]
+keySpec: "Wall-mounted · 550 × 420 mm"
+specs:
+  Dimensions: "550 × 420 × 180 mm"
+  Mounting: "Wall-mounted"
+  Material: "Vitreous china"
+hex: "#F4F3EF"
+placeholder: true

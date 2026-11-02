@@ -1,0 +1,17 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Aurum Wall-hung WC"
+code: "JSN-WH-101"
+brand: "johnson"
+category: "bathware"
+bathwareType: "wall-hung-wc"
+finishes: ["white"]
+keySpec: "Wall-hung · 520 × 360 mm"
+specs:
+  Dimensions: "520 × 360 × 340 mm"
+  Mounting: "Wall-hung, concealed cistern"
+  Material: "Vitreous china"
+  Flush: "Dual flush, 3/6 litres"
+  Warranty: "[WARRANTY]"
+features: ["Rimless bowl", "Soft-close seat"]
+hex: "#F4F3EF"
+placeholder: true

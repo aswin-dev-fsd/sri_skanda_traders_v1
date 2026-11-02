@@ -1,0 +1,56 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Subway Ivory"
+brand: "brand-e"
+description: "Classic glossy subway tiles for kitchens and bathrooms."
+categories: ["wall"]
+spaces: ["kitchen", "bathroom"]
+looks: ["plain"]
+features: ["stain-resistant", "easy-to-clean", "heat-resistant"]
+colours:
+  - name: "Ivory"
+    code: "SI-601"
+    family: "white"
+    hex: "#F3F0EA"
+    finishes: ["glossy"]
+    sizes: ["75x300", "100x300"]
+    application: "wall"
+    thickness: "9 mm"
+  - name: "Cream"
+    code: "SI-602"
+    family: "cream"
+    hex: "#ECE3D1"
+    finishes: ["glossy"]
+    sizes: ["75x300", "100x300"]
+    application: "wall"
+    thickness: "9 mm"
+  - name: "Sage"
+    code: "SI-603"
+    family: "special"
+    hex: "#B9C4B5"
+    finishes: ["glossy"]
+    sizes: ["75x300"]
+    application: "wall"
+    thickness: "9 mm"
+  - name: "Forest"
+    code: "SI-604"
+    family: "special"
+    hex: "#123B32"
+    finishes: ["glossy"]
+    sizes: ["75x300", "100x300"]
+    application: "wall"
+    thickness: "9 mm"
+  - name: "Charcoal"
+    code: "SI-605"
+    family: "black"
+    hex: "#3E4441"
+    finishes: ["glossy"]
+    sizes: ["75x300", "100x300"]
+    application: "wall"
+    thickness: "9 mm"
+decor:
+  - name: "Subway Border"
+    code: "SI-D1"
+    size: "75x300"
+isNew: true
+isTrending: false
+placeholder: true

@@ -1,0 +1,16 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Terra Floor-mounted WC"
+code: "JSN-FM-102"
+brand: "johnson"
+category: "bathware"
+bathwareType: "floor-mounted-wc"
+finishes: ["white"]
+keySpec: "Floor-mounted · 680 × 370 mm"
+specs:
+  Dimensions: "680 × 370 × 780 mm"
+  Mounting: "Floor-mounted, S-trap"
+  Material: "Vitreous china"
+  Flush: "Dual flush, 3/6 litres"
+features: ["Easy-clean glaze"]
+hex: "#F4F3EF"
+placeholder: true

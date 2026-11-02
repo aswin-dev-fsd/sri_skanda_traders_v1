@@ -1,0 +1,45 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Slate Matt"
+brand: "brand-c"
+description: "Low-sheen slate with real grip for wet areas."
+categories: ["floor", "wall"]
+spaces: ["bathroom", "outdoor", "parking"]
+looks: ["stone", "rustic"]
+features: ["anti-skid", "frost-resistant"]
+colours:
+  - name: "Slate Grey"
+    code: "SM-801"
+    family: "grey"
+    hex: "#7D827F"
+    finishes: ["matt", "rustic"]
+    sizes: ["300x600", "600x600"]
+    application: "both"
+    thickness: "9 mm"
+  - name: "Deep Slate"
+    code: "SM-802"
+    family: "black"
+    hex: "#5E6360"
+    finishes: ["matt"]
+    sizes: ["300x600", "600x600"]
+    application: "both"
+    thickness: "9 mm"
+  - name: "Rust"
+    code: "SM-803"
+    family: "brown"
+    hex: "#8D6A55"
+    finishes: ["matt", "rustic"]
+    sizes: ["300x600"]
+    application: "both"
+    thickness: "9 mm"
+  - name: "Green Slate"
+    code: "SM-804"
+    family: "special"
+    hex: "#6E7A6F"
+    finishes: ["matt"]
+    sizes: ["300x600", "600x600"]
+    application: "both"
+    thickness: "9 mm"
+decor: []
+isNew: true
+isTrending: false
+placeholder: true

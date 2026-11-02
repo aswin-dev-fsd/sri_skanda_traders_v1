@@ -1,0 +1,13 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Loop Towel Ring"
+code: "BRB-AC-107"
+brand: "brand-b"
+category: "bathware"
+bathwareType: "accessory"
+finishes: ["chrome", "matt-black"]
+keySpec: "Towel ring · 200 mm"
+specs:
+  Size: "200 mm"
+  Material: "Brass"
+hex: "#BFC2C4"
+placeholder: true

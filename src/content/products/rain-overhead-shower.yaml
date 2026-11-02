@@ -1,0 +1,14 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Rain Overhead Shower"
+code: "JSN-SH-106"
+brand: "johnson"
+category: "bathware"
+bathwareType: "shower"
+finishes: ["chrome"]
+keySpec: "Overhead · 250 mm round"
+specs:
+  Size: "250 mm round"
+  Mounting: "Wall arm"
+  Spray: "Rain"
+hex: "#C9CCCF"
+placeholder: true

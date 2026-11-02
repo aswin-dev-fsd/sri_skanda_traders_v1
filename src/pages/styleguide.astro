@@ -12,6 +12,7 @@ import PhotoPlaceholder from '@/components/ui/PhotoPlaceholder.astro';
 import CollectionCard from '@/components/cards/CollectionCard.astro';
 import ProductCard from '@/components/cards/ProductCard.astro';
 import { business } from '@/config/site';
+import { getProducts, getTiles } from '@/lib/catalogue';
 
 const samples = [
   { name: 'Ivory', code: 'SG-101', face: 'linear-gradient(135deg, #F4F0E8 0%, #DCD2C0 100%)', glossy: true },
@@ -20,43 +21,14 @@ const samples = [
   { name: 'Nero', code: 'SG-104', face: 'linear-gradient(135deg, #50554F 0%, #2C302E 100%)', glossy: true },
 ];
 
-const collections = [
-  {
-    id: 'sg-ivory-marble',
-    name: 'Ivory Marble',
-    brand: '[BRAND]',
-    colours: 6,
-    finishes: 2,
-    sizes: 3,
-    badge: 'New',
-    dots: ['#F2EEE6', '#E3D8C4', '#CFC3AD', '#B8AC97', '#8E8C87'],
-    tileFace: 'linear-gradient(118deg, #F4EFE6 0%, #E2D8C6 40%, #F1ECE2 55%, #D7CBB5 100%)',
-    roomLabel: 'living room with Ivory Marble floor',
-  },
-  {
-    id: 'sg-oak-plank',
-    name: 'Oak Plank',
-    brand: '[BRAND]',
-    colours: 8,
-    finishes: 1,
-    sizes: 2,
-    dots: ['#C9A27A', '#A57C55', '#7A5A3D'],
-    tileFace: 'repeating-linear-gradient(90deg, #BF956A 0 58px, #A57C55 58px 60px), #BF956A',
-    roomLabel: 'bedroom with Oak Plank floor',
-  },
-  {
-    id: 'sg-terrazzo-sand',
-    name: 'Terrazzo Sand',
-    brand: '[BRAND]',
-    colours: 1,
-    finishes: 1,
-    sizes: 1,
-    dots: ['#E8DFD0'],
-    tileFace:
-      'radial-gradient(circle at 3px 3px, #B9A687 2px, transparent 2.6px) 0 0 / 17px 17px, radial-gradient(circle at 9px 11px, #7E7B75 1.6px, transparent 2.2px) 0 0 / 23px 23px, #E8DFD0',
-    roomLabel: 'bathroom with Terrazzo Sand floor',
-  },
-];
+const tiles = (await getTiles()).slice(0, 3);
+const products = [...(await getProducts('bathware')).slice(0, 2), ...(await getProducts('granite')).slice(0, 1), ...(await getProducts('adhesives')).slice(0, 1)];
+const counts = {
+  tiles: (await getTiles()).length,
+  bathware: (await getProducts('bathware')).length,
+  granite: (await getProducts('granite')).length,
+  adhesives: (await getProducts('adhesives')).length,
+};
 
 const colours = [
   { name: 'Royal Forest Green', token: '--green', hex: '#123B32', ink: 'light' },
@@ -245,26 +217,44 @@ const radii = [
         <p class="muted">
           Hover a collection card with a mouse to see the tile face. On touch screens, use the Room | Tile toggle.
         </p>
+        <p class="small muted">
+          {`From the placeholder catalogue: ${counts.tiles} tile collections, ${counts.bathware} bathware, ${counts.granite} granite, ${counts.adhesives} adhesives.`}
+        </p>
         <div class="card-grid">
           {
-            collections.map((c, i) => (
+            tiles.map((t, i) => (
               <div data-reveal style={`--i: ${i}`}>
-                <CollectionCard {...c} href="#" />
+                <CollectionCard
+                  id={t.entry.id}
+                  href={t.href}
+                  brand={t.brand.name}
+                  name={t.entry.data.name}
+                  colours={t.colours}
+                  finishes={t.finishes}
+                  sizes={t.sizes}
+                  dots={t.dots}
+                  tileFace={t.dots[0]}
+                  badge={t.entry.data.isNew ? 'New' : undefined}
+                  roomLabel={`${t.entry.data.spaces[0].replace('-', ' ')} with ${t.entry.data.name} tiles`}
+                />
               </div>
             ))
           }
         </div>
         <div class="product-grid">
-          <ProductCard
-            id="sg-wall-hung"
-            href="#"
-            brand="Johnson"
-            name="Wall-hung WC"
-            code="[CODE]"
-            spec="Wall-hung · 520 × 360 mm"
-            authorised
-          />
-          <ProductCard id="sg-basin" href="#" brand="[BRAND]" name="Counter-top basin" code="[CODE]" spec="Counter-top · 600 × 400 mm" />
+          {
+            products.map((p) => (
+              <ProductCard
+                id={p.entry.id}
+                href={p.href}
+                brand={p.brand.name}
+                name={p.entry.data.name}
+                code={p.entry.data.code}
+                spec={p.entry.data.keySpec}
+                authorised={p.brand.authorised}
+              />
+            ))
+          }
         </div>
       </div>
     </section>
@@ -337,7 +327,12 @@ const radii = [
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-4) var(--gutter);
-    max-width: 640px;
+  }
+
+  @media (min-width: 1200px) {
+    .product-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
   }
 
   @media (min-width: 768px) {

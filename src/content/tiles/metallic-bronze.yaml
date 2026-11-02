@@ -1,0 +1,45 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Metallic Bronze"
+brand: "brand-c"
+description: "A soft metallic sheen for feature walls and counters."
+categories: ["wall"]
+spaces: ["living-room", "kitchen"]
+looks: ["metallic"]
+features: ["stain-resistant"]
+colours:
+  - name: "Bronze"
+    code: "MB-1301"
+    family: "brown"
+    hex: "#8C6A4E"
+    finishes: ["satin", "glossy"]
+    sizes: ["300x600", "600x1200"]
+    application: "wall"
+    thickness: "9 mm"
+  - name: "Copper"
+    code: "MB-1302"
+    family: "special"
+    hex: "#A0664A"
+    finishes: ["satin"]
+    sizes: ["300x600", "600x1200"]
+    application: "wall"
+    thickness: "9 mm"
+  - name: "Pewter"
+    code: "MB-1303"
+    family: "grey"
+    hex: "#8B8C88"
+    finishes: ["satin", "glossy"]
+    sizes: ["300x600"]
+    application: "wall"
+    thickness: "9 mm"
+  - name: "Champagne"
+    code: "MB-1304"
+    family: "cream"
+    hex: "#CDB894"
+    finishes: ["satin"]
+    sizes: ["300x600", "600x1200"]
+    application: "wall"
+    thickness: "9 mm"
+decor: []
+isNew: false
+isTrending: false
+placeholder: true

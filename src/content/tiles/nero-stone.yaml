@@ -1,0 +1,48 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Nero Stone"
+brand: "brand-a"
+description: "Deep stone tones that hide dust and add warmth."
+categories: ["floor", "wall"]
+spaces: ["living-room", "elevation"]
+looks: ["stone"]
+features: ["stain-resistant"]
+colours:
+  - name: "Nero"
+    code: "NS-401"
+    family: "black"
+    hex: "#2C302E"
+    finishes: ["polished", "matt"]
+    sizes: ["600x1200", "800x800"]
+    application: "both"
+    thickness: "9 mm"
+  - name: "Charcoal"
+    code: "NS-402"
+    family: "black"
+    hex: "#4C514E"
+    finishes: ["polished"]
+    sizes: ["600x1200", "800x800"]
+    application: "both"
+    thickness: "9 mm"
+  - name: "Slate"
+    code: "NS-403"
+    family: "grey"
+    hex: "#6B706C"
+    finishes: ["polished", "matt"]
+    sizes: ["600x1200"]
+    application: "both"
+    thickness: "9 mm"
+  - name: "Gold Seam"
+    code: "NS-404"
+    family: "special"
+    hex: "#3F3A2E"
+    finishes: ["polished"]
+    sizes: ["600x1200", "800x800"]
+    application: "both"
+    thickness: "9 mm"
+decor:
+  - name: "Nero Highlighter"
+    code: "NS-D1"
+    size: "300x600"
+isNew: true
+isTrending: false
+placeholder: true

@@ -3,6 +3,7 @@
 | File | What it is |
 |---|---|
 | [`DECISIONS.md`](DECISIONS.md) | Every agreed build decision, plus the task order |
+| [`CATALOGUE.md`](CATALOGUE.md) | How to add brands, tile collections and products (YAML) |
 | [`DEPLOYMENT.md`](DEPLOYMENT.md) | Vercel setup, the launch check, connecting the domain, pre-launch checklist |
 | [`changelogs/`](changelogs/) | One changelog per day, `YYYY-MM-DD.md` |
 | [`Website prompts/Full website Prompt..txt`](Website%20prompts/Full%20website%20Prompt..txt) | Full design brief: design system, shared components, all 8 pages, handoff notes |

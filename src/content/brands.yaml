@@ -1,0 +1,31 @@
+# Brands carried. Johnson and JSW are confirmed authorised dealerships; Brand A-E are placeholders.
+- id: "johnson"
+  name: "Johnson"
+  authorised: true
+  range: "Sanitary ware & CP fittings"
+  placeholder: false
+- id: "jsw"
+  name: "JSW"
+  authorised: true
+  range: "Adhesives"
+  placeholder: false
+- id: "brand-a"
+  name: "Brand A"
+  authorised: false
+  placeholder: true
+- id: "brand-b"
+  name: "Brand B"
+  authorised: false
+  placeholder: true
+- id: "brand-c"
+  name: "Brand C"
+  authorised: false
+  placeholder: true
+- id: "brand-d"
+  name: "Brand D"
+  authorised: false
+  placeholder: true
+- id: "brand-e"
+  name: "Brand E"
+  authorised: false
+  placeholder: true

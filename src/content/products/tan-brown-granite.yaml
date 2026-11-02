@@ -1,0 +1,13 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Tan Brown"
+code: "GR-201"
+brand: "brand-c"
+category: "granite"
+colourFamily: "brown"
+finishes: ["polished", "leather"]
+uses: ["kitchen-top", "flooring"]
+keySpec: "Polished · 18 mm slab"
+specs:
+  Thickness: "18 mm"
+hex: "#4B3328"
+placeholder: true

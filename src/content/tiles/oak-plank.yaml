@@ -1,0 +1,53 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "Oak Plank"
+brand: "brand-b"
+description: "Warm wood-look planks with the easy care of tile."
+categories: ["floor"]
+spaces: ["living-room", "bedroom"]
+looks: ["wood"]
+features: ["scratch-resistant", "easy-to-clean"]
+colours:
+  - name: "Natural Oak"
+    code: "OP-201"
+    family: "beige"
+    hex: "#C9A27A"
+    finishes: ["matt"]
+    sizes: ["200x1200", "200x1000"]
+    application: "floor"
+    thickness: "9 mm"
+  - name: "Honey"
+    code: "OP-202"
+    family: "brown"
+    hex: "#B98F66"
+    finishes: ["matt"]
+    sizes: ["200x1200", "200x1000"]
+    application: "floor"
+    thickness: "9 mm"
+  - name: "Walnut"
+    code: "OP-203"
+    family: "brown"
+    hex: "#7A5A3D"
+    finishes: ["matt"]
+    sizes: ["200x1200"]
+    application: "floor"
+    thickness: "9 mm"
+  - name: "Smoked"
+    code: "OP-204"
+    family: "grey"
+    hex: "#8E847A"
+    finishes: ["matt"]
+    sizes: ["200x1200", "200x1000"]
+    application: "floor"
+    thickness: "9 mm"
+  - name: "Bleached"
+    code: "OP-205"
+    family: "cream"
+    hex: "#DCCBB3"
+    finishes: ["matt"]
+    sizes: ["200x1200", "200x1000"]
+    application: "floor"
+    thickness: "9 mm"
+decor: []
+isNew: false
+isTrending: true
+placeholder: true

@@ -1,0 +1,14 @@
+# Placeholder demo data: fictional, replace with the client's catalogue before launch.
+name: "JSW Tile Adhesive T1"
+code: "JSW-TA-01"
+brand: "jsw"
+category: "adhesives"
+adhesiveType: "tile-adhesive"
+uses: ["floor", "wall"]
+keySpec: "20 kg bag · interior floor & wall"
+specs:
+  Pack: "20 kg"
+  Coverage: "[COVERAGE]"
+  Use: "Interior floor and wall tiles"
+hex: "#BDB7AC"
+placeholder: true
