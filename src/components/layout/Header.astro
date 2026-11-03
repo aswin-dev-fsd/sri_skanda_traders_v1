@@ -66,6 +66,7 @@ const [tilesGroup, spaceGroup, bathwareGroup, moreGroup] = productMenu;
           </button>
         )
       }
+      <button type="button" class="new-customer" data-new-customer>New customer</button>
       <a class="selection-btn" href={routes.mySelection} data-selection-open>
         <Icon name="star" size={20} filled class="selection-star" />
         <span class="selection-count tabular" data-selection-count>0</span>
@@ -137,12 +138,20 @@ const [tilesGroup, spaceGroup, bathwareGroup, moreGroup] = productMenu;
             name="q"
             placeholder="Search collections, categories or product codes"
             autocomplete="off"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="site-search-list"
             data-search-input
+            data-suggest
           />
           <button type="button" class="icon-btn" aria-label="Close search" data-search-close>
             <Icon name="close" size={22} />
           </button>
         </form>
+        <div class="container">
+          <ul id="site-search-list" class="suggestions" role="listbox" aria-label="Suggestions" hidden></ul>
+        </div>
       </div>
     )
   }
@@ -167,8 +176,20 @@ const [tilesGroup, spaceGroup, bathwareGroup, moreGroup] = productMenu;
             Search collections, categories or product codes
           </label>
           <Icon name="search" size={20} class="search-icon" />
-          <input id="mobile-search" type="search" name="q" placeholder="Search tiles, codes…" autocomplete="off" />
+          <input
+            id="mobile-search"
+            type="search"
+            name="q"
+            placeholder="Search tiles, codes…"
+            autocomplete="off"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-controls="mobile-search-list"
+            data-suggest
+          />
         </form>
+        <ul id="mobile-search-list" class="suggestions on-dark" role="listbox" aria-label="Suggestions" hidden></ul>
       )
     }
 
@@ -366,6 +387,36 @@ const [tilesGroup, spaceGroup, bathwareGroup, moreGroup] = productMenu;
 
   .search-btn {
     display: none;
+  }
+
+  /* Showroom mode only (see ShowroomMode.astro). */
+  .new-customer {
+    display: none;
+    min-height: 44px;
+    padding: 0 14px;
+    border: 1px solid rgba(248, 246, 239, 0.4);
+    border-radius: var(--radius-button);
+    background: transparent;
+    color: var(--on-green);
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .new-customer:hover {
+    border-color: var(--gold);
+  }
+
+  :global(:root[data-mode='showroom']) .new-customer {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Showroom mode is for the tablet; on a phone the header has no room for it. */
+  @media (max-width: 767px) {
+    :global(:root[data-mode='showroom']) .new-customer {
+      display: none;
+    }
   }
 
   .selection-btn {
@@ -588,6 +639,85 @@ const [tilesGroup, spaceGroup, bathwareGroup, moreGroup] = productMenu;
 
   .search-form .icon-btn:hover {
     background: rgba(18, 59, 50, 0.06);
+  }
+
+  /* Instant search suggestions (src/scripts/search.ts). */
+  .suggestions {
+    display: grid;
+    gap: 2px;
+    max-height: min(420px, 60vh);
+    margin: 0 0 var(--space-2);
+    padding: 6px;
+    overflow-y: auto;
+    border: var(--border);
+    border-radius: var(--radius-card);
+    background: var(--surface);
+    list-style: none;
+  }
+
+  .suggestions[hidden] {
+    display: none;
+  }
+
+  .suggestions :global(.sg-group) {
+    padding: 10px 12px 4px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .suggestions :global(.sg-item) {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 52px;
+    padding: 6px 12px;
+    border-radius: var(--radius-button);
+    color: var(--green);
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .suggestions :global(.sg-item[aria-selected='true']),
+  .suggestions :global(.sg-item:hover) {
+    background: rgba(18, 59, 50, 0.07);
+  }
+
+  .suggestions :global(.sg-swatch) {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    border: var(--border);
+    border-radius: 0 8px 0 0;
+    background: var(--beige);
+  }
+
+  .suggestions :global(.sg-text) {
+    display: grid;
+    min-width: 0;
+  }
+
+  .suggestions :global(.sg-title) {
+    font-weight: 600;
+  }
+
+  .suggestions :global(.sg-sub) {
+    overflow: hidden;
+    color: var(--muted);
+    font-size: var(--fs-small);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .suggestions :global(.sg-empty) {
+    padding: 14px 12px;
+    color: var(--muted);
+  }
+
+  .suggestions.on-dark {
+    margin: -12px 0 0;
   }
 
   /* Full-screen menu (below 1200px) */

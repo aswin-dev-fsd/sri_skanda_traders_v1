@@ -1,0 +1,119 @@
+---
+// Showroom mode (brief Prompt 00-K), for the in-store tablet. Turned on with ?mode=showroom and
+// remembered on that tablet (?mode=off turns it off); BaseLayout sets <html data-mode="showroom">
+// before the page paints. In showroom mode:
+//   - "New customer" buttons (header, My Selection) clear the list after a confirm,
+//   - after 3 minutes without a touch, "Still browsing?" asks before anything is cleared,
+//   - the floating WhatsApp button is hidden (staff are right there).
+import Button from '@/components/ui/Button.astro';
+---
+
+<dialog class="sm-dialog" data-new-customer-dialog aria-labelledby="nc-title">
+  <h2 id="nc-title">Start fresh for a new customer?</h2>
+  <p class="muted">This clears the list on this tablet.</p>
+  <div class="sm-actions">
+    <Button variant="secondary" data-nc-cancel>Cancel</Button>
+    <Button data-nc-clear>Clear and start fresh</Button>
+  </div>
+</dialog>
+
+<dialog class="sm-dialog" data-idle-dialog aria-labelledby="idle-title">
+  <h2 id="idle-title">Still browsing?</h2>
+  <p class="muted">Tap "Yes, continue" to keep your list, or start fresh for the next customer.</p>
+  <div class="sm-actions">
+    <Button variant="secondary" data-idle-fresh>Start fresh</Button>
+    <Button data-idle-continue>Yes, continue</Button>
+  </div>
+</dialog>
+
+<style>
+  .sm-dialog {
+    width: min(440px, calc(100vw - 2 * var(--page-x)));
+    padding: var(--space-4);
+    border: 0;
+    border-radius: var(--radius-card);
+    background: var(--ivory);
+    box-shadow: var(--shadow-lift);
+  }
+
+  .sm-dialog::backdrop {
+    background: rgba(14, 47, 40, 0.55);
+  }
+
+  .sm-dialog[open] {
+    animation: sm-in 250ms var(--ease);
+  }
+
+  @keyframes sm-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  .sm-dialog h2 {
+    margin-bottom: 8px;
+    font-size: var(--fs-h3);
+  }
+
+  .sm-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: var(--space-3);
+  }
+</style>
+
+<script>
+  import { clearSelection } from '@/stores/selection';
+  import { closeDrawer } from '@/scripts/drawer';
+  import { showToast } from '@/scripts/toast';
+
+  const IDLE_MS = 3 * 60 * 1000;
+  const isShowroom = () => document.documentElement.dataset.mode === 'showroom';
+  const newCustomer = document.querySelector<HTMLDialogElement>('[data-new-customer-dialog]')!;
+  const idle = document.querySelector<HTMLDialogElement>('[data-idle-dialog]')!;
+
+  /** Clears the list, closes anything open, and resets forms on the page. */
+  function startFresh() {
+    clearSelection();
+    closeDrawer({ restoreFocus: false });
+    document.querySelectorAll<HTMLFormElement>('form').forEach((f) => f.reset());
+  }
+
+  // "New customer" → confirm → clear.
+  document.addEventListener('click', (event) => {
+    if (!(event.target as HTMLElement).closest('[data-new-customer]')) return;
+    event.preventDefault();
+    newCustomer.showModal();
+  });
+  newCustomer.querySelector('[data-nc-cancel]')?.addEventListener('click', () => newCustomer.close());
+  newCustomer.querySelector('[data-nc-clear]')?.addEventListener('click', () => {
+    startFresh();
+    newCustomer.close();
+    showToast('Started fresh for a new customer');
+  });
+
+  // "Still browsing?" after 3 minutes without a touch. Nothing is cleared without a tap.
+  if (isShowroom()) {
+    let timer = 0;
+    const reset = () => {
+      window.clearTimeout(timer);
+      if (!idle.open) timer = window.setTimeout(() => idle.showModal(), IDLE_MS);
+    };
+    ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach((type) =>
+      window.addEventListener(type, reset, { passive: true, capture: true }),
+    );
+    idle.querySelector('[data-idle-continue]')?.addEventListener('click', () => {
+      idle.close();
+      reset();
+    });
+    idle.querySelector('[data-idle-fresh]')?.addEventListener('click', () => {
+      startFresh();
+      idle.close();
+      location.href = '/';
+    });
+    reset();
+  }
+</script>

@@ -124,6 +124,14 @@ All routes live in `routes` in `src/config/site.ts`.
 - The Google rating shows only when `googleRating` in `site.ts` is set (it starts empty, as the brief says to show it only if supplied). `googleReviewsUrl` is a placeholder.
 - Until a Google logo file is supplied, the reviews bar and cards say "Google review" in text. The showroom video's play button is disabled until a video exists.
 
+## Search and showroom mode
+
+- Search suggestions come from `/search-index.json`, built at build time from the catalogue and listings: collections, each colour code, products and categories. It is only downloaded when someone focuses a search box. A typed code ("IM-103", "JSN-FT-105") is shown first as an exact match.
+- Enter opens the highlighted suggestion (or the first one); there is no separate search results page.
+- Showroom mode turns on with `?mode=showroom` and is remembered on that tablet in localStorage, so it survives browser restarts; `?mode=off` ends it. The brief only says "turned on with a URL parameter", so the persistence is my choice. Staff instructions: [`SHOWROOM.md`](SHOWROOM.md).
+- "Start fresh" (from "Still browsing?") clears the list and goes to the home page; "New customer" clears the list and stays on the page.
+- The header's New customer button is hidden below 768px: showroom mode is for the tablet, and a phone header has no room.
+
 ## Internal pages
 
 `/styleguide` shows every token and shared component for review. It is `noindex` and not linked from the menus.
@@ -181,8 +189,8 @@ Status is updated in the same commit that finishes each task (the commit hash is
 | 10 | My Selection page, plus the print view | ✅ Done · `d7aabc9` |
 | 11 | Contact page | ✅ Done · `656ae2f` |
 | 12 | About page | ✅ Done · `7c3efa7` |
-| 13 | Gallery page | ✅ Done |
-| 14 | Search, Showroom mode | ⬜ To do |
+| 13 | Gallery page | ✅ Done · `d29f9ef` |
+| 14 | Search, Showroom mode | ✅ Done |
 | 15 | Tests, accessibility and Lighthouse pass | ⬜ To do |
 
 Unplanned: `5ded719` fix(deploy), launch check made opt-in for Vercel.

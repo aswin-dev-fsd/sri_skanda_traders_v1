@@ -9,6 +9,7 @@ import Footer from '@/components/layout/Footer.astro';
 import WhatsAppButton from '@/components/layout/WhatsAppButton.astro';
 import Toast from '@/components/ui/Toast.astro';
 import Lightbox from '@/components/ui/Lightbox.astro';
+import ShowroomMode from '@/components/layout/ShowroomMode.astro';
 import EnquiryDrawer from '@/components/drawers/EnquiryDrawer.astro';
 import SelectionDrawer from '@/components/drawers/SelectionDrawer.astro';
 import { business } from '@/config/site';
@@ -39,7 +40,16 @@ const topic = whatsappTopic ?? title ?? 'your tiles and bathware';
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
     {noindex && <meta name="robots" content="noindex" />}
-    <script is:inline>document.documentElement.classList.add('js');</script>
+    <script is:inline>
+      // JS flag, and showroom mode (?mode=showroom, remembered on the tablet; ?mode=off ends it).
+      document.documentElement.classList.add('js');
+      try {
+        var mode = new URLSearchParams(location.search).get('mode');
+        if (mode === 'showroom') localStorage.setItem('sst:mode', 'showroom');
+        if (mode === 'off') localStorage.removeItem('sst:mode');
+        if (localStorage.getItem('sst:mode') === 'showroom') document.documentElement.dataset.mode = 'showroom';
+      } catch (e) {}
+    </script>
     <slot name="head" />
   </head>
   <body>
@@ -54,10 +64,12 @@ const topic = whatsappTopic ?? title ?? 'your tiles and bathware';
     <EnquiryDrawer />
     <Toast />
     <Lightbox />
+    <ShowroomMode />
     <script>
       import '@/scripts/reveal';
       import '@/scripts/drawer';
       import '@/scripts/shortlist';
+      import '@/scripts/search';
     </script>
   </body>
 </html>

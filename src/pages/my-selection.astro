@@ -103,14 +103,6 @@ import { business, features, routes, spaces } from '@/config/site';
     </div>
   </section>
 
-  <dialog class="confirm" data-new-customer-dialog aria-labelledby="confirm-title">
-    <h2 id="confirm-title">Start fresh for a new customer?</h2>
-    <p class="muted">This clears the list on this tablet.</p>
-    <div class="confirm-actions">
-      <Button variant="secondary" data-confirm-cancel>Cancel</Button>
-      <Button data-confirm-clear>Clear and start fresh</Button>
-    </div>
-  </dialog>
 
   <template data-ms-row>
     <li class="row" data-row>
@@ -539,33 +531,6 @@ import { business, features, routes, spaces } from '@/config/site';
     margin-top: var(--space-2);
   }
 
-  /* New customer confirm dialog. */
-  .confirm {
-    max-width: 420px;
-    padding: var(--space-4);
-    border: 0;
-    border-radius: var(--radius-card);
-    background: var(--ivory);
-    box-shadow: var(--shadow-lift);
-  }
-
-  .confirm::backdrop {
-    background: rgba(14, 47, 40, 0.45);
-  }
-
-  .confirm h2 {
-    margin-bottom: 8px;
-    font-size: var(--fs-h3);
-  }
-
-  .confirm-actions {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: var(--space-3);
-  }
-
   /* Print view (A4). */
   .print {
     display: none;
@@ -660,7 +625,7 @@ import { business, features, routes, spaces } from '@/config/site';
 </style>
 
 <script>
-  import { $selection, clearSelection, moveItem, removeItem, restoreItem, updateItem } from '@/stores/selection';
+  import { $selection, moveItem, removeItem, restoreItem, updateItem } from '@/stores/selection';
   import { buildEnquiryMessage, buildShortlistMessage, roomName, validateEnquiry, whatsappLink } from '@/lib/enquiry';
   import { showToast } from '@/scripts/toast';
   import { spaces } from '@/config/site';
@@ -911,14 +876,4 @@ import { business, features, routes, spaces } from '@/config/site';
     window.print();
   });
 
-  // Showroom: New customer → confirm → clear.
-  const dialog = document.querySelector<HTMLDialogElement>('[data-new-customer-dialog]')!;
-  page.querySelector('[data-new-customer]')?.addEventListener('click', () => dialog.showModal());
-  dialog.querySelector('[data-confirm-cancel]')?.addEventListener('click', () => dialog.close());
-  dialog.querySelector('[data-confirm-clear]')?.addEventListener('click', () => {
-    clearSelection();
-    form.reset();
-    dialog.close();
-    showToast('Started fresh for a new customer');
-  });
 </script>
