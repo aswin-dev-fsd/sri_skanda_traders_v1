@@ -1,0 +1,740 @@
+---
+// Gallery page (brief Prompt 06): real proof. Tabs for Projects · Showroom · Reviews (also reachable
+// as /gallery#showroom, /gallery#reviews). Every project leads back to its tiles ("Shop this look").
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import CollectionCard from '@/components/cards/CollectionCard.astro';
+import Button from '@/components/ui/Button.astro';
+import Icon from '@/components/ui/Icon.astro';
+import PhotoPlaceholder from '@/components/ui/PhotoPlaceholder.astro';
+import TrustFrame from '@/components/ui/TrustFrame.astro';
+import { business, isPlaceholder, routes, spaces } from '@/config/site';
+import { summarise } from '@/lib/catalogue';
+
+const projects = await Promise.all(
+  (await getCollection('projects')).map(async (p) => ({
+    id: p.id,
+    ...p.data,
+    tiles: await Promise.all(
+      p.data.tilesUsed.map(async (ref) => summarise((await getCollection('tiles')).find((t) => t.id === ref.id)!)),
+    ),
+  })),
+);
+const reviews = (await getCollection('reviews')).map((r) => r.data);
+const videoReviews = reviews.filter((r) => r.videoUrl);
+const spaceName = (slug: string) => spaces.find((s) => s.slug === slug)?.name ?? slug;
+const usedSpaces = spaces.filter((s) => projects.some((p) => p.space === s.slug));
+// Varied heights make the masonry read as photos rather than a grid.
+const ratios = ['4 / 5', '4 / 3', '1 / 1', '3 / 4', '5 / 4', '4 / 5'];
+const showroomAreas = ['Bathroom mock-ups', 'Floor displays', 'Wall displays', 'Granite slabs', 'Bathware gallery', 'Seating area'];
+const googleUrl = isPlaceholder(business.googleReviewsUrl) ? '#' : business.googleReviewsUrl;
+---
+
+<BaseLayout
+  title="Gallery"
+  description="See the Sri Skanda Traders showroom in Sulur, homes we've helped finish across Coimbatore, and what our customers say."
+  whatsappTopic="a project in your gallery"
+>
+  <section class="section page" aria-labelledby="gallery-title">
+    <div class="container">
+      <div class="head">
+        <p class="eyebrow rise">Gallery</p>
+        <h1 id="gallery-title" class="rise" style="--i: 1">Real homes. Real tiles.</h1>
+        <p class="body-lg muted rise" style="--i: 2">See our showroom, homes we've helped finish, and what our customers say.</p>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Gallery" data-gallery-tabs>
+        <button type="button" role="tab" id="tab-projects" aria-controls="panel-projects" aria-selected="true" data-tab="projects">Projects</button>
+        <button type="button" role="tab" id="tab-showroom" aria-controls="panel-showroom" aria-selected="false" tabindex="-1" data-tab="showroom">Showroom</button>
+        <button type="button" role="tab" id="tab-reviews" aria-controls="panel-reviews" aria-selected="false" tabindex="-1" data-tab="reviews">Reviews</button>
+      </div>
+
+      <!-- Projects -->
+      <div class="panel" role="tabpanel" id="panel-projects" aria-labelledby="tab-projects" data-panel="projects">
+        <div class="filters" role="group" aria-label="Filter by space" data-project-filters>
+          <button type="button" class="chip" aria-pressed="true" data-space="">All</button>
+          {
+            usedSpaces.map((s) => (
+              <button type="button" class="chip" aria-pressed="false" data-space={s.slug}>
+                {s.label}
+              </button>
+            ))
+          }
+        </div>
+        <ul class="masonry">
+          {
+            projects.map((p, i) => (
+              <li class="project" data-project-space={p.space}>
+                <button type="button" class="project-btn" style={`aspect-ratio: ${ratios[i % ratios.length]}`} data-open-project={p.id}>
+                  {p.photos[0] ? (
+                    <Image src={p.photos[0].image} alt={`${p.title}, ${p.area}`} widths={[400, 640, 900]} sizes="(min-width: 1200px) 420px, (min-width: 768px) 45vw, 90vw" />
+                  ) : (
+                    <PhotoPlaceholder label={`${spaceName(p.space).toLowerCase()} in a finished home`} />
+                  )}
+                  <span class="overlay">
+                    <strong>{p.title}</strong>
+                    <span class="small">
+                      {p.area} · {spaceName(p.space)}
+                    </span>
+                  </span>
+                </button>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="small muted">[PROJECT PHOTOS — client to provide, with area and tiles used]</p>
+      </div>
+
+      <!-- Showroom -->
+      <div class="panel" role="tabpanel" id="panel-showroom" aria-labelledby="tab-showroom" data-panel="showroom" hidden>
+        <button type="button" class="wide" data-lightbox data-lightbox-group="showroom" data-lightbox-face="var(--beige)" data-lightbox-caption="Our showroom front, Sulur">
+          <PhotoPlaceholder label="showroom front" />
+        </button>
+        <ul class="areas">
+          {
+            showroomAreas.map((area) => (
+              <li>
+                <button type="button" class="area" data-lightbox data-lightbox-group="showroom" data-lightbox-face="#E4DFD3" data-lightbox-caption={area}>
+                  <PhotoPlaceholder label={area.toLowerCase()} face="#E4DFD3" />
+                </button>
+                <p class="small area-name">{area}</p>
+              </li>
+            ))
+          }
+        </ul>
+        <div class="video">
+          <PhotoPlaceholder label="VIDEO: showroom walkthrough" face="#DCD7CB" />
+          <button type="button" class="play" aria-label="Play the showroom walkthrough (coming soon)" disabled>
+            <Icon name="play" size={40} />
+          </button>
+        </div>
+      </div>
+
+      <!-- Reviews -->
+      <div class="panel" role="tabpanel" id="panel-reviews" aria-labelledby="tab-reviews" data-panel="reviews" hidden>
+        <div class="review-bar">
+          <p>
+            <strong>Read our reviews on Google</strong>
+            {business.googleRating && <span class="rating tabular">{business.googleRating} ★</span>}
+          </p>
+          <Button variant="secondary" size="sm" href={googleUrl} target="_blank" rel="noopener" arrow>See all on Google</Button>
+        </div>
+        <ul class="review-grid">
+          {
+            reviews.map((r) => (
+              <li class="review">
+                <blockquote>
+                  <p class="body-lg review-text" data-review-text>{r.text}</p>
+                </blockquote>
+                <button type="button" class="read-more" data-review-more hidden>
+                  Read more
+                </button>
+                <p class="who small">
+                  <strong>{r.name}</strong> · {r.area}
+                  {r.date && <span class="muted"> · {r.date}</span>}
+                </p>
+                <p class="source small muted">{r.source === 'google' ? 'Google review' : r.source === 'whatsapp' ? 'On WhatsApp' : 'At our showroom'}</p>
+              </li>
+            ))
+          }
+        </ul>
+        {
+          videoReviews.length > 0 && (
+            <ul class="videos">
+              {videoReviews.map((r) => (
+                <li>
+                  <a href={r.videoUrl} class="video-thumb" target="_blank" rel="noopener">
+                    <PhotoPlaceholder label={`video from ${r.name}`} face="#DCD7CB" />
+                    <Icon name="play" size={40} class="video-play" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Closing (Stone Beige band) -->
+  <section class="section closing" aria-labelledby="closing-title">
+    <div class="container closing-inner">
+      <h3 id="closing-title">Want a home like these?</h3>
+      <div class="closing-actions">
+        <Button href={routes.contact} arrow>Visit the showroom</Button>
+        <Button variant="secondary" href={routes.contact} data-enquire>Enquire Now</Button>
+      </div>
+    </div>
+  </section>
+
+  <!-- One dialog per project: photo slider in the Trust Frame, note, and the tiles used. -->
+  {
+    projects.map((p) => (
+      <dialog class="project-dialog" data-project-dialog={p.id} aria-labelledby={`pd-${p.id}`}>
+        <button type="button" class="pd-close" aria-label="Close" data-close-project>
+          <Icon name="close" size={24} />
+        </button>
+        <div class="pd-body">
+          <TrustFrame label={`${p.area}, Coimbatore`}>
+            <div class="pd-slider" data-pd-slider tabindex="0" aria-label="Project photos">
+              {p.photos.length ? (
+                p.photos.map((ph) => (
+                  <div class="pd-slide">
+                    <Image src={ph.image} alt={ph.caption || p.title} widths={[640, 1024, 1400]} sizes="(min-width: 1024px) 900px, 100vw" />
+                  </div>
+                ))
+              ) : (
+                [1, 2, 3].map((n) => (
+                  <div class="pd-slide">
+                    <PhotoPlaceholder label={`project photo ${n}`} />
+                  </div>
+                ))
+              )}
+            </div>
+          </TrustFrame>
+          <div class="pd-text">
+            <h2 id={`pd-${p.id}`}>{p.title}</h2>
+            <p class="muted">{p.note}</p>
+          </div>
+          {p.tiles.length > 0 && (
+            <div class="pd-tiles">
+              <h3>Tiles used</h3>
+              <ul>
+                {p.tiles.map((t) => (
+                  <li>
+                    <CollectionCard
+                      id={t.entry.id}
+                      href={t.href}
+                      brand={t.brand.name}
+                      name={t.entry.data.name}
+                      colours={t.colours}
+                      finishes={t.finishes}
+                      sizes={t.sizes}
+                      dots={t.dots}
+                      tileFace={t.dots[0]}
+                      roomLabel={`${spaceName(p.space).toLowerCase()} with ${t.entry.data.name} tiles`}
+                    />
+                    <Button variant="text" href={t.href} arrow>
+                      Shop this look
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </dialog>
+    ))
+  }
+</BaseLayout>
+
+<style>
+  .page {
+    padding-top: var(--space-6);
+  }
+
+  .head {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+
+  /* Large underline tabs. */
+  .tabs {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+    border-bottom: var(--border);
+  }
+
+  .tabs button {
+    position: relative;
+    min-height: 56px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--muted);
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .tabs button::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 -1px;
+    height: 2px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transition: transform var(--dur-ui) var(--ease);
+  }
+
+  .tabs [aria-selected='true'] {
+    color: var(--green);
+  }
+
+  .tabs [aria-selected='true']::after {
+    transform: scaleX(1);
+  }
+
+  .panel:not([hidden]) {
+    animation: fade 250ms var(--ease);
+  }
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: var(--space-4);
+  }
+
+  .chip {
+    min-height: 40px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: var(--radius-chip);
+    background: var(--beige);
+    color: var(--green);
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .chip[aria-pressed='true'] {
+    background: var(--green);
+    color: var(--on-green);
+  }
+
+  /* Masonry: 3 columns desktop, 2 tablet, 1 phone. */
+  .masonry {
+    columns: 1;
+    column-gap: var(--gutter);
+    margin-bottom: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 768px) {
+    .masonry {
+      columns: 2;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .masonry {
+      columns: 3;
+    }
+  }
+
+  .project {
+    break-inside: avoid;
+    margin-bottom: var(--gutter);
+  }
+
+  .project[hidden] {
+    display: none;
+  }
+
+  .project-btn {
+    position: relative;
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-image);
+    cursor: zoom-in;
+  }
+
+  .project-btn :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Soft green overlay with the project name; always visible on touch screens. */
+  .overlay {
+    position: absolute;
+    inset: auto 0 0;
+    display: grid;
+    gap: 2px;
+    padding: var(--space-3);
+    background: linear-gradient(180deg, rgba(18, 59, 50, 0), rgba(18, 59, 50, 0.6));
+    color: var(--on-green);
+    text-align: left;
+    transition: opacity var(--dur-ui-slow) var(--ease);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .overlay {
+      opacity: 0;
+    }
+
+    .project-btn:hover .overlay,
+    .project-btn:focus-visible .overlay {
+      opacity: 1;
+    }
+  }
+
+  /* Showroom */
+  .wide {
+    display: block;
+    width: 100%;
+    aspect-ratio: 21 / 9;
+    overflow: hidden;
+    margin-bottom: var(--gutter);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-image);
+    cursor: zoom-in;
+  }
+
+  .areas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gutter);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 1024px) {
+    .areas {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .area {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-image);
+    cursor: zoom-in;
+  }
+
+  .area-name {
+    margin-top: 8px;
+    color: var(--green);
+    font-weight: 500;
+  }
+
+  .video {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    margin-top: var(--space-6);
+    border-radius: var(--radius-image);
+  }
+
+  .play,
+  .video-thumb :global(.video-play) {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .play {
+    display: grid;
+    place-items: center;
+    width: 80px;
+    height: 80px;
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    background: var(--green);
+    color: var(--on-green);
+  }
+
+  .play[disabled] {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  /* Reviews */
+  .review-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: var(--space-4);
+    padding: var(--space-3);
+    border: var(--border);
+    border-radius: var(--radius-card);
+    background: var(--surface);
+    color: var(--green);
+  }
+
+  .rating {
+    margin-left: 12px;
+    font-weight: 600;
+  }
+
+  .review-grid {
+    columns: 1;
+    column-gap: var(--gutter);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 768px) {
+    .review-grid {
+      columns: 2;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .review-grid {
+      columns: 3;
+    }
+  }
+
+  .review {
+    display: grid;
+    gap: 10px;
+    break-inside: avoid;
+    margin-bottom: var(--gutter);
+    padding: var(--space-3);
+    border: var(--border);
+    border-radius: var(--radius-card);
+    background: var(--surface);
+  }
+
+  blockquote {
+    margin: 0;
+  }
+
+  /* Max 6 lines, then "Read more". */
+  .review-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    line-clamp: 6;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  [data-expanded] .review-text {
+    display: block;
+  }
+
+  .read-more {
+    justify-self: start;
+    min-height: 36px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--green);
+    font-weight: 600;
+    text-decoration: underline;
+  }
+
+  .read-more[hidden] {
+    display: none;
+  }
+
+  .who {
+    color: var(--green);
+  }
+
+  .videos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--gutter);
+    margin-top: var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  .video-thumb {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--radius-image);
+    color: var(--on-green);
+  }
+
+  .closing {
+    background: var(--beige);
+  }
+
+  .closing-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .closing-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* Project dialog */
+  .project-dialog {
+    width: min(1100px, 100vw);
+    max-width: none;
+    max-height: 100dvh;
+    margin: auto;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-card);
+    background: var(--ivory);
+  }
+
+  @media (max-width: 767px) {
+    .project-dialog {
+      height: 100dvh;
+      border-radius: 0;
+    }
+  }
+
+  .project-dialog::backdrop {
+    background: rgba(14, 47, 40, 0.7);
+  }
+
+  .project-dialog[open] {
+    animation: fade 250ms var(--ease);
+  }
+
+  .pd-close {
+    position: sticky;
+    top: 12px;
+    z-index: 5;
+    float: right;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    margin: 12px 12px 0 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--green);
+    color: var(--on-green);
+  }
+
+  .pd-body {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-6) var(--space-4) var(--space-6);
+  }
+
+  .pd-slider {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    border-radius: var(--radius-image);
+    scrollbar-width: none;
+  }
+
+  .pd-slide {
+    flex: 0 0 100%;
+    aspect-ratio: 16 / 10;
+    scroll-snap-align: start;
+  }
+
+  .pd-slide :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .pd-text {
+    display: grid;
+    gap: 8px;
+  }
+
+  .pd-tiles h3 {
+    margin-bottom: var(--space-2);
+  }
+
+  .pd-tiles ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--space-4) var(--gutter);
+    padding: 0;
+    list-style: none;
+  }
+</style>
+
+<script>
+  // Tabs, with /gallery#showroom and /gallery#reviews opening their tab.
+  const tablist = document.querySelector<HTMLElement>('[data-gallery-tabs]');
+  if (tablist) {
+    const tabs = [...tablist.querySelectorAll<HTMLButtonElement>('[data-tab]')];
+    const select = (tab: HTMLButtonElement, updateHash = true) => {
+      tabs.forEach((t) => {
+        const on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        document.querySelector<HTMLElement>(`[data-panel="${t.dataset.tab}"]`)!.hidden = !on;
+      });
+      if (updateHash) history.replaceState(null, '', tab.dataset.tab === 'projects' ? location.pathname : `#${tab.dataset.tab}`);
+      checkReviewLengths();
+    };
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => select(tab));
+      tab.addEventListener('keydown', (e) => {
+        const move = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (!move) return;
+        const next = tabs[(i + move + tabs.length) % tabs.length];
+        next.focus();
+        select(next);
+      });
+    });
+    const fromHash = tabs.find((t) => `#${t.dataset.tab}` === location.hash);
+    if (fromHash) select(fromHash, false);
+  }
+
+  // Project filter chips.
+  const filters = document.querySelector<HTMLElement>('[data-project-filters]');
+  filters?.querySelectorAll<HTMLButtonElement>('[data-space]').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      filters.querySelectorAll('[data-space]').forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+      document.querySelectorAll<HTMLElement>('[data-project-space]').forEach((p) => {
+        p.hidden = !!chip.dataset.space && p.dataset.projectSpace !== chip.dataset.space;
+      });
+    });
+  });
+
+  // Project dialogs.
+  document.querySelectorAll<HTMLButtonElement>('[data-open-project]').forEach((button) => {
+    const dialog = document.querySelector<HTMLDialogElement>(`[data-project-dialog="${button.dataset.openProject}"]`);
+    if (!dialog) return;
+    button.addEventListener('click', () => {
+      dialog.showModal();
+      document.documentElement.dataset.overlay = 'project';
+    });
+    dialog.querySelector('[data-close-project]')?.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', (e) => e.target === dialog && dialog.close());
+    dialog.addEventListener('close', () => {
+      delete document.documentElement.dataset.overlay;
+      button.focus();
+    });
+  });
+
+  // Reviews longer than 6 lines get "Read more".
+  function checkReviewLengths() {
+    document.querySelectorAll<HTMLElement>('[data-review-text]').forEach((text) => {
+      const more = text.closest('li')?.querySelector<HTMLButtonElement>('[data-review-more]');
+      if (more && text.offsetParent) more.hidden = text.scrollHeight <= text.clientHeight + 2;
+    });
+  }
+  document.querySelectorAll<HTMLButtonElement>('[data-review-more]').forEach((more) => {
+    more.addEventListener('click', () => {
+      const card = more.closest('li')!;
+      const open = !card.hasAttribute('data-expanded');
+      card.toggleAttribute('data-expanded', open);
+      more.textContent = open ? 'Read less' : 'Read more';
+    });
+  });
+</script>

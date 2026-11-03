@@ -115,6 +115,15 @@ All routes live in `routes` in `src/config/site.ts`.
 - "The people" stays hidden while `team` in `about.ts` is empty, as the brief says. Adding portraits there shows the section.
 - Brands show as wordmarks linking to `/products?brand=<id>` until logo files arrive.
 
+## Gallery page
+
+- Projects and reviews are content collections: one YAML per project in `src/content/projects/` (title, area, space, note, photos, tiles used), and `src/content/reviews.yaml`. All current entries are `placeholder: true`; the launch check lists them.
+- Tabs Projects · Showroom · Reviews; `/gallery#showroom` and `/gallery#reviews` open their tab.
+- The space filter only shows spaces that have a project, so no chip leads to an empty grid.
+- Each project opens its own dialog: photo slider in the Trust Frame ("<Area>, Coimbatore"), note, and "Tiles used" collection cards with Shop this look.
+- The Google rating shows only when `googleRating` in `site.ts` is set (it starts empty, as the brief says to show it only if supplied). `googleReviewsUrl` is a placeholder.
+- Until a Google logo file is supplied, the reviews bar and cards say "Google review" in text. The showroom video's play button is disabled until a video exists.
+
 ## Internal pages
 
 `/styleguide` shows every token and shared component for review. It is `noindex` and not linked from the menus.
@@ -171,8 +180,8 @@ Status is updated in the same commit that finishes each task (the commit hash is
 | 9 | 3D Visualizer page | ✅ Done · `27075a8` |
 | 10 | My Selection page, plus the print view | ✅ Done · `d7aabc9` |
 | 11 | Contact page | ✅ Done · `656ae2f` |
-| 12 | About page | ✅ Done |
-| 13 | Gallery page | ⬜ To do |
+| 12 | About page | ✅ Done · `7c3efa7` |
+| 13 | Gallery page | ✅ Done |
 | 14 | Search, Showroom mode | ⬜ To do |
 | 15 | Tests, accessibility and Lighthouse pass | ⬜ To do |
 

@@ -1,0 +1,7 @@
+# Placeholder: client to provide real project photos, area and tiles used.
+title: "[Project name]"
+area: "[Area]"
+space: "kitchen"
+note: "[Short note about the project — client to provide]"
+tilesUsed: ["kitchen-mosaic", "concrete-grey"]
+placeholder: true

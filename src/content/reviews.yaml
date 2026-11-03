@@ -1,0 +1,43 @@
+# Real reviews only (brief). Placeholders until the client supplies them.
+- id: "review-1"
+  name: "[NAME]"
+  area: "[AREA]"
+  text: "[REVIEW TEXT — client to provide]"
+  source: "google"
+  date: "[DATE]"
+  placeholder: true
+- id: "review-2"
+  name: "[NAME]"
+  area: "[AREA]"
+  text: "[REVIEW TEXT — client to provide]"
+  source: "google"
+  date: "[DATE]"
+  placeholder: true
+- id: "review-3"
+  name: "[NAME]"
+  area: "[AREA]"
+  text: "[REVIEW TEXT — client to provide]"
+  source: "google"
+  date: "[DATE]"
+  placeholder: true
+- id: "review-4"
+  name: "[NAME]"
+  area: "[AREA]"
+  text: "[REVIEW TEXT — client to provide]"
+  source: "google"
+  date: "[DATE]"
+  placeholder: true
+- id: "review-5"
+  name: "[NAME]"
+  area: "[AREA]"
+  text: "[REVIEW TEXT — client to provide]"
+  source: "google"
+  date: "[DATE]"
+  placeholder: true
+- id: "review-6"
+  name: "[NAME]"
+  area: "[AREA]"
+  text: "[REVIEW TEXT — client to provide]"
+  source: "google"
+  date: "[DATE]"
+  placeholder: true

@@ -25,6 +25,10 @@ export const business = {
   /** "Areas we serve" chips on the Contact page. */
   areasServed: ['Sulur', 'Trichy Road', 'Karanampettai', 'Neelambur', 'Palladam', 'Coimbatore city'],
   mapsUrl: '[GOOGLE MAPS LINK]',
+  /** Google Business reviews page, for "See all on Google". */
+  googleReviewsUrl: '[GOOGLE REVIEWS LINK]',
+  /** Google rating, e.g. "4.8". Leave '' until the client confirms the real figure; it is shown only when set. */
+  googleRating: '',
   social: {
     instagram: '[INSTAGRAM URL]',
     facebook: '[FACEBOOK URL]',

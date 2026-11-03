@@ -135,4 +135,36 @@ const products = defineCollection({
       }),
 });
 
-export const collections = { brands, tiles, products };
+/** Finished homes for the Gallery (one YAML per project). Every project leads back to its tiles. */
+const projects = defineCollection({
+  loader: glob({ pattern: '**/*.yaml', base: './src/content/projects' }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      /** Locality, e.g. "Sulur". The lightbox label reads "<area>, Coimbatore". */
+      area: z.string(),
+      space,
+      note: z.string().default(''),
+      photos: z.array(z.object({ image: image(), caption: z.string().default('') })).default([]),
+      tilesUsed: z.array(reference('tiles')).default([]),
+      placeholder: z.boolean().default(false),
+    }),
+});
+
+/** Customer reviews. Real reviews only: until the client supplies them, entries are placeholders. */
+const reviews = defineCollection({
+  loader: file('src/content/reviews.yaml'),
+  schema: z.object({
+    name: z.string(),
+    area: z.string(),
+    text: z.string(),
+    source: z.enum(['google', 'showroom', 'whatsapp']).default('google'),
+    /** e.g. "October 2026". */
+    date: z.string().default(''),
+    /** YouTube or MP4 link for a video testimonial. */
+    videoUrl: z.string().url().optional(),
+    placeholder: z.boolean().default(false),
+  }),
+});
+
+export const collections = { brands, tiles, products, projects, reviews };
