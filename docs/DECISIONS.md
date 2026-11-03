@@ -108,6 +108,13 @@ All routes live in `routes` in `src/config/site.ts`.
 - New business details in `site.ts`: `hoursTable` (days and times), `parking` (set to `''` if there is none), `areasServed`. The launch check covers them.
 - Quick-action tiles link to `tel:`, `wa.me`, `mailto:` and Google Maps; while a detail is a placeholder its tile links to `#`.
 
+## About page
+
+- Copy lives in `src/config/about.ts`. The story is the brief's DRAFT, waiting for the founder's approval and name.
+- "Book a consultation" opens the enquiry drawer with "You're asking about: Design consultation" (a `service` item), rather than adding a consultation chip to the product interests.
+- "The people" stays hidden while `team` in `about.ts` is empty, as the brief says. Adding portraits there shows the section.
+- Brands show as wordmarks linking to `/products?brand=<id>` until logo files arrive.
+
 ## Internal pages
 
 `/styleguide` shows every token and shared component for review. It is `noindex` and not linked from the menus.
@@ -163,8 +170,8 @@ Status is updated in the same commit that finishes each task (the commit hash is
 | 8 | Collection page, plus the bathware variant | ✅ Done · `0874f77` |
 | 9 | 3D Visualizer page | ✅ Done · `27075a8` |
 | 10 | My Selection page, plus the print view | ✅ Done · `d7aabc9` |
-| 11 | Contact page | ✅ Done |
-| 12 | About page | ⬜ To do |
+| 11 | Contact page | ✅ Done · `656ae2f` |
+| 12 | About page | ✅ Done |
 | 13 | Gallery page | ⬜ To do |
 | 14 | Search, Showroom mode | ⬜ To do |
 | 15 | Tests, accessibility and Lighthouse pass | ⬜ To do |

@@ -2,7 +2,7 @@
 export interface SelectionItem {
   /** Unique per saved thing: a collection, a colour of a collection, or a product. */
   id: string;
-  kind: 'collection' | 'product';
+  kind: 'collection' | 'product' | 'service';
   name: string;
   brand?: string;
   colour?: string;

@@ -1,0 +1,515 @@
+---
+// About page (brief Prompt 07): the people and values behind the showroom, how we help (former
+// Services page), and the brands we carry (former Brands page). Reads like a conversation.
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Button from '@/components/ui/Button.astro';
+import ClosingBand from '@/components/ui/ClosingBand.astro';
+import PhotoPlaceholder from '@/components/ui/PhotoPlaceholder.astro';
+import TileReveal from '@/components/ui/TileReveal.astro';
+import TrustFrame from '@/components/ui/TrustFrame.astro';
+import { services, story, team, values } from '@/config/about';
+import { business, routes } from '@/config/site';
+import { hrefOrHash } from '@/lib/links';
+import type { SelectionItem } from '@/lib/types';
+
+const brands = (await getCollection('brands')).map((b) => ({ id: b.id, ...b.data }));
+const dealers = brands.filter((b) => b.authorised);
+const consultation: SelectionItem = { id: 'service:design-consultation', kind: 'service', name: 'Design consultation', href: routes.about };
+const directions = hrefOrHash(business.mapsUrl);
+---
+
+<BaseLayout
+  title="About us"
+  description="Sri Skanda Traders, Sulur, Coimbatore: a family-run tiles, granite and bathware showroom built on people's trust. Our story, services and brands."
+  whatsappTopic="your showroom"
+>
+  <!-- 01 Hero -->
+  <section class="section hero" aria-labelledby="about-title">
+    <div class="container split">
+      <div class="copy">
+        <p class="eyebrow rise">About us</p>
+        <h1 id="about-title" class="rise" style="--i: 1">A showroom built on people's trust.</h1>
+        <p class="body-lg muted rise" style="--i: 2">
+          For 4 years, we've helped families in and around Coimbatore choose tiles, granite and bathware with honest
+          advice and real care.
+        </p>
+      </div>
+      <div class="rise" style="--i: 2">
+        <TrustFrame label="People's Trust">
+          <TileReveal class="photo tall">
+            <PhotoPlaceholder label="founder and team in the showroom" />
+          </TileReveal>
+        </TrustFrame>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 Our story -->
+  <section class="section story" aria-labelledby="story-title">
+    <div class="container split">
+      <blockquote class="quote" data-reveal>
+        <p>“{story.quote}”</p>
+      </blockquote>
+      <div class="story-text" data-reveal style="--i: 1">
+        <p class="eyebrow" id="story-title">Our story</p>
+        {story.paragraphs.map((p) => <p class="body-lg">{p}</p>)}
+        <p class="signature">— {story.founder}, Founder</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 What we stand for -->
+  <section class="section" aria-labelledby="values-title">
+    <div class="container">
+      <div class="head" data-reveal>
+        <p class="eyebrow">What we stand for</p>
+        <h2 id="values-title">Four things we never trade away.</h2>
+      </div>
+      <ul class="values">
+        {
+          values.map((v, i) => (
+            <li class="value" data-reveal style={`--i: ${i}`}>
+              <h3>{v.title}</h3>
+              <p class="muted">{v.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- 04 How we help -->
+  <section class="section help" aria-labelledby="help-title">
+    <div class="container">
+      <div class="head" data-reveal>
+        <p class="eyebrow">How we help</p>
+        <h2 id="help-title">From first idea to the last tile.</h2>
+      </div>
+      <ol class="timeline" data-reveal>
+        {
+          services.map((s, i) => (
+            <li class="stop">
+              <span class="stop-num tabular" aria-hidden="true">{i + 1}</span>
+              <h3>{s.title}</h3>
+              <p class="muted small">{s.body}</p>
+              {'note' in s && <p class="small note">{s.note}</p>}
+            </li>
+          ))
+        }
+      </ol>
+      <div class="help-cta" data-reveal>
+        <Button href={routes.contact} arrow data-enquire data-item={JSON.stringify(consultation)}>Book a consultation</Button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 Brands we carry -->
+  <section class="section" aria-labelledby="brands-title">
+    <div class="container">
+      <div class="head" data-reveal>
+        <p class="eyebrow">Our brands</p>
+        <h2 id="brands-title">Many brands. One trusted showroom.</h2>
+      </div>
+      <ul class="dealers">
+        {
+          dealers.map((d, i) => (
+            <li class="dealer" data-reveal style={`--i: ${i}`}>
+              <svg class="seal" viewBox="0 0 64 64" aria-hidden="true">
+                <circle cx="32" cy="28" r="20" />
+                <circle cx="32" cy="28" r="14" />
+                <path d="M24 44 20 58l12-6 12 6-4-14" />
+                <path d="m25 28 5 5 9-10" />
+              </svg>
+              <div>
+                <p class="dealer-tag">Authorised Dealer</p>
+                <h3>{d.name}</h3>
+                <p class="muted">{d.range}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+      <ul class="logos" data-reveal>
+        {
+          brands.map((b) => (
+            <li>
+              <a href={`${routes.products}?brand=${b.id}`} class="logo-word">
+                {b.name}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="small muted">[BRAND LIST & LOGOS — client to confirm]</p>
+    </div>
+  </section>
+
+  <!-- 06 The people (hidden until team photos arrive, as the brief says) -->
+  {
+    team.length > 0 && (
+      <section class="section" aria-labelledby="people-title">
+        <div class="container">
+          <div class="head" data-reveal>
+            <p class="eyebrow">The people</p>
+            <h2 id="people-title">The team you'll meet.</h2>
+          </div>
+          <ul class="team">
+            {team.map((m, i) => (
+              <li data-reveal style={`--i: ${i}`}>
+                <div class="portrait">{m.image ? <Image src={m.image} alt={m.name} width={400} height={500} /> : <PhotoPlaceholder label={m.name} />}</div>
+                <p class="member">{m.name}</p>
+                <p class="small muted">{m.role}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- 07 Our showroom -->
+  <section class="section showroom" aria-labelledby="showroom-title">
+    <div class="container split">
+      <div class="collage" data-reveal>
+        <div class="c-tall"><PhotoPlaceholder label="showroom front" /></div>
+        <div class="c-a"><PhotoPlaceholder label="bathroom displays" face="#DDD8CC" /></div>
+        <div class="c-b"><PhotoPlaceholder label="floor tile displays" face="#E4DFD3" /></div>
+      </div>
+      <div class="showroom-text" data-reveal style="--i: 1">
+        <p class="eyebrow">Our showroom</p>
+        <h2 id="showroom-title">Sit down, take your time.</h2>
+        <p class="body-lg muted">
+          Every collection on this website is on display in Sulur. Bring your plan, sit with our team, and see the real
+          tiles, granite and bathware side by side before you decide.
+        </p>
+        <div><Button href={directions} arrow target="_blank" rel="noopener">Get directions</Button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 Closing band -->
+  <ClosingBand title="Come and see us." body={`${business.address}, ${business.location} · ${business.hours}`}>
+    <Button variant="accent" href={directions} arrow target="_blank" rel="noopener">Get directions</Button>
+    <Button variant="outline-light" href={routes.contact} data-enquire>Enquire Now</Button>
+  </ClosingBand>
+</BaseLayout>
+
+<style>
+  .head {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+  }
+
+  .split {
+    display: grid;
+    gap: var(--space-8);
+    align-items: center;
+  }
+
+  @media (min-width: 1024px) {
+    .split {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-12);
+    }
+  }
+
+  .copy {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .copy h1 {
+    max-width: 14ch;
+  }
+
+  .split :global(.photo) {
+    overflow: hidden;
+    border-radius: var(--radius-image);
+  }
+
+  .split :global(.tall) {
+    aspect-ratio: 4 / 5;
+  }
+
+  /* Story: a large pull-quote beside the text. */
+  .story {
+    border-block: var(--border);
+  }
+
+  .quote {
+    margin: 0;
+  }
+
+  .quote p {
+    max-width: 22ch;
+    color: var(--green);
+    font-size: var(--fs-h2);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .story-text {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .signature {
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  /* Values: four columns with thin gold top lines, no icon circles. */
+  .values {
+    display: grid;
+    gap: var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 768px) {
+    .values {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .values {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .value {
+    display: grid;
+    gap: 8px;
+    padding-top: var(--space-3);
+    border-top: 1.5px solid var(--gold);
+  }
+
+  /* How we help: horizontal timeline with a thin gold line, vertical on phones. */
+  .help {
+    background: var(--surface);
+    border-block: var(--border);
+  }
+
+  .timeline {
+    position: relative;
+    display: grid;
+    gap: var(--space-4);
+    padding: 0 0 0 64px;
+    list-style: none;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    top: 24px;
+    bottom: 24px;
+    left: 23px;
+    width: 1.5px;
+    background: var(--gold);
+  }
+
+  .stop {
+    position: relative;
+    display: grid;
+    gap: 6px;
+  }
+
+  .stop-num {
+    position: absolute;
+    top: 0;
+    left: -64px;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border: 1.5px solid var(--green);
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  .stop h3 {
+    padding-top: 10px;
+    font-size: 18px;
+  }
+
+  .note {
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  @media (min-width: 1024px) {
+    .timeline {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: var(--space-3);
+      padding: 0;
+    }
+
+    .timeline::before {
+      top: 24px;
+      bottom: auto;
+      left: 24px;
+      right: calc((100% - 4 * var(--space-3)) / 5 - 24px);
+      width: auto;
+      height: 1.5px;
+    }
+
+    .stop {
+      padding-top: 64px;
+    }
+
+    .stop-num {
+      left: 0;
+    }
+
+    .stop h3 {
+      padding-top: 0;
+    }
+  }
+
+  .help-cta {
+    margin-top: var(--space-6);
+  }
+
+  /* Brands */
+  .dealers {
+    display: grid;
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 768px) {
+    .dealers {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .dealer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border: 1px solid var(--gold);
+    border-radius: var(--radius-card);
+    background: var(--surface);
+  }
+
+  .seal {
+    flex: none;
+    width: 64px;
+    height: 64px;
+    fill: none;
+    stroke: var(--gold);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .dealer-tag {
+    font-size: var(--fs-eyebrow);
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .logos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gutter);
+    margin-bottom: var(--space-2);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 768px) {
+    .logos {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .logos {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+  }
+
+  .logo-word {
+    display: grid;
+    place-items: center;
+    min-height: 96px;
+    border: var(--border);
+    border-radius: var(--radius-image);
+    color: var(--green);
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    opacity: 0.6;
+    transition: opacity var(--dur-ui) var(--ease);
+  }
+
+  .logo-word:hover,
+  .logo-word:focus-visible {
+    opacity: 1;
+  }
+
+  /* People */
+  .team {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gutter);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 1024px) {
+    .team {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .portrait {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    margin-bottom: 10px;
+    border-radius: var(--radius-image);
+  }
+
+  .member {
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  /* Showroom collage: one tall, two stacked. */
+  .collage {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 12px;
+    aspect-ratio: 5 / 4;
+  }
+
+  .collage > div {
+    overflow: hidden;
+    border-radius: var(--radius-image);
+  }
+
+  .c-tall {
+    grid-row: span 2;
+  }
+
+  .showroom-text {
+    display: grid;
+    gap: var(--space-2);
+  }
+</style>
