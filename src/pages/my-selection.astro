@@ -133,7 +133,9 @@ import { business, features, routes, spaces } from '@/config/site';
 </BaseLayout>
 
 <style>
+  /* The list renders in the browser; reserving height keeps the footer from jumping (CLS). */
   .page {
+    min-height: 80vh;
     padding-top: var(--space-4);
   }
 

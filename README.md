@@ -13,6 +13,7 @@ npm install
 npm run dev           # http://localhost:4321
 npm run build         # build to dist/ (warns about placeholders)
 npm run build:launch  # launch build: fails while placeholders or temporary images remain
+npm test              # unit, flow and accessibility tests (see docs/TESTING.md)
 ```
 
 Business details (phone, WhatsApp, address, hours) and feature flags live in `src/config/site.ts`. Design tokens live in `src/styles/tokens.css`.

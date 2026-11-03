@@ -98,7 +98,7 @@ const tilesTitle = data.category === 'adhesives' ? 'Tiles you can lay with it' :
             {
               views.map((v, i) => (
                 <li>
-                  <button type="button" class="thumb" aria-label={`Show ${v.label}`} aria-current={i === 0 ? 'true' : undefined} data-thumb={i} data-src={v.src} data-caption={v.label}>
+                  <button type="button" class="thumb" aria-label={`${i + 1}: show ${v.label}`} aria-current={i === 0 ? 'true' : undefined} data-thumb={i} data-src={v.src} data-caption={v.label}>
                     {v.img ? <Image src={v.img} alt="" width={120} height={120} /> : <span class="thumb-ph tabular">{i + 1}</span>}
                   </button>
                 </li>
@@ -171,7 +171,7 @@ const tilesTitle = data.category === 'adhesives' ? 'Tiles you can lay with it' :
     pairs.length > 0 && (
       <section class="section more" aria-labelledby="pairs-title">
         <div class="container">
-          <h3 id="pairs-title" class="more-title">Pairs well with</h3>
+          <h2 id="pairs-title" class="more-title">Pairs well with</h2>
           <ul class="grid products">
             {pairs.map((p) => (
               <li>
@@ -195,7 +195,7 @@ const tilesTitle = data.category === 'adhesives' ? 'Tiles you can lay with it' :
 
   <section class="section more" aria-labelledby="tiles-title">
     <div class="container">
-      <h3 id="tiles-title" class="more-title">{tilesTitle}</h3>
+      <h2 id="tiles-title" class="more-title">{tilesTitle}</h2>
       <ul class="grid tiles">
         {
           tiles.map((t) => (
@@ -412,8 +412,12 @@ const tilesTitle = data.category === 'adhesives' ? 'Tiles you can lay with it' :
     border-top: var(--border);
   }
 
+  /* Section headings are H2 for the outline but keep the brief's H3 size. */
   .more-title {
     margin-bottom: var(--space-4);
+    font-size: var(--fs-h3);
+    font-weight: 600;
+    line-height: 1.3;
   }
 
   .grid {

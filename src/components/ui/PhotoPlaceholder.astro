@@ -1,5 +1,7 @@
 ---
 // Visible stand-in for a photo the client has not supplied yet, labelled "[PHOTO: …]" as the brief asks.
+// The visible label is CSS generated text, so it never becomes part of a parent button's name;
+// screen readers get the words once, from role="img".
 interface Props {
   /** What the photo should show, e.g. "living room with a light floor". */
   label: string;
@@ -12,7 +14,7 @@ const { label, face, class: className } = Astro.props;
 ---
 
 <span class:list={['placeholder', className]} style={face ? `background: ${face}` : undefined} role="img" aria-label={label}>
-  <span class="placeholder-label">[PHOTO: {label}]</span>
+  <span class="placeholder-label" data-label={`[PHOTO: ${label}]`}></span>
 </span>
 
 <style>
@@ -23,6 +25,10 @@ const { label, face, class: className } = Astro.props;
     height: 100%;
     padding: var(--space-2);
     background: var(--beige);
+  }
+
+  .placeholder-label::after {
+    content: attr(data-label);
   }
 
   .placeholder-label {

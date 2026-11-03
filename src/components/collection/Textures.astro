@@ -32,7 +32,7 @@ const { colours } = Astro.props;
               data-lightbox-caption={`${c.name} · ${c.code}, close-up`}
               aria-label={`${c.name} close-up, open larger`}
             >
-              {!c.textureSrc && <span class="ph small">[PHOTO: {c.name} close-up]</span>}
+              {!c.textureSrc && <span class="ph small" data-label={`[PHOTO: ${c.name} close-up]`}></span>}
               <span class="lens" aria-hidden="true" style={`background: ${c.texture}`}></span>
             </button>
             <p class="small caption">
@@ -83,6 +83,10 @@ const { colours } = Astro.props;
     border: var(--border);
     border-radius: var(--radius-image);
     cursor: zoom-in;
+  }
+
+  .ph::after {
+    content: attr(data-label);
   }
 
   .ph {

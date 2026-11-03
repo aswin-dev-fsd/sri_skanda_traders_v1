@@ -40,7 +40,7 @@ const { src } = Astro.props;
         data-viz-iframe></iframe>
 
       <div class="state loading" data-viz-loading aria-live="polite">
-        <Logo height={120} decorative class="mark" />
+        <Logo height={120} decorative class="mark" loading="eager" />
         <p>Setting up the room…</p>
         <span class="progress" aria-hidden="true"><span></span></span>
       </div>

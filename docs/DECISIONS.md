@@ -132,6 +132,12 @@ All routes live in `routes` in `src/config/site.ts`.
 - "Start fresh" (from "Still browsing?") clears the list and goes to the home page; "New customer" clears the list and stays on the page.
 - The header's New customer button is hidden below 768px: showroom mode is for the tablet, and a phone header has no room.
 
+## Testing
+
+- Unit tests also use the Playwright runner (no browser), so only the two packages named under Quality are added: `@playwright/test` and `@axe-core/playwright`.
+- The accessibility check fails on axe "serious" or "critical" WCAG 2.1 AA issues, and on any script error. Lighthouse is run by hand; results are in [`TESTING.md`](TESTING.md).
+- `[PHOTO: …]` placeholder labels are drawn with CSS generated content, so they never become part of a button's accessible name (axe `label-content-name-mismatch`).
+
 ## Internal pages
 
 `/styleguide` shows every token and shared component for review. It is `noindex` and not linked from the menus.
@@ -190,7 +196,7 @@ Status is updated in the same commit that finishes each task (the commit hash is
 | 11 | Contact page | ✅ Done · `656ae2f` |
 | 12 | About page | ✅ Done · `7c3efa7` |
 | 13 | Gallery page | ✅ Done · `d29f9ef` |
-| 14 | Search, Showroom mode | ✅ Done |
-| 15 | Tests, accessibility and Lighthouse pass | ⬜ To do |
+| 14 | Search, Showroom mode | ✅ Done · `d8d5089` |
+| 15 | Tests, accessibility and Lighthouse pass | ✅ Done |
 
 Unplanned: `5ded719` fix(deploy), launch check made opt-in for Vercel.

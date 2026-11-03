@@ -121,6 +121,7 @@ const roomName = (slug: string) => slug.replace('-', ' ');
         </div>
       </div>
 
+      <h2 class="visually-hidden">{isTiles ? 'Collections' : 'Products'}</h2>
       <ul class:list={['grid', isTiles ? 'grid-tiles' : 'grid-products']} data-results>
         {
           items.map((item, i) => (

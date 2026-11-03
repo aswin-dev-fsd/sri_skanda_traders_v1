@@ -6,6 +6,7 @@
 | [`CATALOGUE.md`](CATALOGUE.md) | How to add brands, tile collections and products (YAML) |
 | [`IMAGE-PROMPTS.md`](IMAGE-PROMPTS.md) | Prompts and file names for the temporary AI images |
 | [`SHOWROOM.md`](SHOWROOM.md) | Setting up the showroom tablet (showroom mode) |
+| [`TESTING.md`](TESTING.md) | Running the tests, what they cover, Lighthouse results |
 | [`DEPLOYMENT.md`](DEPLOYMENT.md) | Vercel setup, the launch check, connecting the domain, pre-launch checklist |
 | [`changelogs/`](changelogs/) | One changelog per day, `YYYY-MM-DD.md` |
 | [`Website prompts/Full website Prompt..txt`](Website%20prompts/Full%20website%20Prompt..txt) | Full design brief: design system, shared components, all 8 pages, handoff notes |
