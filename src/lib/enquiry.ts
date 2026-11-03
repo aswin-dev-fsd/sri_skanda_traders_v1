@@ -9,6 +9,12 @@ export const roles = ['Homeowner', 'Architect or Designer', 'Builder', 'Contract
 /** What they are interested in. */
 export const interests = ['Floor tiles', 'Wall tiles', 'Vitrified', 'Granite', 'Bathware', 'Adhesives'] as const;
 
+/** Contact page: where the project is. */
+export const stages = ['Planning', 'Under construction', 'Renovating'] as const;
+
+/** Roles that get the Company and Project size fields. */
+export const tradeRoles: readonly string[] = ['Architect or Designer', 'Builder', 'Contractor'];
+
 export interface Enquiry {
   name: string;
   phone: string;
@@ -16,6 +22,12 @@ export interface Enquiry {
   role?: string;
   interests?: string[];
   message?: string;
+  email?: string;
+  /** Contact page: Planning · Under construction · Renovating. */
+  stage?: string;
+  /** Contact page, trade enquiries only. */
+  company?: string;
+  projectSize?: string;
   /** The collection or product the enquiry was opened from. */
   about?: SelectionItem;
   /** Saved items attached from My Selection. */
@@ -102,9 +114,13 @@ export function buildShortlistMessage(items: SavedItem[]): string {
 export function buildEnquiryMessage(enquiry: Enquiry): string {
   const phone = normalisePhone(enquiry.phone) ?? enquiry.phone;
   const lines = [`Hi ${business.name}, I'd like to enquire.`, '', `Name: ${enquiry.name.trim()}`, `Phone: +91 ${phone}`];
+  if (enquiry.email?.trim()) lines.push(`Email: ${enquiry.email.trim()}`);
   if (enquiry.area?.trim()) lines.push(`Area: ${enquiry.area.trim()}`);
   if (enquiry.role) lines.push(`I am a: ${enquiry.role}`);
+  if (enquiry.company?.trim()) lines.push(`Company / firm: ${enquiry.company.trim()}`);
+  if (enquiry.projectSize?.trim()) lines.push(`Project size: ${enquiry.projectSize.trim()}`);
   if (enquiry.interests?.length) lines.push(`Interested in: ${enquiry.interests.join(', ')}`);
+  if (enquiry.stage) lines.push(`Project stage: ${enquiry.stage}`);
   if (enquiry.about) lines.push('', `Asking about: ${describeItem(enquiry.about)}`);
   if (enquiry.items?.length) {
     lines.push('', `My saved items (${enquiry.items.length}):`);

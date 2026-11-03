@@ -1,0 +1,521 @@
+---
+// Contact page (brief Prompt 08): quick actions, map and showroom details, the full enquiry form
+// (with the trade fields for architects, builders and contractors), and quick answers.
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Button from '@/components/ui/Button.astro';
+import ChoiceChips from '@/components/ui/ChoiceChips.astro';
+import Faq from '@/components/ui/Faq.astro';
+import Field from '@/components/ui/Field.astro';
+import Icon, { type IconName } from '@/components/ui/Icon.astro';
+import PhotoPlaceholder from '@/components/ui/PhotoPlaceholder.astro';
+import TrustFrame from '@/components/ui/TrustFrame.astro';
+import { business, isPlaceholder } from '@/config/site';
+import { interests, roles, stages } from '@/lib/enquiry';
+import { hrefOrHash, whatsappUrl } from '@/lib/links';
+
+const telHref = isPlaceholder(business.phone) ? '#' : `tel:+91${business.phone.replace(/\D/g, '').slice(-10)}`;
+const mailHref = isPlaceholder(business.email) ? '#' : `mailto:${business.email}`;
+const hasEmail = !isPlaceholder(business.email);
+
+const actions: { label: string; detail: string; href: string; icon: IconName; external?: boolean }[] = [
+  { label: 'Call us', detail: business.phone, href: telHref, icon: 'phone' },
+  { label: 'WhatsApp', detail: business.whatsapp, href: whatsappUrl('visiting your showroom'), icon: 'whatsapp', external: true },
+  { label: 'Email', detail: business.email, href: mailHref, icon: 'mail' },
+  { label: 'Directions', detail: 'Open in Google Maps', href: hrefOrHash(business.mapsUrl), icon: 'map-pin', external: true },
+];
+
+const questions = [
+  { q: 'Do you deliver?', a: 'Yes, free delivery [area and usual timing — to confirm].' },
+  { q: 'Do you help with laying?', a: 'Yes, we offer laying and installation support.' },
+  {
+    q: 'Can I see samples before buying?',
+    a: 'Yes, every collection on the website can be seen at our showroom. Save it to My Selection and show our team.',
+  },
+  { q: '[Additional question — to confirm]', a: '[Answer — to confirm]' },
+];
+---
+
+<BaseLayout
+  title="Contact"
+  description="Visit the Sri Skanda Traders showroom in Sulur, Coimbatore, call, WhatsApp or send an enquiry. Architects, builders and contractors welcome."
+  whatsappTopic="visiting your showroom"
+>
+  <!-- 01 Header + quick actions -->
+  <section class="section intro" aria-labelledby="contact-title">
+    <div class="container">
+      <div class="head">
+        <p class="eyebrow rise">Contact</p>
+        <h1 id="contact-title" class="rise" style="--i: 1">Visit our showroom.</h1>
+        <p class="body-lg muted rise" style="--i: 2">
+          Come in, sit down, and browse every collection with our team. Or reach us any way you like.
+        </p>
+      </div>
+      <ul class="actions">
+        {
+          actions.map((a, i) => (
+            <li data-reveal style={`--i: ${i}`}>
+              <a href={a.href} class="action" target={a.external && a.href !== '#' ? '_blank' : undefined} rel={a.external ? 'noopener' : undefined}>
+                <Icon name={a.icon} size={28} />
+                <span class="action-label">{a.label}</span>
+                <span class="action-detail small muted tabular">{a.detail}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- 02 Map + details -->
+  <section class="section visit" aria-labelledby="details-title">
+    <div class="container">
+      <div class="map-row">
+        <div class="map" data-reveal>
+          <PhotoPlaceholder label="MAP: muted styled map of Sulur with a green pin" face="#DCD7CB" />
+        </div>
+        <div data-reveal style="--i: 1">
+          <TrustFrame label={business.location} tone="beige">
+            <div class="card">
+              <h2 id="details-title" class="card-title">Our showroom</h2>
+              <p class="address">{business.address}, {business.location}</p>
+              <table class="hours">
+                <caption class="visually-hidden">Opening hours</caption>
+                <tbody>
+                  {
+                    business.hoursTable.map((h) => (
+                      <tr>
+                        <th scope="row">{h.days}</th>
+                        <td class="tabular">{h.times}</td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </table>
+              <p class="small"><span class="muted">Landmark:</span> {business.landmark}</p>
+              {business.parking && <p class="small"><span class="muted">Parking:</span> {business.parking}</p>}
+              <Button href={hrefOrHash(business.mapsUrl)} arrow target="_blank" rel="noopener">Get directions</Button>
+            </div>
+          </TrustFrame>
+        </div>
+      </div>
+
+      <div class="areas" data-reveal>
+        <p class="areas-title">Areas we serve</p>
+        <ul class="area-chips">
+          {business.areasServed.map((area) => <li>{area}</li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 Enquiry form -->
+  <section class="section enquiry" aria-labelledby="form-title">
+    <div class="container form-cols">
+      <div class="form-intro" data-reveal>
+        <h2 id="form-title">Tell us about your project.</h2>
+        <p class="body-lg muted">
+          Share a few details and our team will get back to you within a few hours during showroom timings.
+        </p>
+      </div>
+
+      <div data-reveal style="--i: 1">
+        <form class="form" novalidate data-contact-form>
+          <div class="pair">
+            <Field label="Name" name="name" id="ct-name" required autocomplete="name" />
+            <Field label="Phone" name="phone" id="ct-phone" type="tel" prefix="+91" required autocomplete="tel-national" />
+          </div>
+          <div class="pair">
+            <Field label="Email" name="email" id="ct-email" type="email" autocomplete="email" />
+            <Field label="Area / Location" name="area" id="ct-area" autocomplete="address-level2" />
+          </div>
+          <ChoiceChips legend="I am a" name="role" options={roles} />
+
+          <div class="trade" data-trade hidden>
+            <div class="pair">
+              <Field label="Company / Firm name" name="company" id="ct-company" autocomplete="organization" />
+              <Field label="Project size" name="projectSize" id="ct-size" placeholder="e.g. 24 units or 18,000 sq ft" />
+            </div>
+            <p class="small muted">We supply projects of every size. Our team will contact you with project details.</p>
+          </div>
+
+          <ChoiceChips legend="Interested in" name="interests" options={interests} multiple />
+          <ChoiceChips legend="Project stage" name="stage" options={stages} />
+          <Field label="Message" name="message" id="ct-message" multiline />
+
+          <label class="attach" data-contact-attach hidden>
+            <input type="checkbox" name="attach" checked />
+            <span>Attach my saved items (<span data-contact-attach-count>0</span>)</span>
+          </label>
+
+          <div class="submit">
+            <Button type="submit" icon="whatsapp">Send enquiry</Button>
+            {
+              hasEmail && (
+                <Button variant="text" data-contact-email>
+                  Or send it by email
+                </Button>
+              )
+            }
+          </div>
+          <p class="small muted">"Send enquiry" opens WhatsApp with your details filled in. Just press send.</p>
+        </form>
+
+        <div class="done" data-contact-done hidden tabindex="-1">
+          <span class="done-icon"><Icon name="whatsapp" size={36} /></span>
+          <h3 data-done-title>Thank you.</h3>
+          <p class="muted" data-done-text></p>
+          <Button variant="secondary" href="/">Keep browsing</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 Quick answers -->
+  <Faq title="Quick answers" items={questions} />
+</BaseLayout>
+
+<style>
+  .intro {
+    padding-bottom: var(--space-8);
+  }
+
+  .head {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+  }
+
+  .actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 900px) {
+    .actions {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--gutter);
+    }
+  }
+
+  .action {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    height: 100%;
+    min-height: 140px;
+    padding: var(--space-3);
+    border: var(--border);
+    border-radius: var(--radius-card);
+    background: var(--surface);
+    color: var(--green);
+    text-decoration: none;
+    transition:
+      transform var(--dur-ui-slow) var(--ease),
+      box-shadow var(--dur-ui-slow) var(--ease);
+  }
+
+  .action:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lift);
+  }
+
+  .action-label {
+    margin-top: 8px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .action-detail {
+    overflow-wrap: anywhere;
+  }
+
+  .visit {
+    background: var(--beige);
+  }
+
+  .map-row {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 1024px) {
+    .map-row {
+      grid-template-columns: 7fr 5fr;
+      gap: var(--space-8);
+    }
+  }
+
+  .map {
+    min-height: 360px;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+  }
+
+  .card {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    border-radius: var(--radius-card);
+    background: var(--ivory);
+  }
+
+  .card-title {
+    font-size: var(--fs-h3);
+  }
+
+  .hours {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--fs-small);
+  }
+
+  .hours th,
+  .hours td {
+    padding: 8px 0;
+    border-bottom: var(--border);
+    text-align: left;
+  }
+
+  .hours th {
+    font-weight: 500;
+    color: var(--green);
+  }
+
+  .areas {
+    margin-top: var(--space-6);
+  }
+
+  .areas-title {
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: var(--green);
+  }
+
+  .area-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .area-chips li {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 16px;
+    border-radius: var(--radius-chip);
+    background: var(--ivory);
+    color: var(--green);
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .form-cols {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 1024px) {
+    .form-cols {
+      grid-template-columns: 5fr 7fr;
+      gap: var(--space-8);
+    }
+  }
+
+  .form-intro {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+  }
+
+  .form {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .pair {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  @media (min-width: 600px) {
+    .pair {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* Trade fields slide in (250ms) for architects, builders and contractors. */
+  .trade {
+    display: grid;
+    gap: 8px;
+  }
+
+  .trade[hidden] {
+    display: none;
+  }
+
+  .trade:not([hidden]) {
+    animation: slide-in 250ms var(--ease);
+  }
+
+  @keyframes slide-in {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
+
+  .attach {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: var(--touch-min);
+    color: var(--green);
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  .attach[hidden] {
+    display: none;
+  }
+
+  .attach input {
+    width: 22px;
+    height: 22px;
+    accent-color: var(--green);
+  }
+
+  .submit {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px var(--space-3);
+  }
+
+  .done {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+    padding: var(--space-6) var(--space-3);
+    border: var(--border);
+    border-radius: var(--radius-card);
+    background: var(--surface);
+    text-align: center;
+  }
+
+  .done[hidden] {
+    display: none;
+  }
+
+  .done:focus {
+    outline: none;
+  }
+
+  .done-icon {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    border: 1.5px solid var(--gold);
+    border-radius: 50%;
+    color: var(--green);
+  }
+</style>
+
+<script>
+  import { buildEnquiryMessage, emailLink, tradeRoles, validateEnquiry, whatsappLink, type Enquiry } from '@/lib/enquiry';
+  import { $selection } from '@/stores/selection';
+
+  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+  if (form) {
+    const trade = form.querySelector<HTMLElement>('[data-trade]')!;
+    const attachRow = form.querySelector<HTMLElement>('[data-contact-attach]')!;
+    const attachBox = attachRow.querySelector<HTMLInputElement>('input')!;
+    const done = document.querySelector<HTMLElement>('[data-contact-done]')!;
+
+    $selection.subscribe((items) => {
+      attachRow.hidden = items.length === 0;
+      const count = form.querySelector('[data-contact-attach-count]');
+      if (count) count.textContent = String(items.length);
+    });
+
+    // Company and Project size appear for trade enquiries.
+    form.addEventListener('change', (event) => {
+      const input = event.target as HTMLInputElement;
+      if (input.name === 'role') trade.hidden = !tradeRoles.includes(input.value);
+    });
+
+    const setError = (id: string, message?: string) => {
+      document.getElementById(id)?.closest('[data-field]')?.toggleAttribute('data-invalid', !!message);
+      document.getElementById(id)?.setAttribute('aria-invalid', String(!!message));
+      const error = document.getElementById(`${id}-error`);
+      if (error) error.textContent = message ?? '';
+    };
+
+    const read = (): Enquiry | null => {
+      const data = new FormData(form);
+      const get = (key: string) => String(data.get(key) ?? '');
+      const role = (data.get('role') as string | null) ?? undefined;
+      const enquiry: Enquiry = {
+        name: get('name'),
+        phone: get('phone'),
+        email: get('email'),
+        area: get('area'),
+        role,
+        company: role && tradeRoles.includes(role) ? get('company') : undefined,
+        projectSize: role && tradeRoles.includes(role) ? get('projectSize') : undefined,
+        interests: data.getAll('interests').map(String),
+        stage: (data.get('stage') as string | null) ?? undefined,
+        message: get('message'),
+        items: attachBox.checked && !attachRow.hidden ? $selection.get() : undefined,
+        sourcePage: '/contact',
+      };
+      const errors = validateEnquiry(enquiry);
+      setError('ct-name', errors.name);
+      setError('ct-phone', errors.phone);
+      if (errors.name || errors.phone) {
+        document.getElementById(errors.name ? 'ct-name' : 'ct-phone')?.focus();
+        return null;
+      }
+      return enquiry;
+    };
+
+    const finish = (enquiry: Enquiry, channel: 'whatsapp' | 'email') => {
+      const first = enquiry.name.trim().split(/\s+/)[0];
+      done.querySelector('[data-done-title]')!.textContent = `Thank you, ${first}.`;
+      done.querySelector('[data-done-text]')!.textContent =
+        channel === 'whatsapp'
+          ? `WhatsApp is open with your enquiry. Press send there, and we'll call you soon on +91 ${enquiry.phone.replace(/\D/g, '').slice(-10)}.`
+          : `Your email app is open with your enquiry. Press send there, and we'll get back to you soon.`;
+      form.hidden = true;
+      done.hidden = false;
+      done.focus();
+    };
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const enquiry = read();
+      if (!enquiry) return;
+      window.open(whatsappLink(buildEnquiryMessage(enquiry)), '_blank', 'noopener');
+      finish(enquiry, 'whatsapp');
+    });
+
+    form.querySelector('[data-contact-email]')?.addEventListener('click', () => {
+      const enquiry = read();
+      const link = enquiry && emailLink(buildEnquiryMessage(enquiry));
+      if (!enquiry || !link) return;
+      window.location.href = link;
+      finish(enquiry, 'email');
+    });
+
+    form.addEventListener('input', (event) => {
+      const id = (event.target as HTMLElement).id;
+      if (id === 'ct-name' || id === 'ct-phone') setError(id);
+    });
+  }
+</script>

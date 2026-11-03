@@ -101,6 +101,13 @@ All routes live in `routes` in `src/config/site.ts`.
 - The "New customer" button is built here but only shows when `<html data-mode="showroom">`; turning showroom mode on is task 14.
 - Print view: A4, logo on a green tile (the logo is made for green), date, items grouped by room in a table, showroom details, lined space for staff notes.
 
+## Contact page
+
+- "Send enquiry" opens WhatsApp, like every form. The brief's secondary "Or chat on WhatsApp" would repeat it, so the secondary option is "Or send it by email", shown once the email address is filled in (as in the enquiry drawer).
+- Choosing Architect or Designer, Builder or Contractor slides in Company / Firm name and Project size; both go into the message only for those roles.
+- New business details in `site.ts`: `hoursTable` (days and times), `parking` (set to `''` if there is none), `areasServed`. The launch check covers them.
+- Quick-action tiles link to `tel:`, `wa.me`, `mailto:` and Google Maps; while a detail is a placeholder its tile links to `#`.
+
 ## Internal pages
 
 `/styleguide` shows every token and shared component for review. It is `noindex` and not linked from the menus.
@@ -155,8 +162,8 @@ Status is updated in the same commit that finishes each task (the commit hash is
 | 7 | Products listing with filters | ✅ Done · `0e7d8c6` |
 | 8 | Collection page, plus the bathware variant | ✅ Done · `0874f77` |
 | 9 | 3D Visualizer page | ✅ Done · `27075a8` |
-| 10 | My Selection page, plus the print view | ✅ Done |
-| 11 | Contact page | ⬜ To do |
+| 10 | My Selection page, plus the print view | ✅ Done · `d7aabc9` |
+| 11 | Contact page | ✅ Done |
 | 12 | About page | ⬜ To do |
 | 13 | Gallery page | ⬜ To do |
 | 14 | Search, Showroom mode | ⬜ To do |

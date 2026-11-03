@@ -17,7 +17,13 @@ export const business = {
   email: '[EMAIL]',
   address: '[ADDRESS]',
   hours: '[OPENING HOURS]',
+  /** Opening hours for the Contact page table. */
+  hoursTable: [{ days: '[DAYS]', times: '[TIMES]' }],
   landmark: '[NEARBY LANDMARK]',
+  /** Parking note for the Contact page. Set to '' if there is none, and the line is hidden. */
+  parking: '[PARKING NOTE]',
+  /** "Areas we serve" chips on the Contact page. */
+  areasServed: ['Sulur', 'Trichy Road', 'Karanampettai', 'Neelambur', 'Palladam', 'Coimbatore city'],
   mapsUrl: '[GOOGLE MAPS LINK]',
   social: {
     instagram: '[INSTAGRAM URL]',
