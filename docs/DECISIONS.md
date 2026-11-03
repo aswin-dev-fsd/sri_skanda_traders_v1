@@ -85,6 +85,13 @@ All routes live in `routes` in `src/config/site.ts`.
 - `/product/<id>` serves bathware, granite and adhesives with the brief's bathware layout. Spec values still set to a `[PLACEHOLDER]` (e.g. warranty) are left out of the table, as the brief says "[if supplied]".
 - Below a product: "Pairs well with" (same category) and tiles for the matching room (bathroom for bathware, kitchen for granite).
 
+## 3D Visualizer page
+
+- The embedded copy lives at `public/embed/visualizer.html` (served as `/embed/visualizer.html`), not under `/visualizer/`, so it cannot clash with the `/visualizer` page. Only its title, brand line, a gold "DEMO" chip and the screenshot file name were changed from the original in `docs/`.
+- The page shows "Setting up the room…" until the visualizer has drawn its 3D canvas, and the error state if that has not happened after 20 seconds or the device has no WebGL.
+- Full screen uses the browser's Fullscreen API on the embed; where that is missing (iPhone Safari), the visualizer opens in a new tab instead.
+- "How it works" steps are the brief's DRAFT wording, with `[SCREENSHOT: step N]` placeholders, until they are matched to the final visualizer's controls.
+
 ## Internal pages
 
 `/styleguide` shows every token and shared component for review. It is `noindex` and not linked from the menus.
@@ -137,8 +144,8 @@ Status is updated in the same commit that finishes each task (the commit hash is
 | 5 | My Selection store and drawer, enquiry drawer | ✅ Done · `13c56eb` |
 | 6 | Home page, section by section | ✅ Done · `ac26f44` |
 | 7 | Products listing with filters | ✅ Done · `0e7d8c6` |
-| 8 | Collection page, plus the bathware variant | ✅ Done |
-| 9 | 3D Visualizer page | ⬜ To do |
+| 8 | Collection page, plus the bathware variant | ✅ Done · `0874f77` |
+| 9 | 3D Visualizer page | ✅ Done |
 | 10 | My Selection page, plus the print view | ⬜ To do |
 | 11 | Contact page | ⬜ To do |
 | 12 | About page | ⬜ To do |

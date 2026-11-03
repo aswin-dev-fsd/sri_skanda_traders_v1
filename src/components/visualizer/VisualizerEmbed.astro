@@ -1,0 +1,303 @@
+---
+// Visualizer 01 — the embed gets the most space: title row (72px), then the visualizer at
+// viewport height minus header and title row (min 560, max 860px). We design only the frame
+// around it; the visualizer is the temporary demo in public/embed/ (see DECISIONS.md).
+import Button from '@/components/ui/Button.astro';
+import Icon from '@/components/ui/Icon.astro';
+import Logo from '@/components/layout/Logo.astro';
+import { routes } from '@/config/site';
+
+interface Props {
+  src: string;
+}
+
+const { src } = Astro.props;
+---
+
+<section class="viz" aria-labelledby="viz-title">
+  <div class="container">
+    <div class="title-row">
+      <div class="title-text">
+        <h1 id="viz-title">3D Visualizer</h1>
+        <p class="muted">Try any tile in a real room.</p>
+      </div>
+      <div class="title-actions">
+        <Button variant="secondary" size="sm" icon="expand" data-viz-fullscreen>Full screen</Button>
+        <Button variant="text" href="#how-it-works">How it works ↓</Button>
+      </div>
+    </div>
+
+    <p class="rotate-hint small">Rotate your phone for a wider view</p>
+
+    <div class="frame" data-viz-frame data-state="loading">
+      <iframe
+        class="embed"
+        title="Sri Skanda 3D Visualizer"
+        src={src}
+        loading="eager"
+        allow="fullscreen; xr-spatial-tracking"
+        allowfullscreen
+        data-viz-iframe></iframe>
+
+      <div class="state loading" data-viz-loading aria-live="polite">
+        <Logo height={120} decorative class="mark" />
+        <p>Setting up the room…</p>
+        <span class="progress" aria-hidden="true"><span></span></span>
+      </div>
+
+      <div class="state error" data-viz-error role="alert" hidden>
+        <p class="error-text">The visualizer couldn't load. Check your connection or try again.</p>
+        <div class="error-actions">
+          <Button data-viz-reload icon="arrow-right">Reload</Button>
+          <Button variant="secondary" href={routes.products}>Browse products instead</Button>
+        </div>
+      </div>
+
+      <button type="button" class="exit-full" data-viz-exit aria-label="Exit full screen" hidden>
+        <Icon name="close" size={24} />
+      </button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .viz {
+    padding-bottom: var(--space-8);
+  }
+
+  .title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px var(--space-3);
+    min-height: 72px;
+    padding-block: 12px;
+  }
+
+  .title-text {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px var(--space-2);
+  }
+
+  h1 {
+    font-size: 32px;
+  }
+
+  .title-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .rotate-hint {
+    display: none;
+    width: max-content;
+    margin-bottom: 12px;
+    padding: 6px 14px;
+    border-radius: var(--radius-chip);
+    background: var(--beige);
+    color: var(--green);
+  }
+
+  @media (max-width: 767px) and (orientation: portrait) {
+    .rotate-hint {
+      display: block;
+    }
+  }
+
+  .frame {
+    position: relative;
+    height: clamp(560px, calc(100dvh - var(--header-h) - 72px - 24px), 860px);
+    overflow: hidden;
+    border: var(--border);
+    border-radius: var(--radius-card);
+    background: var(--ivory);
+  }
+
+  @media (max-width: 767px) {
+    .frame {
+      height: 75vh;
+      min-height: 0;
+    }
+  }
+
+  .frame:fullscreen {
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .embed {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    opacity: 0;
+    transition: opacity var(--dur-reveal) var(--ease);
+  }
+
+  [data-state='ready'] .embed {
+    opacity: 1;
+  }
+
+  .state {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    text-align: center;
+    color: var(--green);
+    transition: opacity var(--dur-ui-slow) var(--ease);
+  }
+
+  .state[hidden] {
+    display: none;
+  }
+
+  /* Loading: ivory with the grout-line grid, the logo mark at 20%, a thin gold progress line. */
+  .loading {
+    background-color: var(--ivory);
+    background-image:
+      linear-gradient(rgba(231, 226, 214, 0.6) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(231, 226, 214, 0.6) 1px, transparent 1px);
+    background-size: 96px 96px;
+    font-weight: 500;
+  }
+
+  [data-state='ready'] .loading,
+  [data-state='error'] .loading {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .loading :global(.mark) {
+    width: auto;
+    height: 120px;
+    opacity: 0.2;
+  }
+
+  .progress {
+    position: relative;
+    width: 180px;
+    height: 2px;
+    overflow: hidden;
+    background: var(--beige);
+  }
+
+  .progress span {
+    position: absolute;
+    inset: 0;
+    background: var(--gold);
+    transform-origin: left;
+    animation: load 1.6s var(--ease) infinite;
+  }
+
+  @keyframes load {
+    0% {
+      transform: translateX(-100%) scaleX(0.4);
+    }
+    100% {
+      transform: translateX(100%) scaleX(0.4);
+    }
+  }
+
+  .error {
+    background: var(--ivory);
+  }
+
+  .error-text {
+    max-width: 40ch;
+    font-size: var(--fs-body-lg);
+    font-weight: 500;
+  }
+
+  .error-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .exit-full {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--green);
+    color: var(--on-green);
+  }
+
+  .exit-full[hidden] {
+    display: none;
+  }
+</style>
+
+<script>
+  const READY_TIMEOUT_MS = 20000;
+
+  document.querySelectorAll<HTMLElement>('[data-viz-frame]').forEach((frame) => {
+    const iframe = frame.querySelector<HTMLIFrameElement>('[data-viz-iframe]')!;
+    const errorBox = frame.querySelector<HTMLElement>('[data-viz-error]')!;
+    const exit = frame.querySelector<HTMLButtonElement>('[data-viz-exit]')!;
+    let timer = 0;
+    let poll = 0;
+
+    const setState = (state: 'loading' | 'ready' | 'error') => {
+      frame.dataset.state = state;
+      errorBox.hidden = state !== 'error';
+      if (state !== 'loading') {
+        window.clearTimeout(timer);
+        window.clearInterval(poll);
+      }
+    };
+
+    const webgl = (() => {
+      try {
+        const canvas = document.createElement('canvas');
+        return !!(canvas.getContext('webgl2') || canvas.getContext('webgl'));
+      } catch {
+        return false;
+      }
+    })();
+
+    // Ready once the visualizer has drawn its 3D canvas (same origin, so we can look inside).
+    // Polling rather than waiting for `load`: the iframe can finish before this script runs.
+    const start = () => {
+      setState('loading');
+      if (!webgl) return setState('error');
+      timer = window.setTimeout(() => setState('error'), READY_TIMEOUT_MS);
+      poll = window.setInterval(() => {
+        if (iframe.contentDocument?.querySelector('canvas')) setState('ready');
+      }, 250);
+    };
+    iframe.addEventListener('error', () => setState('error'));
+
+    frame.parentElement?.parentElement
+      ?.querySelector('[data-viz-fullscreen]')
+      ?.addEventListener('click', () => {
+        if (frame.requestFullscreen) frame.requestFullscreen().catch(() => window.open(iframe.src, '_blank'));
+        else window.open(iframe.src, '_blank');
+      });
+    exit.addEventListener('click', () => document.exitFullscreen?.());
+    document.addEventListener('fullscreenchange', () => (exit.hidden = document.fullscreenElement !== frame));
+
+    frame.querySelector('[data-viz-reload]')?.addEventListener('click', () => {
+      start();
+      iframe.src = iframe.src;
+    });
+
+    start();
+  });
+</script>

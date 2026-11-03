@@ -1,0 +1,350 @@
+---
+// Visualizer 03 — How to choose the right tile: five topics, as chips on desktop and an accordion
+// on phones (the same <details> elements; on desktop the chips open one at a time). 250ms fade.
+import SampleChip from '@/components/ui/SampleChip.astro';
+
+const topics = [
+  {
+    id: 'size',
+    label: 'Size',
+    body: 'Big formats (600 × 1200 and above) suit large rooms and mean fewer joints. Smaller sizes suit compact rooms and bathrooms.',
+  },
+  {
+    id: 'finish',
+    label: 'Finish',
+    body: 'Glossy reflects light and makes rooms feel brighter. Matt hides marks and gives better grip.',
+  },
+  {
+    id: 'safety',
+    label: 'Safety',
+    body: 'Choose anti-skid or matt tiles for bathrooms, parking and outdoor areas.',
+  },
+  {
+    id: 'colour',
+    label: 'Colour',
+    body: 'Light tones make small rooms feel bigger. Darker tones add warmth and hide dust.',
+  },
+  {
+    id: 'grout',
+    label: 'Grout',
+    body: 'A grout colour close to the tile gives a seamless look; a contrasting colour shows the pattern.',
+  },
+];
+
+// Size visual: three tile sizes to scale beside a 2100 mm door (mm units).
+const sizeRects = [
+  { w: 300, h: 600, x: 1100 },
+  { w: 600, h: 1200, x: 1600 },
+  { w: 1200, h: 2400, x: 2400 },
+];
+---
+
+<section class="section guide" aria-labelledby="choose-title">
+  <div class="container">
+    <div class="head" data-reveal>
+      <p class="eyebrow">Before you decide</p>
+      <h2 id="choose-title">How to choose the right tile.</h2>
+    </div>
+
+    <div class="chips" role="group" aria-label="Topics" data-guide-chips>
+      {
+        topics.map((t, i) => (
+          <button type="button" class="chip" aria-pressed={i === 0 ? 'true' : 'false'} data-guide-chip={t.id}>
+            {t.label}
+          </button>
+        ))
+      }
+    </div>
+
+    <div class="topics" data-guide-topics>
+      {
+        topics.map((t, i) => (
+          <details class="topic" open={i === 0} data-topic={t.id}>
+            <summary class="summary">
+              {t.label}
+              <span class="chevron" aria-hidden="true" />
+            </summary>
+            <div class="content">
+              <p class="body-lg">{t.body}</p>
+              <div class="visual" aria-hidden="true">
+                {t.id === 'size' && (
+                  <svg viewBox="0 0 3700 2600" class="size-svg">
+                    <line x1="0" y1="2500" x2="3700" y2="2500" class="floor" />
+                    <rect x="60" y="400" width="900" height="2100" class="door" />
+                    <circle cx="840" cy="1500" r="28" class="knob" />
+                    {sizeRects.map((r) => (
+                      <rect x={r.x} y={2500 - r.h} width={r.w} height={r.h} class="tile" />
+                    ))}
+                  </svg>
+                )}
+                {t.id === 'finish' && (
+                  <div class="pair">
+                    <SampleChip name="Glossy" face="linear-gradient(135deg, #F4F0E8, #DCD2C0)" size={120} glossy />
+                    <SampleChip name="Matt" face="linear-gradient(135deg, #F4F0E8, #DCD2C0)" size={120} />
+                  </div>
+                )}
+                {t.id === 'safety' && (
+                  <ul class="checks">
+                    {['Bathroom', 'Parking', 'Outdoor'].map((room) => (
+                      <li>
+                        <span class="tick">✓</span>
+                        {room}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {t.id === 'colour' && (
+                  <div class="pair">
+                    <span class="room light">
+                      <span>Light</span>
+                    </span>
+                    <span class="room dark">
+                      <span>Dark</span>
+                    </span>
+                  </div>
+                )}
+                {t.id === 'grout' && (
+                  <div class="pair">
+                    <span class="grid matching">
+                      <span>Matching grout</span>
+                    </span>
+                    <span class="grid contrast">
+                      <span>Contrasting grout</span>
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .guide {
+    border-top: var(--border);
+  }
+
+  .head {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+
+  .chips {
+    display: none;
+    gap: 8px;
+    margin-bottom: var(--space-4);
+  }
+
+  .chip {
+    min-height: 44px;
+    padding: 0 20px;
+    border: 0;
+    border-radius: var(--radius-chip);
+    background: var(--beige);
+    color: var(--green);
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .chip[aria-pressed='true'] {
+    background: var(--green);
+    color: var(--on-green);
+  }
+
+  .topic {
+    border-bottom: var(--border);
+  }
+
+  .summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 56px;
+    color: var(--green);
+    font-weight: 600;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .chevron {
+    width: 9px;
+    height: 9px;
+    margin: 0 6px 4px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(45deg);
+  }
+
+  [open] .chevron {
+    transform: translateY(3px) rotate(-135deg);
+  }
+
+  .content {
+    display: grid;
+    gap: var(--space-3);
+    padding-bottom: var(--space-3);
+    animation: fade 250ms var(--ease);
+  }
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  /* Desktop: chips choose the topic; the accordion headers hide. */
+  @media (min-width: 900px) {
+    .chips {
+      display: flex;
+    }
+
+    .topic {
+      border: 0;
+    }
+
+    .topic:not([open]) {
+      display: none;
+    }
+
+    .summary {
+      display: none;
+    }
+
+    .content {
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: var(--space-8);
+      min-height: 280px;
+      padding: var(--space-4);
+      border: var(--border);
+      border-radius: var(--radius-card);
+      background: var(--surface);
+    }
+  }
+
+  .visual {
+    display: grid;
+    place-items: center;
+  }
+
+  .size-svg {
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .floor {
+    stroke: var(--beige);
+    stroke-width: 16;
+  }
+
+  .door {
+    fill: none;
+    stroke: var(--muted);
+    stroke-width: 18;
+  }
+
+  .knob {
+    fill: var(--muted);
+  }
+
+  .tile {
+    fill: var(--beige);
+    stroke: var(--green);
+    stroke-width: 16;
+  }
+
+  .pair {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+  }
+
+  .checks {
+    display: grid;
+    gap: 12px;
+    padding: 0;
+    list-style: none;
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  .tick {
+    display: inline-grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    margin-right: 12px;
+    border: 1.5px solid var(--gold);
+    border-radius: 50%;
+    color: var(--green);
+  }
+
+  .room,
+  .grid {
+    position: relative;
+    display: grid;
+    align-items: end;
+    width: 140px;
+    aspect-ratio: 1;
+    padding: 10px;
+    border: var(--border);
+    border-radius: 0 var(--radius-card) 0 0;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .room span,
+  .grid span {
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(255, 253, 248, 0.9);
+    color: var(--green);
+    justify-self: start;
+  }
+
+  .light {
+    background: linear-gradient(180deg, #F4F1EA 0 60%, #E9E2D3 60% 100%);
+  }
+
+  .dark {
+    background: linear-gradient(180deg, #E9E3D7 0 60%, #5B4A3C 60% 100%);
+  }
+
+  .grid {
+    background-color: #E8E2D5;
+    background-size: 35px 35px;
+  }
+
+  .matching {
+    background-image:
+      linear-gradient(#DCD4C4 2px, transparent 2px),
+      linear-gradient(90deg, #DCD4C4 2px, transparent 2px);
+  }
+
+  .contrast {
+    background-image:
+      linear-gradient(#2E3A35 2px, transparent 2px),
+      linear-gradient(90deg, #2E3A35 2px, transparent 2px);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-guide-chips]').forEach((chips) => {
+    const topics = chips.nextElementSibling;
+    chips.querySelectorAll<HTMLButtonElement>('[data-guide-chip]').forEach((chip) => {
+      chip.addEventListener('click', () => {
+        chips.querySelectorAll('[data-guide-chip]').forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+        topics?.querySelectorAll<HTMLDetailsElement>('[data-topic]').forEach((d) => (d.open = d.dataset.topic === chip.dataset.guideChip));
+      });
+    });
+  });
+</script>

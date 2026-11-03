@@ -1,0 +1,40 @@
+---
+// Green closing band used at the end of pages: heading, one line, and a few actions (slot).
+interface Props {
+  title: string;
+  body?: string;
+}
+
+const { title, body } = Astro.props;
+---
+
+<section class="section on-green band" aria-label={title}>
+  <div class="container inner" data-reveal>
+    <h2>{title}</h2>
+    {body && <p class="body-lg muted">{body}</p>}
+    <div class="actions"><slot /></div>
+  </div>
+</section>
+
+<style>
+  .band {
+    background-color: var(--green);
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-size: 96px 96px;
+  }
+
+  .inner {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-3);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+</style>

@@ -1,0 +1,122 @@
+---
+// Quick questions accordion (Visualizer and Contact pages). Plain <details>, so it works with the
+// keyboard and without JavaScript.
+interface Props {
+  eyebrow?: string;
+  title: string;
+  items: { q: string; a: string }[];
+}
+
+const { eyebrow, title, items } = Astro.props;
+const id = `faq-${title.toLowerCase().replace(/[^a-z]+/g, '-')}`;
+---
+
+<section class="section faq" aria-labelledby={id}>
+  <div class="container inner">
+    <div class="head" data-reveal>
+      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+      <h2 id={id}>{title}</h2>
+    </div>
+    <div class="items" data-reveal style="--i: 1">
+      {
+        items.map((item) => (
+          <details class="item">
+            <summary class="q">
+              {item.q}
+              <span class="plus" aria-hidden="true" />
+            </summary>
+            <p class="a muted">{item.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq {
+    border-top: var(--border);
+  }
+
+  .inner {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 1024px) {
+    .inner {
+      grid-template-columns: 5fr 7fr;
+      gap: var(--space-8);
+    }
+  }
+
+  .head {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+  }
+
+  .item {
+    border-bottom: var(--border);
+  }
+
+  .item:first-child {
+    border-top: var(--border);
+  }
+
+  .q {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    min-height: 64px;
+    padding-block: 12px;
+    color: var(--green);
+    font-size: 17px;
+    font-weight: 600;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .q::-webkit-details-marker {
+    display: none;
+  }
+
+  .plus {
+    position: relative;
+    flex: none;
+    width: 16px;
+    height: 16px;
+  }
+
+  .plus::before,
+  .plus::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 16px;
+    height: 1.5px;
+    background: currentColor;
+    transition: transform var(--dur-ui) var(--ease);
+  }
+
+  .plus::after {
+    transform: rotate(90deg);
+  }
+
+  [open] .plus::after {
+    transform: rotate(0deg);
+  }
+
+  .a {
+    padding-bottom: var(--space-3);
+    animation: fade 250ms var(--ease);
+  }
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+</style>

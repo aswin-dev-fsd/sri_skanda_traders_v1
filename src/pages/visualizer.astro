@@ -1,0 +1,68 @@
+---
+// 3D Visualizer page (brief Prompt 04): the embedded visualizer first, then how to use it, how to
+// choose a tile, quick questions and a closing band.
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import VisualizerEmbed from '@/components/visualizer/VisualizerEmbed.astro';
+import HowItWorks from '@/components/visualizer/HowItWorks.astro';
+import ChooseGuide from '@/components/visualizer/ChooseGuide.astro';
+import Button from '@/components/ui/Button.astro';
+import ClosingBand from '@/components/ui/ClosingBand.astro';
+import Faq from '@/components/ui/Faq.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { routes } from '@/config/site';
+import { whatsappUrl } from '@/lib/links';
+
+const questions = [
+  {
+    q: 'Will the colour on screen match the real tile?',
+    a: 'Screens show colours slightly differently. Save your favourites and see the real sample at our showroom before you decide.',
+  },
+  {
+    q: 'Can I use this in the showroom?',
+    a: 'Yes. Ask our team for the tablet and try tiles while you sit with us.',
+  },
+  {
+    q: 'How many tiles will I need?',
+    a: 'Share your room size with us, or ask about our site measurement service.',
+  },
+  { q: '[Additional question — to confirm with client]', a: '[Answer — to confirm with client]' },
+];
+---
+
+<BaseLayout
+  title="3D Visualizer"
+  description="Try tiles in a real room with the Sri Skanda 3D Visualizer, at home or on the tablet in our Sulur showroom."
+  whatsappTopic="the 3D Visualizer"
+>
+  <VisualizerEmbed src="/embed/visualizer.html" />
+  <HowItWorks />
+  <ChooseGuide />
+  <Faq title="Quick questions" items={questions} />
+  <ClosingBand title="Found one you like?" body="Save it to My Selection and visit us, or send your choice on WhatsApp.">
+    <Button variant="accent" href={routes.mySelection} arrow>View My Selection</Button>
+    <Button variant="outline-light" href={routes.contact}>Visit the showroom</Button>
+    <a href={whatsappUrl('a tile I saw in the 3D Visualizer')} class="wa" target="_blank" rel="noopener" aria-label="Send your choice on WhatsApp">
+      <Icon name="whatsapp" size={24} />
+    </a>
+  </ClosingBand>
+</BaseLayout>
+
+<style>
+  .wa {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border: 1.5px solid var(--gold);
+    border-radius: 50%;
+    color: var(--gold);
+  }
+
+  .wa:hover {
+    background: rgba(248, 246, 239, 0.08);
+  }
+
+  .wa:focus-visible {
+    outline-color: var(--gold);
+  }
+</style>
