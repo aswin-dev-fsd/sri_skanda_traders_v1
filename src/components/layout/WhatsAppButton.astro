@@ -52,6 +52,13 @@ const { topic } = Astro.props;
     transform: translateY(8px);
   }
 
+  /* A page with a bar docked at the bottom (Collection, My Selection) sets data-bar-visible. */
+  @media (max-width: 1023px) {
+    :global(:root[data-bar-visible]) .wa-float {
+      bottom: 92px;
+    }
+  }
+
   :global(:root[data-mode='showroom']) .wa-float {
     display: none;
   }

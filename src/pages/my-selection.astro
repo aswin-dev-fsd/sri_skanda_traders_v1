@@ -1,0 +1,924 @@
+---
+// My Selection page (brief Prompt 05): the customer's shortlist, saved on this device. At home it
+// becomes one ready-made enquiry; in the showroom, staff open it on the tablet and bring samples.
+// Everything below is rendered in the browser from the selection store.
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Logo from '@/components/layout/Logo.astro';
+import Breadcrumbs from '@/components/ui/Breadcrumbs.astro';
+import Button from '@/components/ui/Button.astro';
+import Field from '@/components/ui/Field.astro';
+import Icon from '@/components/ui/Icon.astro';
+import TrustFrame from '@/components/ui/TrustFrame.astro';
+import { business, features, routes, spaces } from '@/config/site';
+---
+
+<BaseLayout
+  title="My Selection"
+  description="Your saved tiles and bathware from Sri Skanda Traders, ready to send as one enquiry or show at our showroom."
+  whatsappTopic="my saved items"
+  noindex
+>
+  <section class="section page" data-ms-page>
+    <div class="container">
+      <Breadcrumbs items={[{ label: 'Home', href: routes.home }, { label: 'My Selection' }]} />
+
+      <div class="page-head">
+        <div class="titles">
+          <h1>My Selection <span class="count tabular" data-ms-count></span></h1>
+          <p class="body-lg muted">Everything you've saved, ready to send to us or show at the showroom.</p>
+        </div>
+        <div class="head-tools" data-ms-tools hidden>
+          <div class="segmented" role="group" aria-label="Group items">
+            <button type="button" aria-pressed="true" data-group-by="room">By room</button>
+            <button type="button" aria-pressed="false" data-group-by="code">By code</button>
+          </div>
+          <Button variant="secondary" size="sm" class="new-customer" data-new-customer>New customer</Button>
+        </div>
+      </div>
+
+      <div class="layout" data-ms-layout hidden>
+        <div class="list" data-ms-list aria-live="polite"></div>
+
+        <aside class="send" data-ms-send aria-labelledby="send-title">
+          <button type="button" class="send-close" aria-label="Close" data-send-close>
+            <Icon name="close" size={24} />
+          </button>
+          <TrustFrame label="Your shortlist" tone="ivory">
+            <div class="send-card">
+              <div data-send-form-wrap>
+                <h2 id="send-title" class="send-title" data-ms-summary></h2>
+                <form class="send-form" novalidate data-send-form>
+                  <Field label="Name" name="name" id="ms-name" required autocomplete="name" />
+                  <Field label="Phone" name="phone" id="ms-phone" type="tel" prefix="+91" required autocomplete="tel-national" />
+                  <Field label="Area / Location" name="area" id="ms-area" autocomplete="address-level2" />
+                  <Field label="Message (optional)" name="message" id="ms-message" multiline />
+                  <Button type="submit" block icon="whatsapp">Send as one enquiry</Button>
+                  <Button variant="secondary" block data-share-whatsapp>Share on WhatsApp</Button>
+                  <Button variant="text" data-print-list>Print list</Button>
+                  <p class="small muted">Our team will get back to you within a few hours.</p>
+                </form>
+              </div>
+              <div class="sent" data-send-done hidden tabindex="-1">
+                <Icon name="whatsapp" size={36} />
+                <h2 data-sent-title>Sent.</h2>
+                <p class="muted" data-sent-text></p>
+                <Button variant="secondary" data-send-again>Back to my list</Button>
+              </div>
+            </div>
+          </TrustFrame>
+        </aside>
+      </div>
+
+      <div class="empty" data-ms-empty hidden>
+        <Icon name="star" size={88} class="empty-star" />
+        <h2>Nothing saved yet.</h2>
+        <p class="body-lg muted">Tap the ☆ on any collection or product to keep it here.</p>
+        <div class="empty-actions">
+          <Button href={routes.products} arrow>Browse products</Button>
+          {features.visualizer && <Button variant="secondary" href={routes.visualizer}>Try the 3D Visualizer</Button>}
+        </div>
+      </div>
+    </div>
+
+    <div class="send-bar" data-send-bar hidden>
+      <Button block data-send-open icon="whatsapp"><span data-send-bar-label>Send items</span></Button>
+    </div>
+    <div class="send-backdrop" data-send-backdrop hidden></div>
+  </section>
+
+  <!-- Print view: a clean A4 list for the showroom. -->
+  <section class="print" data-print-root aria-hidden="true">
+    <div class="print-head">
+      <Logo height={72} decorative class="print-logo" />
+      <div>
+        <p class="print-title">My Selection</p>
+        <p data-print-date></p>
+      </div>
+    </div>
+    <div data-print-list-body></div>
+    <div class="print-foot">
+      <p><strong>{business.name}</strong> · {business.address}, {business.location} · {business.phone}</p>
+      <p class="notes-label">Staff notes</p>
+      <div class="notes"></div>
+    </div>
+  </section>
+
+  <dialog class="confirm" data-new-customer-dialog aria-labelledby="confirm-title">
+    <h2 id="confirm-title">Start fresh for a new customer?</h2>
+    <p class="muted">This clears the list on this tablet.</p>
+    <div class="confirm-actions">
+      <Button variant="secondary" data-confirm-cancel>Cancel</Button>
+      <Button data-confirm-clear>Clear and start fresh</Button>
+    </div>
+  </dialog>
+
+  <template data-ms-row>
+    <li class="row" data-row>
+      <span class="handle" aria-hidden="true" title="Drag to reorder" data-handle>⋮⋮</span>
+      <a class="thumb" data-thumb tabindex="-1" aria-hidden="true"></a>
+      <div class="info">
+        <a class="name" data-name></a>
+        <p class="meta small muted tabular" data-meta></p>
+      </div>
+      <div class="controls">
+        <label class="room-chip">
+          <span class="visually-hidden">Room</span>
+          <select data-room>
+            <option value="">Not sorted yet</option>
+            {spaces.map((s) => <option value={s.slug}>{s.name}</option>)}
+          </select>
+        </label>
+        <label class="area">
+          <span class="small">Approx. area</span>
+          <input type="number" min="0" step="1" inputmode="numeric" data-area />
+          <span class="small muted">sq ft</span>
+        </label>
+        <a class="view small" data-view>View</a>
+        <button type="button" class="remove" data-remove><Icon name="close" size={20} /></button>
+      </div>
+    </li>
+  </template>
+</BaseLayout>
+
+<style>
+  .page {
+    padding-top: var(--space-4);
+  }
+
+  /* Room for the docked "Send N items" bar. */
+  @media (max-width: 1023px) {
+    .page {
+      padding-bottom: calc(var(--section-y) + 80px);
+    }
+  }
+
+  .page-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin: var(--space-2) 0 var(--space-6);
+  }
+
+  .titles {
+    display: grid;
+    gap: 8px;
+  }
+
+  .count {
+    color: var(--muted);
+    font-size: 0.5em;
+    font-weight: 500;
+    vertical-align: middle;
+  }
+
+  .head-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .head-tools[hidden] {
+    display: none;
+  }
+
+  .segmented {
+    display: inline-flex;
+    padding: 4px;
+    border: var(--border);
+    border-radius: var(--radius-chip);
+    background: var(--surface);
+  }
+
+  .segmented button {
+    min-height: 40px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: var(--radius-chip);
+    background: transparent;
+    color: var(--green);
+    font-weight: 500;
+  }
+
+  .segmented button[aria-pressed='true'] {
+    background: var(--green);
+    color: var(--on-green);
+  }
+
+  /* "New customer" only in showroom mode. */
+  .head-tools :global(.new-customer) {
+    display: none;
+  }
+
+  :global(:root[data-mode='showroom']) .head-tools :global(.new-customer) {
+    display: inline-flex;
+  }
+
+  .layout {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .layout[hidden] {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .layout {
+      grid-template-columns: 8fr 4fr;
+      align-items: start;
+    }
+  }
+
+  /* List */
+  .list :global(.group) {
+    margin-bottom: var(--space-4);
+  }
+
+  .list :global(.group-title) {
+    margin-bottom: 12px;
+    font-size: 18px;
+  }
+
+  .list :global(.group-title span) {
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .list :global(ul) {
+    display: grid;
+    gap: 12px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .list :global(.row) {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    border: var(--border);
+    border-radius: var(--radius-card);
+    background: var(--surface);
+  }
+
+  .list :global(.row.dragging) {
+    opacity: 0.5;
+  }
+
+  .list :global(.row.drop-target) {
+    box-shadow: 0 -3px 0 var(--gold);
+  }
+
+  .list :global(.handle) {
+    display: none;
+  }
+
+  /* Desktop: drag handle, thumbnail over two rows, name above the controls. */
+  @media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
+    .list :global(.row) {
+      grid-template-columns: 20px 96px 1fr;
+      grid-template-areas:
+        'handle thumb info'
+        'handle thumb controls';
+      row-gap: 10px;
+    }
+
+    .list :global(.handle) {
+      grid-area: handle;
+      align-self: center;
+    }
+
+    .list :global(.thumb) {
+      grid-area: thumb;
+    }
+
+    .list :global(.info) {
+      grid-area: info;
+      align-self: end;
+    }
+
+    .list :global(.handle) {
+      display: block;
+      color: var(--muted);
+      font-size: 18px;
+      letter-spacing: -2px;
+      cursor: grab;
+      user-select: none;
+    }
+  }
+
+  .list :global(.thumb) {
+    width: 96px;
+    height: 96px;
+    border: var(--border);
+    border-radius: 0 var(--radius-card) 0 0;
+    background-color: var(--beige);
+    background-size: cover;
+    background-position: center;
+  }
+
+  .list :global(.info) {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .list :global(.name) {
+    color: var(--green);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .list :global(.name:hover) {
+    text-decoration: underline;
+  }
+
+  .list :global(.controls) {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px var(--space-2);
+  }
+
+  @media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
+    .list :global(.controls) {
+      grid-area: controls;
+      align-self: start;
+    }
+  }
+
+  .list :global(.room-chip select) {
+    min-height: 40px;
+    padding: 0 32px 0 14px;
+    border: 0;
+    border-radius: var(--radius-chip);
+    background: var(--beige);
+    color: var(--green);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .list :global(.area) {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--green);
+  }
+
+  .list :global(.area input) {
+    width: 76px;
+    min-height: 40px;
+    padding: 0 10px;
+    border: var(--border);
+    border-radius: 10px;
+    background: var(--ivory);
+  }
+
+  .list :global(.view) {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  .list :global(.remove) {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--muted);
+  }
+
+  .list :global(.remove:hover) {
+    background: rgba(18, 59, 50, 0.06);
+    color: var(--green);
+  }
+
+  /* Send panel: sticky on desktop, a bottom sheet below 1024px. */
+  .send-card {
+    display: grid;
+    padding: var(--space-3);
+    border-radius: var(--radius-card);
+    background: var(--surface);
+  }
+
+  .send-title {
+    margin-bottom: var(--space-2);
+    font-size: var(--fs-h3);
+  }
+
+  .send-form {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .send-form :global(.btn-text) {
+    justify-self: center;
+  }
+
+  .sent {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+    padding: var(--space-4) 0;
+    color: var(--green);
+    text-align: center;
+  }
+
+  .sent[hidden] {
+    display: none;
+  }
+
+  .send-close {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .send {
+      position: sticky;
+      top: calc(var(--header-h-compact) + var(--space-3));
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .send {
+      position: fixed;
+      inset: auto 0 0;
+      z-index: 70;
+      max-height: 92dvh;
+      overflow-y: auto;
+      padding: var(--space-6) var(--page-x) calc(var(--space-3) + env(safe-area-inset-bottom));
+      border-radius: var(--radius-card) var(--radius-card) 0 0;
+      background: var(--ivory);
+      box-shadow: 0 -12px 40px rgba(14, 47, 40, 0.2);
+      transform: translateY(105%);
+      visibility: hidden;
+      transition:
+        transform 400ms var(--ease),
+        visibility 0s linear 400ms;
+    }
+
+    .send[data-open] {
+      transform: none;
+      visibility: visible;
+      transition: transform 400ms var(--ease);
+    }
+
+    .send-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      display: grid;
+      place-items: center;
+      width: var(--touch-min);
+      height: var(--touch-min);
+      border: 0;
+      background: transparent;
+      color: var(--green);
+    }
+  }
+
+  .send-bar {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 45;
+    padding: 12px var(--page-x) calc(12px + env(safe-area-inset-bottom));
+    border-top: var(--border);
+    background: rgba(248, 246, 239, 0.97);
+  }
+
+  .send-bar[hidden],
+  .send-backdrop[hidden] {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .send-bar {
+      display: none;
+    }
+  }
+
+  .send-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 65;
+    background: rgba(14, 47, 40, 0.45);
+  }
+
+  /* Empty state: no illustration, a large muted star outline. */
+  .empty {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+    padding: var(--space-8) 0;
+    text-align: center;
+  }
+
+  .empty[hidden] {
+    display: none;
+  }
+
+  .empty :global(.empty-star) {
+    color: var(--beige);
+  }
+
+  .empty-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: var(--space-2);
+  }
+
+  /* New customer confirm dialog. */
+  .confirm {
+    max-width: 420px;
+    padding: var(--space-4);
+    border: 0;
+    border-radius: var(--radius-card);
+    background: var(--ivory);
+    box-shadow: var(--shadow-lift);
+  }
+
+  .confirm::backdrop {
+    background: rgba(14, 47, 40, 0.45);
+  }
+
+  .confirm h2 {
+    margin-bottom: 8px;
+    font-size: var(--fs-h3);
+  }
+
+  .confirm-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: var(--space-3);
+  }
+
+  /* Print view (A4). */
+  .print {
+    display: none;
+  }
+
+  @media print {
+    @page {
+      size: A4;
+      margin: 16mm;
+    }
+
+    :global(body) {
+      background: #fff;
+    }
+
+    :global(.skip-link),
+    :global(.site-header),
+    :global(.header-spacer),
+    :global(.site-footer),
+    :global(.wa-float),
+    :global(.toast),
+    :global([data-drawer]),
+    :global(.mobile-menu),
+    .page {
+      display: none !important;
+    }
+
+    .print {
+      display: block;
+      color: #000;
+      font-size: 11pt;
+    }
+
+    .print-head {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #999;
+    }
+
+    /* The logo is ivory/gold for green backgrounds, so it prints on a green tile. */
+    .print-head :global(.print-logo) {
+      width: auto;
+      height: 72px;
+      padding: 6px;
+      border-radius: 8px;
+      background: var(--green);
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    .print-title {
+      font-size: 18pt;
+      font-weight: 700;
+    }
+
+    .print :global(h3) {
+      margin: 16px 0 6px;
+      color: #000;
+      font-size: 13pt;
+    }
+
+    .print :global(table) {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .print :global(th),
+    .print :global(td) {
+      padding: 6px 4px;
+      border-bottom: 1px solid #ccc;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .print-foot {
+      margin-top: 24px;
+    }
+
+    .notes-label {
+      margin-top: 16px;
+      font-weight: 600;
+    }
+
+    .notes {
+      height: 120px;
+      margin-top: 6px;
+      background: repeating-linear-gradient(transparent 0 27px, #bbb 27px 28px);
+    }
+  }
+</style>
+
+<script>
+  import { $selection, clearSelection, moveItem, removeItem, restoreItem, updateItem } from '@/stores/selection';
+  import { buildEnquiryMessage, buildShortlistMessage, roomName, validateEnquiry, whatsappLink } from '@/lib/enquiry';
+  import { showToast } from '@/scripts/toast';
+  import { spaces } from '@/config/site';
+  import type { SavedItem } from '@/lib/types';
+
+  const page = document.querySelector<HTMLElement>('[data-ms-page]')!;
+  const list = page.querySelector<HTMLElement>('[data-ms-list]')!;
+  const layout = page.querySelector<HTMLElement>('[data-ms-layout]')!;
+  const empty = page.querySelector<HTMLElement>('[data-ms-empty]')!;
+  const tools = page.querySelector<HTMLElement>('[data-ms-tools]')!;
+  const countEl = page.querySelector<HTMLElement>('[data-ms-count]')!;
+  const summary = page.querySelector<HTMLElement>('[data-ms-summary]')!;
+  const send = page.querySelector<HTMLElement>('[data-ms-send]')!;
+  const sendBar = page.querySelector<HTMLElement>('[data-send-bar]')!;
+  const backdrop = page.querySelector<HTMLElement>('[data-send-backdrop]')!;
+  const rowTemplate = document.querySelector<HTMLTemplateElement>('[data-ms-row]')!;
+  const printBody = document.querySelector<HTMLElement>('[data-print-list-body]')!;
+  const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+  const sheetMedia = matchMedia('(max-width: 1023px)');
+  let groupBy: 'room' | 'code' = 'room';
+  let dragId: string | null = null;
+
+  function rooms(items: SavedItem[]) {
+    return new Set(items.map((i) => i.room).filter(Boolean)).size;
+  }
+
+  /** Room groups in the brief's space order, unsorted items last. */
+  function grouped(items: SavedItem[]): [string, SavedItem[]][] {
+    const order = [...spaces.map((s) => s.slug), ''];
+    const groups = order.map((room): [string, SavedItem[]] => [room, items.filter((i) => (i.room ?? '') === room)]);
+    return groups.filter(([, g]) => g.length > 0);
+  }
+
+  function row(item: SavedItem): HTMLElement {
+    const el = rowTemplate.content.firstElementChild!.cloneNode(true) as HTMLElement;
+    el.dataset.id = item.id;
+    const thumb = el.querySelector<HTMLAnchorElement>('[data-thumb]')!;
+    thumb.href = item.href;
+    if (item.thumb) thumb.style.backgroundImage = `url("${item.thumb}")`;
+    else if (item.swatch) thumb.style.backgroundColor = item.swatch;
+    const name = el.querySelector<HTMLAnchorElement>('[data-name]')!;
+    name.href = item.href;
+    name.textContent = item.colour ? `${item.name} · ${item.colour}` : item.name;
+    el.querySelector('[data-meta]')!.textContent = [item.code, item.size, item.finish, item.brand].filter(Boolean).join(' · ');
+    el.querySelector<HTMLAnchorElement>('[data-view]')!.href = item.href;
+
+    const room = el.querySelector<HTMLSelectElement>('[data-room]')!;
+    room.value = item.room ?? '';
+    room.addEventListener('change', () => updateItem(item.id, { room: room.value || undefined, approxArea: item.approxArea }));
+
+    const area = el.querySelector<HTMLInputElement>('[data-area]')!;
+    area.value = item.approxArea ? String(item.approxArea) : '';
+    area.setAttribute('aria-label', `Approximate area for ${name.textContent}, in square feet`);
+    area.addEventListener('change', () => {
+      const value = Math.round(Number(area.value));
+      updateItem(item.id, { room: item.room, approxArea: value > 0 ? value : undefined });
+    });
+
+    const remove = el.querySelector<HTMLButtonElement>('[data-remove]')!;
+    remove.setAttribute('aria-label', `Remove ${name.textContent}`);
+    remove.addEventListener('click', () => {
+      const removed = removeItem(item.id);
+      if (removed) showToast(`Removed ${removed.name}`, { label: 'Undo', onClick: () => restoreItem(removed) });
+    });
+
+    // Drag to reorder (desktop, by the handle).
+    const handle = el.querySelector<HTMLElement>('[data-handle]')!;
+    handle.addEventListener('mousedown', () => (el.draggable = true));
+    el.addEventListener('dragstart', (e) => {
+      dragId = item.id;
+      el.classList.add('dragging');
+      e.dataTransfer?.setData('text/plain', item.id);
+    });
+    el.addEventListener('dragend', () => {
+      el.draggable = false;
+      el.classList.remove('dragging');
+      list.querySelectorAll('.drop-target').forEach((t) => t.classList.remove('drop-target'));
+    });
+    el.addEventListener('dragover', (e) => {
+      if (!dragId || dragId === item.id) return;
+      e.preventDefault();
+      el.classList.add('drop-target');
+    });
+    el.addEventListener('dragleave', () => el.classList.remove('drop-target'));
+    el.addEventListener('drop', (e) => {
+      e.preventDefault();
+      if (dragId) moveItem(dragId, item.id);
+      dragId = null;
+    });
+    return el;
+  }
+
+  function renderList(items: SavedItem[]) {
+    const groups: [string, SavedItem[]][] =
+      groupBy === 'room'
+        ? grouped(items)
+        : [['', [...items].sort((a, b) => (a.code ?? a.name).localeCompare(b.code ?? b.name))]];
+    list.replaceChildren(
+      ...groups.map(([room, groupItems]) => {
+        const section = document.createElement('section');
+        section.className = 'group';
+        if (groupBy === 'room') {
+          const h = document.createElement('h2');
+          h.className = 'group-title';
+          h.innerHTML = `${roomName(room || undefined)} <span>(${groupItems.length})</span>`;
+          section.append(h);
+        }
+        const ul = document.createElement('ul');
+        ul.append(...groupItems.map(row));
+        section.append(ul);
+        return section;
+      }),
+    );
+  }
+
+  function renderPrint(items: SavedItem[]) {
+    printBody.replaceChildren(
+      ...grouped(items).map(([room, groupItems]) => {
+        const wrap = document.createElement('div');
+        const h = document.createElement('h3');
+        h.textContent = `${roomName(room || undefined)} (${groupItems.length})`;
+        const table = document.createElement('table');
+        table.innerHTML = '<thead><tr><th>Item</th><th>Code</th><th>Size</th><th>Brand</th><th>Area</th></tr></thead>';
+        const tbody = document.createElement('tbody');
+        groupItems.forEach((i) => {
+          const tr = document.createElement('tr');
+          [i.colour ? `${i.name}, ${i.colour}` : i.name, i.code ?? '', i.size ?? '', i.brand ?? '', i.approxArea ? `${i.approxArea} sq ft` : ''].forEach((text) => {
+            const td = document.createElement('td');
+            td.textContent = text;
+            tr.append(td);
+          });
+          tbody.append(tr);
+        });
+        table.append(tbody);
+        wrap.append(h, table);
+        return wrap;
+      }),
+    );
+  }
+
+  $selection.subscribe((items) => {
+    const has = items.length > 0;
+    layout.hidden = !has;
+    tools.hidden = !has;
+    empty.hidden = has;
+    sendBar.hidden = !has;
+    document.documentElement.toggleAttribute('data-bar-visible', has && sheetMedia.matches);
+    countEl.textContent = has ? `(${plural(items.length, 'item', 'items')})` : '';
+    const roomCount = rooms(items);
+    summary.textContent = [plural(items.length, 'item', 'items'), roomCount ? plural(roomCount, 'room', 'rooms') : ''].filter(Boolean).join(' · ');
+    const barLabel = page.querySelector('[data-send-bar-label]');
+    if (barLabel) barLabel.textContent = `Send ${plural(items.length, 'item', 'items')}`;
+    if (!has) closeSheet();
+    renderList(items);
+    renderPrint(items);
+  });
+
+  // By room | By code
+  page.querySelectorAll<HTMLButtonElement>('[data-group-by]').forEach((button) => {
+    button.addEventListener('click', () => {
+      groupBy = button.dataset.groupBy as 'room' | 'code';
+      page.querySelectorAll('[data-group-by]').forEach((b) => b.setAttribute('aria-pressed', String(b === button)));
+      renderList($selection.get());
+    });
+  });
+
+  // Send panel: a bottom sheet below 1024px.
+  function openSheet() {
+    send.setAttribute('data-open', '');
+    send.inert = false;
+    backdrop.hidden = false;
+    document.documentElement.dataset.overlay = 'drawer';
+    document.documentElement.style.overflow = 'hidden';
+    send.querySelector<HTMLInputElement>('#ms-name')?.focus();
+  }
+  function closeSheet() {
+    if (!send.hasAttribute('data-open')) return;
+    send.removeAttribute('data-open');
+    send.inert = sheetMedia.matches;
+    backdrop.hidden = true;
+    delete document.documentElement.dataset.overlay;
+    document.documentElement.style.overflow = '';
+  }
+  const syncSheet = () => {
+    send.inert = sheetMedia.matches && !send.hasAttribute('data-open');
+    document.documentElement.toggleAttribute('data-bar-visible', sheetMedia.matches && $selection.get().length > 0);
+    if (!sheetMedia.matches) closeSheet();
+  };
+  sheetMedia.addEventListener('change', syncSheet);
+  syncSheet();
+  page.querySelector('[data-send-open]')?.addEventListener('click', openSheet);
+  page.querySelector('[data-send-close]')?.addEventListener('click', closeSheet);
+  backdrop.addEventListener('click', closeSheet);
+  document.addEventListener('keydown', (e) => e.key === 'Escape' && closeSheet());
+
+  // Send as one enquiry (WhatsApp, details filled in).
+  const form = page.querySelector<HTMLFormElement>('[data-send-form]')!;
+  const formWrap = page.querySelector<HTMLElement>('[data-send-form-wrap]')!;
+  const done = page.querySelector<HTMLElement>('[data-send-done]')!;
+  const setError = (id: string, message?: string) => {
+    document.getElementById(id)?.closest('[data-field]')?.toggleAttribute('data-invalid', !!message);
+    const error = document.getElementById(`${id}-error`);
+    if (error) error.textContent = message ?? '';
+  };
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const data = new FormData(form);
+    const enquiry = {
+      name: String(data.get('name') ?? ''),
+      phone: String(data.get('phone') ?? ''),
+      area: String(data.get('area') ?? ''),
+      message: String(data.get('message') ?? ''),
+      items: $selection.get(),
+    };
+    const errors = validateEnquiry(enquiry);
+    setError('ms-name', errors.name);
+    setError('ms-phone', errors.phone);
+    if (errors.name || errors.phone) {
+      document.getElementById(errors.name ? 'ms-name' : 'ms-phone')?.focus();
+      return;
+    }
+    window.open(whatsappLink(buildEnquiryMessage(enquiry)), '_blank', 'noopener');
+    const first = enquiry.name.trim().split(/\s+/)[0];
+    page.querySelector('[data-sent-title]')!.textContent = `Sent to WhatsApp, ${first}.`;
+    page.querySelector('[data-sent-text]')!.textContent = "Press send in WhatsApp, and we'll call you soon.";
+    formWrap.hidden = true;
+    done.hidden = false;
+    done.focus();
+  });
+  form.addEventListener('input', (e) => {
+    const id = (e.target as HTMLElement).id;
+    if (id === 'ms-name' || id === 'ms-phone') setError(id);
+  });
+  page.querySelector('[data-send-again]')?.addEventListener('click', () => {
+    formWrap.hidden = false;
+    done.hidden = true;
+  });
+
+  // Share on WhatsApp: just the list, no form needed.
+  page.querySelector('[data-share-whatsapp]')?.addEventListener('click', () => {
+    window.open(whatsappLink(buildShortlistMessage($selection.get())), '_blank', 'noopener');
+  });
+
+  // Print list (A4).
+  page.querySelector('[data-print-list]')?.addEventListener('click', () => {
+    const date = document.querySelector('[data-print-date]');
+    if (date) date.textContent = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+    window.print();
+  });
+
+  // Showroom: New customer → confirm → clear.
+  const dialog = document.querySelector<HTMLDialogElement>('[data-new-customer-dialog]')!;
+  page.querySelector('[data-new-customer]')?.addEventListener('click', () => dialog.showModal());
+  dialog.querySelector('[data-confirm-cancel]')?.addEventListener('click', () => dialog.close());
+  dialog.querySelector('[data-confirm-clear]')?.addEventListener('click', () => {
+    clearSelection();
+    form.reset();
+    dialog.close();
+    showToast('Started fresh for a new customer');
+  });
+</script>

@@ -127,13 +127,6 @@ const { name, brand, item, colour } = Astro.props;
   .wa:hover {
     background: rgba(18, 59, 50, 0.06);
   }
-
-  /* On phones the bar has its own WhatsApp button; lift the floating one clear of it. */
-  @media (max-width: 767px) {
-    :global(:root[data-bar-visible] .wa-float) {
-      bottom: 92px;
-    }
-  }
 </style>
 
 <script>
@@ -145,7 +138,8 @@ const { name, brand, item, colour } = Astro.props;
       bar.toggleAttribute('data-shown', show);
       bar.inert = !show;
       bar.setAttribute('aria-hidden', String(!show));
-      document.documentElement.toggleAttribute('data-bar-visible', show);
+      // Only docked at the bottom on phones; there it lifts the floating WhatsApp button.
+      document.documentElement.toggleAttribute('data-bar-visible', show && matchMedia('(max-width: 767px)').matches);
     }).observe(hero);
   }
 </script>

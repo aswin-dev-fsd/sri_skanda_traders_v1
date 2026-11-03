@@ -92,6 +92,15 @@ All routes live in `routes` in `src/config/site.ts`.
 - Full screen uses the browser's Fullscreen API on the embed; where that is missing (iPhone Safari), the visualizer opens in a new tab instead.
 - "How it works" steps are the brief's DRAFT wording, with `[SCREENSHOT: step N]` placeholders, until they are matched to the final visualizer's controls.
 
+## My Selection page
+
+- `/my-selection` renders entirely in the browser from the saved list, and is `noindex` (it is personal).
+- "Send as one enquiry" opens WhatsApp with name, phone and every item (with its room and approximate area). "Share on WhatsApp" sends just the list, grouped by room, with no form. Both match the WhatsApp-first enquiry decision.
+- The success text is "Sent to WhatsApp, [Name]. Press send in WhatsApp, and we'll call you soon." because the site cannot know whether the customer pressed send.
+- Drag to reorder works with a mouse on desktop only, by the handle (as the brief says, not required on touch).
+- The "New customer" button is built here but only shows when `<html data-mode="showroom">`; turning showroom mode on is task 14.
+- Print view: A4, logo on a green tile (the logo is made for green), date, items grouped by room in a table, showroom details, lined space for staff notes.
+
 ## Internal pages
 
 `/styleguide` shows every token and shared component for review. It is `noindex` and not linked from the menus.
@@ -145,8 +154,8 @@ Status is updated in the same commit that finishes each task (the commit hash is
 | 6 | Home page, section by section | ✅ Done · `ac26f44` |
 | 7 | Products listing with filters | ✅ Done · `0e7d8c6` |
 | 8 | Collection page, plus the bathware variant | ✅ Done · `0874f77` |
-| 9 | 3D Visualizer page | ✅ Done |
-| 10 | My Selection page, plus the print view | ⬜ To do |
+| 9 | 3D Visualizer page | ✅ Done · `27075a8` |
+| 10 | My Selection page, plus the print view | ✅ Done |
 | 11 | Contact page | ⬜ To do |
 | 12 | About page | ⬜ To do |
 | 13 | Gallery page | ⬜ To do |

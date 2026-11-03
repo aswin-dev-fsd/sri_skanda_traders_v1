@@ -1,5 +1,5 @@
-import { business, isPlaceholder } from '@/config/site';
-import type { SelectionItem } from '@/lib/types';
+import { business, isPlaceholder, spaces } from '@/config/site';
+import type { SavedItem, SelectionItem } from '@/lib/types';
 
 export { whatsappLink } from '@/lib/links';
 
@@ -53,16 +53,45 @@ export function validateEnquiry(enquiry: Pick<Enquiry, 'name' | 'phone'>): Enqui
 }
 
 /**
- * One line describing an item, e.g. "Ivory Marble, Ivory (IM-101), 600 × 1200 mm".
- * @param item A collection or product.
+ * Display name of a room slug, e.g. "living-room" → "Living room".
+ * @param slug A space slug.
+ * @returns The room name, or "Not sorted yet" when there is none.
+ */
+export function roomName(slug?: string): string {
+  return spaces.find((s) => s.slug === slug)?.name ?? 'Not sorted yet';
+}
+
+/**
+ * One line describing an item, e.g. "Ivory Marble, Ivory (IM-101), 600 × 1200 mm, Brand A".
+ * Saved items also carry the room and approximate area the customer set.
+ * @param item A collection, colour or product.
  * @returns A readable line.
  */
-export function describeItem(item: SelectionItem): string {
+export function describeItem(item: SelectionItem & Partial<Pick<SavedItem, 'room' | 'approxArea'>>): string {
   const parts = [item.colour ? `${item.name}, ${item.colour}` : item.name];
   if (item.code) parts[0] += ` (${item.code})`;
   if (item.size) parts.push(item.size);
   if (item.brand) parts.push(item.brand);
+  if (item.room) parts.push(`for ${roomName(item.room).toLowerCase()}`);
+  if (item.approxArea) parts.push(`about ${item.approxArea} sq ft`);
   return parts.join(', ');
+}
+
+/**
+ * The shortlist on its own, for "Share on WhatsApp": items grouped by room.
+ * @param items Saved items.
+ * @returns Multi-line message text.
+ */
+export function buildShortlistMessage(items: SavedItem[]): string {
+  const lines = [`My shortlist from ${business.name} (${items.length} ${items.length === 1 ? 'item' : 'items'}):`];
+  const rooms = [...new Set(items.map((i) => i.room ?? ''))];
+  for (const room of rooms) {
+    lines.push('', `${roomName(room || undefined)}:`);
+    items
+      .filter((i) => (i.room ?? '') === room)
+      .forEach((i) => lines.push(`- ${describeItem({ ...i, room: undefined })}`));
+  }
+  return lines.join('\n');
 }
 
 /**

@@ -103,6 +103,22 @@ export function updateItem(id: string, changes: Pick<SavedItem, 'room' | 'approx
 }
 
 /**
+ * Moves an item to a new position (drag to reorder on the My Selection page).
+ * @param id Item id.
+ * @param beforeId Id of the item it should sit before, or null for the end.
+ * @returns Nothing.
+ */
+export function moveItem(id: string, beforeId: string | null): void {
+  const items = $selection.get();
+  const moving = items.find((i) => i.id === id);
+  if (!moving || id === beforeId) return;
+  const rest = items.filter((i) => i.id !== id);
+  const at = beforeId ? rest.findIndex((i) => i.id === beforeId) : -1;
+  rest.splice(at < 0 ? rest.length : at, 0, moving);
+  $selection.set(rest);
+}
+
+/**
  * Empties the list (showroom "New customer").
  * @returns Nothing.
  */
