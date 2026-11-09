@@ -11,7 +11,7 @@ const steps = [
 ];
 ---
 
-<section class="section" id="how-it-works" aria-labelledby="how-title">
+<section class="section divided how" id="how-it-works" aria-labelledby="how-title">
   <div class="container">
     <div class="head" data-reveal>
       <p class="eyebrow">How it works</p>
@@ -39,6 +39,11 @@ const steps = [
 </section>
 
 <style>
+  /* Matches the embed area's 96px bottom, so the divider line between them sits evenly. */
+  .how {
+    padding-top: var(--space-12);
+  }
+
   .head {
     display: grid;
     gap: var(--space-2);

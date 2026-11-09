@@ -37,7 +37,7 @@ const cards = [
 ];
 ---
 
-<section class="section" aria-labelledby="category-title">
+<section class="section divided cat" aria-labelledby="category-title">
   <div class="container">
     <div class="head" data-reveal>
       <p class="eyebrow">Shop by category</p>
@@ -78,6 +78,11 @@ const cards = [
 </section>
 
 <style>
+  /* Matches the hero's 96px bottom, so the divider line between them sits evenly. */
+  .cat {
+    padding-top: var(--space-12);
+  }
+
   .head {
     display: grid;
     gap: var(--space-2);
@@ -208,7 +213,7 @@ const cards = [
     display: inline-flex;
     align-items: center;
     min-height: 40px;
-    padding: 0 16px;
+    padding: 1.5px 16px 0; /* 1.5px top padding: Poppins sits ~0.75px high in a box; this centres the text. */
     border: 1px solid rgba(248, 246, 239, 0.5);
     border-radius: var(--radius-chip);
     background: rgba(18, 59, 50, 0.35);

@@ -296,7 +296,7 @@ const googleUrl = isPlaceholder(business.googleReviewsUrl) ? '#' : business.goog
 
   .chip {
     min-height: 40px;
-    padding: 0 18px;
+    padding: 1.5px 18px 0; /* 1.5px top padding: Poppins sits ~0.75px high in a box; this centres the text. */
     border: 0;
     border-radius: var(--radius-chip);
     background: var(--beige);
