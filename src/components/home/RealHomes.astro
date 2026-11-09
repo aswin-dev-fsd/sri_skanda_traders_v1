@@ -12,7 +12,7 @@ const shopHref = featuredProject.collectionId ? collectionHref(featuredProject.c
 const pageSize = 2;
 ---
 
-<section class="section divided" aria-labelledby="homes-title">
+<section class="section divided homes" aria-labelledby="homes-title">
   <div class="container">
     <div class="head" data-reveal>
       <p class="eyebrow">Real homes</p>
@@ -64,6 +64,12 @@ const pageSize = 2;
 </section>
 
 <style>
+  /* Matches the compact Brands section above (96px), so the divider line between them sits
+     evenly at every screen size. */
+  .homes {
+    padding-top: var(--space-12);
+  }
+
   .head {
     display: grid;
     gap: var(--space-2);

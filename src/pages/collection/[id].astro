@@ -107,7 +107,7 @@ const slides =
                   <p class="small muted tabular">
                     {d.code} · {formatSize(d.size)}
                   </p>
-                  <Button variant="secondary" size="sm" href={routes.contact} data-enquire data-item={JSON.stringify(item)}>
+                  <Button variant="secondary" size="sm" href={routes.contact} class="decor-enquire" data-enquire data-item={JSON.stringify(item)}>
                     Enquire
                   </Button>
                 </li>
@@ -201,6 +201,11 @@ const slides =
     color: var(--green);
     font-size: 17px;
     font-weight: 600;
+  }
+
+  /* The only button on the tile, so it sits right, matching the product cards. */
+  .decor :global(.decor-enquire) {
+    justify-self: end;
   }
 
   .similar {

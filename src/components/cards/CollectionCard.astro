@@ -98,17 +98,53 @@ const loading = eager ? 'eager' : 'lazy';
 </article>
 
 <style>
+  /* One object: ivory panel, beige border, image flush at the top, text padded inside.
+     Hover lifts the whole card (transform) and fades in a soft shadow (opacity). */
   .collection-card {
     position: relative;
     display: grid;
-    gap: var(--space-2);
+    grid-template-rows: auto 1fr;
+    height: 100%;
+    border: var(--border);
+    border-radius: var(--radius-card);
+    background: var(--surface);
+    transition: transform var(--dur-ui-slow) var(--ease);
+  }
+
+  .collection-card::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    box-shadow: var(--shadow-lift);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--dur-ui-slow) var(--ease);
+  }
+
+  @media (hover: hover) {
+    .collection-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .collection-card:hover::before {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .collection-card,
+    .collection-card:hover {
+      transform: none;
+      transition: none;
+    }
   }
 
   .media {
     position: relative;
     aspect-ratio: 4 / 5;
     overflow: hidden;
-    border-radius: var(--radius-image);
+    border-radius: calc(var(--radius-card) - 1px) calc(var(--radius-card) - 1px) 0 0;
     background: var(--beige);
   }
 
@@ -199,8 +235,16 @@ const loading = eager ? 'eager' : 'lazy';
   }
 
   .body {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 6px;
+    padding: var(--space-3);
+  }
+
+  @media (max-width: 599px) {
+    .body {
+      padding: 14px 12px;
+    }
   }
 
   .brand {
@@ -230,8 +274,7 @@ const loading = eager ? 'eager' : 'lazy';
 
   .collection-card:has(.card-link:focus-visible) {
     outline: 2px solid var(--green);
-    outline-offset: 6px;
-    border-radius: var(--radius-image);
+    outline-offset: 4px;
   }
 
   .meta {
@@ -257,7 +300,8 @@ const loading = eager ? 'eager' : 'lazy';
     align-items: center;
     justify-content: space-between;
     gap: var(--space-2);
-    margin-top: 4px;
+    margin-top: auto;
+    padding-top: 10px;
   }
 
   .actions :global(.raise) {
