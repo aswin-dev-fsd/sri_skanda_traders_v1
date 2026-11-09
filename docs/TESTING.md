@@ -20,6 +20,7 @@ Tests run against the production build (`astro build` + `astro preview` on port 
 | `tests/e2e/enquiry.spec.ts` | Enquire from a card (validation, message content, success); Contact trade fields |
 | `tests/e2e/listing.spec.ts` | Filters update results and URL; shared URL restores them; empty state recovers; Load more; brand redirect |
 | `tests/e2e/search-showroom.spec.ts` | Exact code search → colour page; showroom mode on/remembered/off, New customer clears the list |
+| `tests/e2e/visualizer.spec.ts` | 3D view switched On fills the visualizer frame (embed stubbed); Off removes it |
 | `tests/e2e/a11y.spec.ts` | axe WCAG 2.1 AA (serious and critical issues) and no script errors on 11 main pages, desktop and phone |
 
 Projects: `unit`, `desktop` (1280 × 800), `tablet` (1024 × 768, touch; the showroom size), `phone` (Pixel 7).

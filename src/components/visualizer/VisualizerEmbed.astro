@@ -192,7 +192,9 @@ const { src } = Astro.props;
     border-radius: 0;
   }
 
-  .embed {
+  /* :global because the script creates the iframe, so it never gets Astro's scoping attribute.
+     Without it the iframe falls back to the browser's 300 × 150 default. */
+  .frame :global(.embed) {
     display: block;
     width: 100%;
     height: 100%;
@@ -201,7 +203,7 @@ const { src } = Astro.props;
     transition: opacity var(--dur-reveal) var(--ease);
   }
 
-  [data-state='ready'] .embed {
+  .frame[data-state='ready'] :global(.embed) {
     opacity: 1;
   }
 
