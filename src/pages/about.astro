@@ -149,7 +149,7 @@ const directions = hrefOrHash(business.mapsUrl);
   <!-- 06 The people (hidden until team photos arrive, as the brief says) -->
   {
     team.length > 0 && (
-      <section class="section" aria-labelledby="people-title">
+      <section class="section divided" aria-labelledby="people-title">
         <div class="container">
           <div class="head" data-reveal>
             <p class="eyebrow">The people</p>
@@ -170,7 +170,7 @@ const directions = hrefOrHash(business.mapsUrl);
   }
 
   <!-- 07 Our showroom -->
-  <section class="section showroom" aria-labelledby="showroom-title">
+  <section class="section divided showroom" aria-labelledby="showroom-title">
     <div class="container split">
       <div class="collage" data-reveal>
         <div class="c-tall"><PhotoPlaceholder label="showroom front" /></div>
@@ -230,8 +230,9 @@ const directions = hrefOrHash(business.mapsUrl);
     border-radius: var(--radius-image);
   }
 
+  /* Landscape, so the headline and photo both fit on screen; suits a group photo. */
   .split :global(.tall) {
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 4 / 3;
   }
 
   /* Story: a large pull-quote beside the text. */

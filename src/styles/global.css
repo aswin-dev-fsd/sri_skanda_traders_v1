@@ -78,6 +78,12 @@ button {
   padding-block: var(--section-y);
 }
 
+/* A thin line where two plain ivory sections meet, so the gap reads as a break. Add to the
+   second section of the pair. */
+.section.divided {
+  border-top: var(--border);
+}
+
 /* Typography */
 h1,
 h2,
@@ -129,25 +135,14 @@ p {
   font-variant-numeric: tabular-nums;
 }
 
-/* Eyebrow: small uppercase label after a 24px gold hairline */
+/* Eyebrow: small uppercase label above a heading */
 .eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
   font-size: var(--fs-eyebrow);
   font-weight: 600;
   line-height: 1.2;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--green);
-}
-
-.eyebrow::before {
-  content: '';
-  flex: none;
-  width: 24px;
-  height: 1.5px;
-  background: var(--gold);
 }
 
 /* Green surfaces */

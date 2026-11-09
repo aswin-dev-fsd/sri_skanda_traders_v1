@@ -21,7 +21,7 @@ const { slides } = Astro.props;
 const lightboxSrc = await Promise.all(slides.map(async (s) => (s.image ? (await getImage({ src: s.image, width: 1600 })).src : undefined)));
 ---
 
-<section class="section" aria-labelledby="rooms-title" data-room-gallery>
+<section class="section divided" aria-labelledby="rooms-title" data-room-gallery>
   <div class="container">
     <div class="head" data-reveal>
       <p class="eyebrow">In real rooms</p>

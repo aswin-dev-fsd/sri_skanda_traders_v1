@@ -164,13 +164,16 @@ const steps = [
 <script>
   document.querySelectorAll<HTMLElement>('[data-stepper]').forEach((stepper) => {
     const fill = stepper.querySelector<HTMLElement>('[data-stepper-fill]');
+    const track = fill?.parentElement ?? stepper;
     let ticking = false;
     const update = () => {
       ticking = false;
-      const box = stepper.getBoundingClientRect();
+      // Measure the line itself, not the whole stepper: on desktop the line only runs along the
+      // circles, so the tall screenshot cards below must not hold it back.
+      const box = track.getBoundingClientRect();
       const vh = window.innerHeight;
-      // 0 when the stepper's top reaches 80% down the screen, 1 when its bottom passes 40%.
-      const progress = (vh * 0.8 - box.top) / (box.height + vh * 0.4);
+      // 0 when the line's top reaches 85% down the screen, 1 when its bottom passes 35%.
+      const progress = (vh * 0.85 - box.top) / (box.height + vh * 0.5);
       fill?.style.setProperty('--progress', String(Math.min(1, Math.max(0, progress))));
     };
     const onScroll = () => {

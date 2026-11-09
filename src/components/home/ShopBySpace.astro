@@ -18,11 +18,12 @@ const faces: Record<string, string> = {
 };
 ---
 
-<section class="section grout-bg" aria-labelledby="space-title">
+<section class="section grout-bg" aria-labelledby="space-title" data-space-section>
+  <div class="pin" data-space-pin>
   <div class="container">
     <div class="head" data-reveal>
       <div class="head-text">
-        <p class="eyebrow">03 — Shop by space</p>
+        <p class="eyebrow">Shop by space</p>
         <h2 id="space-title">Find tiles for every room.</h2>
       </div>
       <div class="controls">
@@ -61,6 +62,7 @@ const faces: Record<string, string> = {
   <div class="container">
     <div class="progress" aria-hidden="true"><span data-space-progress></span></div>
   </div>
+  </div>
 </section>
 
 <style>
@@ -71,6 +73,27 @@ const faces: Record<string, string> = {
       linear-gradient(rgba(231, 226, 214, 0.4) 1px, transparent 1px),
       linear-gradient(90deg, rgba(231, 226, 214, 0.4) 1px, transparent 1px);
     background-size: 96px 96px;
+  }
+
+  /* Pinned mode (desktop, fine pointer, motion allowed): the section grows by the rail's overflow,
+     the inner pin sticks below the header, and page scroll drives the rail sideways. */
+  .is-pinned {
+    padding-block: 0;
+  }
+
+  .is-pinned .pin {
+    position: sticky;
+    top: var(--header-h);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: calc(100vh - var(--header-h));
+    padding-block: var(--space-6);
+  }
+
+  .is-pinned .scroller {
+    overflow-x: hidden;
+    scroll-snap-type: none;
   }
 
   .head {
@@ -233,10 +256,41 @@ const faces: Record<string, string> = {
       if (next) next.disabled = scroller.scrollLeft >= max - 2;
     };
 
-    prev?.addEventListener('click', () => scroller.scrollBy({ left: -step(), behavior: 'smooth' }));
-    next?.addEventListener('click', () => scroller.scrollBy({ left: step(), behavior: 'smooth' }));
     scroller.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update);
+
+    // Pin the section and map vertical page scroll 1:1 onto the rail.
+    const pin = section?.querySelector<HTMLElement>('[data-space-pin]');
+    const pinQuery = window.matchMedia(
+      '(min-width: 1024px) and (pointer: fine) and (prefers-reduced-motion: no-preference)',
+    );
+    let pinned = false;
+
+    const travel = () => scroller.scrollWidth - scroller.clientWidth;
+    const syncFromPage = () => {
+      if (!pinned || !section) return;
+      const top = section.getBoundingClientRect().top + window.scrollY;
+      const headerH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 0;
+      scroller.scrollLeft = Math.min(Math.max(window.scrollY + headerH - top, 0), travel());
+    };
+    const layout = () => {
+      if (!section || !pin) return;
+      pinned = pinQuery.matches && travel() > 0;
+      section.classList.toggle('is-pinned', pinned);
+      section.style.height = pinned ? `${pin.offsetHeight + travel()}px` : '';
+      syncFromPage();
+      update();
+    };
+    const move = (dir: number) => {
+      if (pinned) window.scrollBy({ top: dir * step(), behavior: 'smooth' });
+      else scroller.scrollBy({ left: dir * step(), behavior: 'smooth' });
+    };
+
+    prev?.addEventListener('click', () => move(-1));
+    next?.addEventListener('click', () => move(1));
+    window.addEventListener('scroll', syncFromPage, { passive: true });
+    window.addEventListener('resize', layout);
+    pinQuery.addEventListener('change', layout);
+    layout();
     update();
   });
 </script>

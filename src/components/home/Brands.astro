@@ -8,9 +8,9 @@ const brands = (await getCollection('brands')).map((b) => ({ id: b.id, ...b.data
 const dealers = brands.filter((b) => b.authorised);
 ---
 
-<section class="section brands" aria-labelledby="brands-title">
+<section class="section divided brands" aria-labelledby="brands-title">
   <div class="container head" data-reveal>
-    <p class="eyebrow">07 — Brands we carry</p>
+    <p class="eyebrow">Brands we carry</p>
     <h3 id="brands-title">Trusted brands, all in one showroom.</h3>
   </div>
 

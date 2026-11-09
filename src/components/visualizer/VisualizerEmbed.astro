@@ -2,6 +2,8 @@
 // Visualizer 01 — the embed gets the most space: title row (72px), then the visualizer at
 // viewport height minus header and title row (min 560, max 860px). We design only the frame
 // around it; the visualizer is the temporary demo in public/embed/ (see DECISIONS.md).
+// The 3D view is heavy, so it starts Off: the iframe only exists while the "3D view" switch is On
+// (choice remembered per browser), and its render loop pauses while the frame is off-screen.
 import Button from '@/components/ui/Button.astro';
 import Icon from '@/components/ui/Icon.astro';
 import Logo from '@/components/layout/Logo.astro';
@@ -22,22 +24,24 @@ const { src } = Astro.props;
         <p class="muted">Try any tile in a real room.</p>
       </div>
       <div class="title-actions">
-        <Button variant="secondary" size="sm" icon="expand" data-viz-fullscreen>Full screen</Button>
-        <Button variant="text" href="#how-it-works">How it works ↓</Button>
+        <button type="button" class="viz-switch" role="switch" aria-checked="false" data-viz-switch>
+          <span class="switch-label">3D view</span>
+          <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
+          <span class="switch-state" data-viz-switch-state>Off</span>
+        </button>
+        <Button variant="secondary" size="sm" icon="expand" data-viz-fullscreen disabled>Full screen</Button>
+        <Button variant="text" href="#how-it-works">How it works</Button>
       </div>
     </div>
 
     <p class="rotate-hint small">Rotate your phone for a wider view</p>
 
-    <div class="frame" data-viz-frame data-state="loading">
-      <iframe
-        class="embed"
-        title="Sri Skanda 3D Visualizer"
-        src={src}
-        loading="eager"
-        allow="fullscreen; xr-spatial-tracking"
-        allowfullscreen
-        data-viz-iframe></iframe>
+    <div class="frame" data-viz-frame data-state="off" data-src={src}>
+      <div class="state off" data-viz-off>
+        <Logo height={120} decorative class="mark" loading="eager" />
+        <p>The 3D view is off to keep the page light.</p>
+        <Button icon="cube" data-viz-start>Turn on 3D view</Button>
+      </div>
 
       <div class="state loading" data-viz-loading aria-live="polite">
         <Logo height={120} decorative class="mark" loading="eager" />
@@ -88,8 +92,65 @@ const { src } = Astro.props;
 
   .title-actions {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--space-2);
+  }
+
+  /* 3D view switch: green track when On, beige when Off. */
+  .viz-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 0 4px;
+    border: 0;
+    background: transparent;
+    color: var(--green);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .switch-track {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    border-radius: 12px;
+    background: var(--beige);
+    transition: background var(--dur-ui) var(--ease);
+  }
+
+  .switch-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(18, 59, 50, 0.3);
+    transition: transform var(--dur-ui) var(--ease);
+  }
+
+  .viz-switch[aria-checked='true'] .switch-track {
+    background: var(--green);
+  }
+
+  .viz-switch[aria-checked='true'] .switch-thumb {
+    transform: translateX(20px);
+  }
+
+  .switch-state {
+    min-width: 2.2em;
+    font-weight: 500;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .switch-track,
+    .switch-thumb {
+      transition: none;
+    }
   }
 
   .rotate-hint {
@@ -170,17 +231,33 @@ const { src } = Astro.props;
     font-weight: 500;
   }
 
+  .off {
+    z-index: 2;
+    background-color: var(--ivory);
+    background-image:
+      linear-gradient(rgba(231, 226, 214, 0.6) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(231, 226, 214, 0.6) 1px, transparent 1px);
+    background-size: 96px 96px;
+    font-weight: 500;
+  }
+
+  /* The logo file is ivory/gold for green backgrounds, so its ivory "SKANDA" vanishes on ivory.
+     Flatten it to one dark silhouette so the whole mark reads as a watermark. */
+  .off :global(.mark),
+  .loading :global(.mark) {
+    width: auto;
+    height: 120px;
+    filter: brightness(0);
+    opacity: 0.12;
+  }
+
+  [data-state='off'] .loading,
   [data-state='ready'] .loading,
   [data-state='error'] .loading {
     opacity: 0;
     pointer-events: none;
   }
 
-  .loading :global(.mark) {
-    width: auto;
-    height: 120px;
-    opacity: 0.2;
-  }
 
   .progress {
     position: relative;
@@ -247,15 +324,42 @@ const { src } = Astro.props;
 <script>
   const READY_TIMEOUT_MS = 20000;
 
+  const STORE_KEY = 'ss-viz-3d';
+
+  const readChoice = () => {
+    try {
+      return localStorage.getItem(STORE_KEY) === 'on';
+    } catch {
+      return false;
+    }
+  };
+  const saveChoice = (on: boolean) => {
+    try {
+      localStorage.setItem(STORE_KEY, on ? 'on' : 'off');
+    } catch {
+      /* storage blocked: the switch still works for this visit */
+    }
+  };
+
   document.querySelectorAll<HTMLElement>('[data-viz-frame]').forEach((frame) => {
-    const iframe = frame.querySelector<HTMLIFrameElement>('[data-viz-iframe]')!;
+    const section = frame.closest('section')!;
+    const src = frame.dataset.src!;
+    const offBox = frame.querySelector<HTMLElement>('[data-viz-off]')!;
     const errorBox = frame.querySelector<HTMLElement>('[data-viz-error]')!;
     const exit = frame.querySelector<HTMLButtonElement>('[data-viz-exit]')!;
+    const toggle = section.querySelector<HTMLButtonElement>('[data-viz-switch]')!;
+    const toggleState = section.querySelector<HTMLElement>('[data-viz-switch-state]')!;
+    const fullBtn = section.querySelector<HTMLButtonElement>('[data-viz-fullscreen]');
+    let iframe: HTMLIFrameElement | null = null;
     let timer = 0;
     let poll = 0;
+    let onScreen = true;
+    let paused = false;
+    let queued: FrameRequestCallback[] = [];
 
-    const setState = (state: 'loading' | 'ready' | 'error') => {
+    const setState = (state: 'off' | 'loading' | 'ready' | 'error') => {
       frame.dataset.state = state;
+      offBox.hidden = state !== 'off';
       errorBox.hidden = state !== 'error';
       if (state !== 'loading') {
         window.clearTimeout(timer);
@@ -272,32 +376,100 @@ const { src } = Astro.props;
       }
     })();
 
+    // Pause the embed's render loop off-screen by holding its requestAnimationFrame callbacks
+    // (same origin, so we can wrap it). The room and the visitor's choices stay as they were.
+    const gateFrames = () => {
+      const win = iframe?.contentWindow as (Window & { __vizGated?: boolean }) | null;
+      if (!win || win.__vizGated) return;
+      const raf = win.requestAnimationFrame.bind(win);
+      win.requestAnimationFrame = (cb: FrameRequestCallback) => {
+        if (!paused) return raf(cb);
+        queued.push(cb);
+        return 0;
+      };
+      win.__vizGated = true;
+    };
+    const setPaused = (value: boolean) => {
+      paused = value;
+      if (iframe) iframe.style.visibility = value ? 'hidden' : '';
+      const win = iframe?.contentWindow;
+      if (!value && win) {
+        const waiting = queued;
+        queued = [];
+        waiting.forEach((cb) => win.requestAnimationFrame(cb));
+      }
+    };
+
     // Ready once the visualizer has drawn its 3D canvas (same origin, so we can look inside).
-    // Polling rather than waiting for `load`: the iframe can finish before this script runs.
-    const start = () => {
+    const watchReady = () => {
       setState('loading');
       if (!webgl) return setState('error');
       timer = window.setTimeout(() => setState('error'), READY_TIMEOUT_MS);
       poll = window.setInterval(() => {
-        if (iframe.contentDocument?.querySelector('canvas')) setState('ready');
+        if (iframe?.contentDocument?.querySelector('canvas')) {
+          gateFrames();
+          setState('ready');
+          setPaused(!onScreen);
+        }
       }, 250);
     };
-    iframe.addEventListener('error', () => setState('error'));
 
-    frame.parentElement?.parentElement
-      ?.querySelector('[data-viz-fullscreen]')
-      ?.addEventListener('click', () => {
-        if (frame.requestFullscreen) frame.requestFullscreen().catch(() => window.open(iframe.src, '_blank'));
-        else window.open(iframe.src, '_blank');
-      });
+    // The iframe only exists while the switch is On, so Off frees CPU, GPU and memory entirely.
+    const turnOn = () => {
+      if (iframe) return;
+      iframe = document.createElement('iframe');
+      iframe.className = 'embed';
+      iframe.title = 'Sri Skanda 3D Visualizer';
+      iframe.allow = 'fullscreen; xr-spatial-tracking';
+      iframe.allowFullscreen = true;
+      iframe.dataset.vizIframe = '';
+      iframe.addEventListener('error', () => setState('error'));
+      iframe.src = src;
+      frame.prepend(iframe);
+      watchReady();
+    };
+    const turnOff = () => {
+      if (document.fullscreenElement === frame) document.exitFullscreen?.();
+      iframe?.remove();
+      iframe = null;
+      queued = [];
+      paused = false;
+      setState('off');
+    };
+    const setOn = (on: boolean, remember = true) => {
+      toggle.setAttribute('aria-checked', String(on));
+      toggleState.textContent = on ? 'On' : 'Off';
+      if (fullBtn) fullBtn.disabled = !on;
+      if (remember) saveChoice(on);
+      if (on) turnOn();
+      else turnOff();
+    };
+
+    toggle.addEventListener('click', () => setOn(toggle.getAttribute('aria-checked') !== 'true'));
+    frame.querySelector('[data-viz-start]')?.addEventListener('click', () => setOn(true));
+
+    new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+      if (frame.dataset.state === 'ready' && document.fullscreenElement !== frame) setPaused(!onScreen);
+    }).observe(frame);
+
+    fullBtn?.addEventListener('click', () => {
+      if (!iframe) return;
+      if (frame.requestFullscreen) frame.requestFullscreen().catch(() => window.open(src, '_blank'));
+      else window.open(src, '_blank');
+    });
     exit.addEventListener('click', () => document.exitFullscreen?.());
-    document.addEventListener('fullscreenchange', () => (exit.hidden = document.fullscreenElement !== frame));
-
-    frame.querySelector('[data-viz-reload]')?.addEventListener('click', () => {
-      start();
-      iframe.src = iframe.src;
+    document.addEventListener('fullscreenchange', () => {
+      exit.hidden = document.fullscreenElement !== frame;
+      if (document.fullscreenElement === frame) setPaused(false);
     });
 
-    start();
+    frame.querySelector('[data-viz-reload]')?.addEventListener('click', () => {
+      iframe?.remove();
+      iframe = null;
+      turnOn();
+    });
+
+    setOn(readChoice(), false);
   });
 </script>

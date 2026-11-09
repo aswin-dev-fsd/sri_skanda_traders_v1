@@ -89,10 +89,10 @@ const loading = eager ? 'eager' : 'lazy';
       )
     }
     <div class="actions">
-      <Button variant="text" href={href} arrow class="raise" tabindex="-1" aria-hidden="true">View</Button>
       <Button variant="secondary" size="sm" href={routes.contact} class="raise" data-enquire data-item={JSON.stringify(item)}>
         Enquire
       </Button>
+      <Button variant="primary" size="sm" href={href} arrow class="raise" tabindex="-1" aria-hidden="true">View</Button>
     </div>
   </div>
 </article>

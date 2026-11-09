@@ -257,8 +257,9 @@ const floors = heroFloors.map((f) => ({ ...f, src: tempImage(f.image) }));
     box-shadow: 0 0 0 2px var(--gold);
   }
 
+  /* Takes no space until a chip is tapped, so the card has no empty bottom. */
   .try-more {
-    display: inline-flex;
+    display: none;
     align-items: center;
     gap: 6px;
     min-height: 32px;
@@ -266,18 +267,24 @@ const floors = heroFloors.map((f) => ({ ...f, src: tempImage(f.image) }));
     font-size: var(--fs-small);
     font-weight: 600;
     text-decoration: none;
-    opacity: 0;
-    transform: translateY(4px);
-    pointer-events: none;
-    transition:
-      opacity var(--dur-ui-slow) var(--ease),
-      transform var(--dur-ui-slow) var(--ease);
   }
 
   :global([data-tried]) .try-more {
-    opacity: 1;
-    transform: none;
-    pointer-events: auto;
+    display: inline-flex;
+    animation: try-more-in var(--dur-ui-slow) var(--ease);
+  }
+
+  @keyframes try-more-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global([data-tried]) .try-more {
+      animation: none;
+    }
   }
 </style>
 

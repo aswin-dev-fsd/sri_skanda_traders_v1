@@ -65,6 +65,8 @@ All routes live in `routes` in `src/config/site.ts`.
 - The hero is side by side from 1024px so the showroom tablet in landscape sees the headline without scrolling.
 - Brand links go to `/products?brand=<id>`; until logo files arrive, brands show as green wordmarks.
 - The Visit section's "Request a call back" sends a WhatsApp message, like every other form.
+- Shop by space: on desktop (1024px and wider, fine pointer, motion allowed) the section pins below the header and page scroll moves the cards sideways; prev/next scroll the page by one card. Phones, tablets and reduced motion keep a normal swipe scroller. Added 2026-11-09.
+- Trending's "View all collections" sits beside the heading, on its last text baseline, rather than below the cards. Added 2026-11-09.
 
 ## Product listings
 
@@ -88,6 +90,7 @@ All routes live in `routes` in `src/config/site.ts`.
 ## 3D Visualizer page
 
 - The embedded copy lives at `public/embed/visualizer.html` (served as `/embed/visualizer.html`), not under `/visualizer/`, so it cannot clash with the `/visualizer` page. Only its title, brand line, a gold "DEMO" chip and the screenshot file name were changed from the original in `docs/`.
+- The visualizer page starts with the 3D view **Off** (no iframe) behind a "3D view" switch, and each browser remembers the visitor's choice (`localStorage` key `ss-viz-3d`). While the view is On, its render loop pauses when the frame is off-screen. The pause wraps the embed's `requestAnimationFrame` from the parent page; the embed file itself is not edited.
 - The page shows "Setting up the room…" until the visualizer has drawn its 3D canvas, and the error state if that has not happened after 20 seconds or the device has no WebGL.
 - Full screen uses the browser's Fullscreen API on the embed; where that is missing (iPhone Safari), the visualizer opens in a new tab instead.
 - "How it works" steps are the brief's DRAFT wording, with `[SCREENSHOT: step N]` placeholders, until they are matched to the final visualizer's controls.
@@ -159,6 +162,13 @@ Until the client sends SVGs, the header and footer use the approved ivory/gold l
 - Trust Frame: gold rounded border with a label in the bottom gap.
 
 The brief also asks for things the mockup lacks: tile reveal, Trust Frame drawing animation, scroll-triggered reveals, flip cards, star fly-to-header, finish sheen, mega menu and drawers.
+
+## Design changes from the brief
+
+- Eyebrows (the small uppercase labels above headings) have no gold hairline and no section numbers. Home shows "Shop by category", not "02 — Shop by category". Changed 2026-11-09 at the user's request; overrides the brief's Eyebrow typography note and signature touch 8 (Section numbering). The "·" separators, as in "Tiles · Granite · Bathware", stay.
+- Where two plain ivory sections meet, the second gets a thin beige line across its top (`.section.divided` in `global.css`), so the 256px desktop gap reads as a break. Spacing is unchanged. Joins that already change colour or have a line are left alone. Home's Shop by category → Shop by space join has no line (the tile-grid background already marks it). Added 2026-11-09.
+- Every page has a back-to-top button, stacked above the floating WhatsApp button. It is smaller (44px), with an ivory surface, green border and green up arrow, so WhatsApp stays the main floating action. It appears only after 1.5 screens of scrolling, so short pages never show it, and it follows WhatsApp's hide rules (drawer or menu open, showroom mode). Added 2026-11-09 at the user's request; not in the brief.
+- Breadcrumbs use a neutral grey `#6b6b6b` (5.1:1 on ivory) instead of the green-tinted muted colour; the one colour outside the brief's palette. Collection cards put Enquire (outlined) left and View (filled green) right; the colour panel's "Try in 3D" is a filled button. Added 2026-11-09 at the user's request.
 
 ## Quality
 

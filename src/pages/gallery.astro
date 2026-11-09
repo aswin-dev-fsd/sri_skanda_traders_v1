@@ -587,8 +587,9 @@ const googleUrl = isPlaceholder(business.googleReviewsUrl) ? '#' : business.goog
   }
 
   /* Project dialog */
+  /* Leaves 80px each side for the close button, which sits outside the panel on the backdrop. */
   .project-dialog {
-    width: min(1100px, 100vw);
+    width: min(1100px, calc(100vw - 160px));
     max-width: none;
     max-height: 100dvh;
     margin: auto;
@@ -596,10 +597,13 @@ const googleUrl = isPlaceholder(business.googleReviewsUrl) ? '#' : business.goog
     border: 0;
     border-radius: var(--radius-card);
     background: var(--ivory);
+    /* Reserve the scrollbar's width on the left too, so both sides match. */
+    scrollbar-gutter: stable both-edges;
   }
 
   @media (max-width: 767px) {
     .project-dialog {
+      width: 100vw;
       height: 100dvh;
       border-radius: 0;
     }
@@ -613,20 +617,24 @@ const googleUrl = isPlaceholder(business.googleReviewsUrl) ? '#' : business.goog
     animation: fade 250ms var(--ease);
   }
 
+  /* Pinned to the screen corner, outside the panel, so the panel's sides stay even. On phones
+     the panel fills the screen and the button sits over its top-right corner. */
   .pd-close {
-    position: sticky;
-    top: 12px;
+    position: fixed;
+    top: 16px;
+    right: 16px;
     z-index: 5;
-    float: right;
     display: grid;
     place-items: center;
     width: 48px;
     height: 48px;
-    margin: 12px 12px 0 0;
     border: 0;
     border-radius: 50%;
-    background: var(--green);
-    color: var(--on-green);
+    background: var(--surface);
+    color: var(--green);
+    box-shadow:
+      0 0 0 1.5px var(--gold),
+      0 4px 16px rgba(18, 59, 50, 0.2);
   }
 
   .pd-body {

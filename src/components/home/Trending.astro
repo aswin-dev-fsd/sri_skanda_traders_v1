@@ -22,8 +22,11 @@ const roomName = (slug: string) => slug.replace('-', ' ');
 <section class="section" aria-labelledby="trending-title">
   <div class="container">
     <div class="head" data-reveal>
-      <p class="eyebrow">05 — Trending</p>
-      <h2 id="trending-title">Collections people are choosing now.</h2>
+      <p class="eyebrow">Trending</p>
+      <div class="title-row">
+        <h2 id="trending-title">Collections people are choosing now.</h2>
+        <Button variant="text" href={routes.tiles} arrow>View all collections</Button>
+      </div>
       <div class="tabs" role="tablist" aria-label="Trending collections">
         {
           tabs.map((tab, i) => (
@@ -76,10 +79,6 @@ const roomName = (slug: string) => slug.replace('-', ' ');
         </div>
       ))
     }
-
-    <div class="more">
-      <Button variant="text" href={routes.tiles} arrow>View all collections</Button>
-    </div>
   </div>
 </section>
 
@@ -162,8 +161,15 @@ const roomName = (slug: string) => slug.replace('-', ' ');
     }
   }
 
-  .more {
-    margin-top: var(--space-4);
+  /* Heading left, "View all collections" right, on the heading's last text baseline; wraps
+     under on phones. */
+  .title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    align-items: last baseline;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-4);
   }
 </style>
 
