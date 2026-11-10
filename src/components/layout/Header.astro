@@ -837,6 +837,11 @@ const [tilesGroup, spaceGroup, bathwareGroup, moreGroup] = productMenu;
     padding: 4px 0 var(--space-3);
   }
 
+  /* display: grid above would otherwise beat the hidden attribute, keeping the list always open. */
+  .mobile-sub[hidden] {
+    display: none;
+  }
+
   .mobile-group .mega-title {
     margin-bottom: 4px;
     color: var(--gold);
