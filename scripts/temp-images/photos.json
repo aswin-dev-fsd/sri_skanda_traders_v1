@@ -1,0 +1,320 @@
+{
+  "_note": "Temporary stock photos (Unsplash License: free to use, no attribution required). Each is saved as src/assets/_temp/photos/<name>.jpg by download-photos.mjs. 'hint' is the [PHOTO: …] description the slot asks for; the real photo must match it before launch.",
+  "photos": [
+    {
+      "name": "home/hero-floor-1",
+      "id": "1742367539759-6e4fc2e39209",
+      "page": "https://unsplash.com/photos/Hu_6KP4m9xA",
+      "usedFor": "Home hero, Try a floor: Ivory Marble",
+      "hint": "living room with a calm, light floor (Ivory Marble)"
+    },
+    {
+      "name": "home/hero-floor-2",
+      "id": "1774278720783-cce9dfbeddc3",
+      "page": "https://unsplash.com/photos/tvnGJ7qFink",
+      "usedFor": "Home hero, Try a floor: Oak Plank",
+      "hint": "living room with an Oak Plank floor"
+    },
+    {
+      "name": "home/hero-floor-3",
+      "id": "1684928364966-6f5cd1c249a9",
+      "page": "https://unsplash.com/photos/ItaT_nUcBb8",
+      "usedFor": "Home hero, Try a floor: Concrete Grey",
+      "hint": "living room with a Concrete Grey floor"
+    },
+    {
+      "name": "photos/space-living-room",
+      "id": "1786995879282-26cb50e30ace",
+      "page": "https://unsplash.com/photos/7xO9KdlidDY",
+      "usedFor": "Home Shop by space: Living room",
+      "hint": "living room with tiles"
+    },
+    {
+      "name": "photos/space-bedroom",
+      "id": "1721216621040-7affb36692b0",
+      "page": "https://unsplash.com/photos/OQWpRTq38QQ",
+      "usedFor": "Home Shop by space: Bedroom",
+      "hint": "bedroom with tiles"
+    },
+    {
+      "name": "photos/space-kitchen",
+      "id": "1722605090433-41d1183a792d",
+      "page": "https://unsplash.com/photos/rjjAKAp0KSw",
+      "usedFor": "Home Shop by space: Kitchen",
+      "hint": "kitchen with tiles"
+    },
+    {
+      "name": "photos/space-bathroom",
+      "id": "1620626011761-996317b8d101",
+      "page": "https://unsplash.com/photos/Aac7IlKnYX8",
+      "usedFor": "Home Shop by space: Bathroom",
+      "hint": "bathroom with tiles"
+    },
+    {
+      "name": "photos/space-parking",
+      "id": "1762117360928-1548ff7ab5a2",
+      "page": "https://unsplash.com/photos/f-DL8K5SYY0",
+      "usedFor": "Home Shop by space: Parking; Parking Shield collection",
+      "hint": "parking with tiles"
+    },
+    {
+      "name": "photos/space-elevation",
+      "id": "1689649539122-a2ef8d486b03",
+      "page": "https://unsplash.com/photos/Ai0KX-4jcHs",
+      "usedFor": "Home Shop by space: Elevation",
+      "hint": "elevation with tiles"
+    },
+    {
+      "name": "photos/space-outdoor",
+      "id": "1752606301289-f0f183ac17cb",
+      "page": "https://unsplash.com/photos/9tQLVo_YIuc",
+      "usedFor": "Home Shop by space: Outdoor",
+      "hint": "outdoor with tiles"
+    },
+    {
+      "name": "photos/category-tiles",
+      "id": "1742367539759-6e4fc2e39209",
+      "page": "https://unsplash.com/photos/Hu_6KP4m9xA",
+      "usedFor": "Home Shop by category: Tiles",
+      "hint": "living room with large-format floor tiles"
+    },
+    {
+      "name": "photos/category-bathware",
+      "id": "1629079447777-1e605162dc8d",
+      "page": "https://unsplash.com/photos/1AF5hP6F4tI",
+      "usedFor": "Home Shop by category: Bathware",
+      "hint": "bathroom with bathware"
+    },
+    {
+      "name": "photos/category-granite",
+      "id": "1703868669362-562283170216",
+      "page": "https://unsplash.com/photos/ds3h6pJye7Q",
+      "usedFor": "Home Shop by category: Granite",
+      "hint": "kitchen with a granite counter"
+    },
+    {
+      "name": "photos/category-adhesives",
+      "id": "1523413363574-c30aa1c2a516",
+      "page": "https://unsplash.com/photos/c2thq3SXJiA",
+      "usedFor": "Home Shop by category: Adhesives",
+      "hint": "tiles being laid with adhesive"
+    },
+    {
+      "name": "photos/room-calacatta-gold",
+      "id": "1742367539759-6e4fc2e39209",
+      "page": "https://unsplash.com/photos/Hu_6KP4m9xA",
+      "usedFor": "Calacatta Gold collection hero and card",
+      "hint": "living room with Calacatta Gold tiles"
+    },
+    {
+      "name": "photos/room-concrete-grey",
+      "id": "1759722667709-648009e31c25",
+      "page": "https://unsplash.com/photos/hqGXP136_Qc",
+      "usedFor": "Concrete Grey collection hero and card",
+      "hint": "living room with Concrete Grey tiles"
+    },
+    {
+      "name": "photos/room-cotto-terracotta",
+      "id": "1788398913509-89f16ab3ab9c",
+      "page": "https://unsplash.com/photos/3bRxBh2yiVc",
+      "usedFor": "Cotto Terracotta collection hero and card",
+      "hint": "outdoor with Cotto Terracotta tiles"
+    },
+    {
+      "name": "photos/room-elevation-stack",
+      "id": "1760648984277-2c7ea436a10b",
+      "page": "https://unsplash.com/photos/T_Lefot03vc",
+      "usedFor": "Elevation Stack collection hero and card",
+      "hint": "elevation with Elevation Stack tiles"
+    },
+    {
+      "name": "photos/room-ivory-marble",
+      "id": "1765766601592-ac2936aa87e0",
+      "page": "https://unsplash.com/photos/dWH92v9E6j4",
+      "usedFor": "Ivory Marble collection hero and card",
+      "hint": "living room with Ivory Marble tiles"
+    },
+    {
+      "name": "photos/room-kitchen-mosaic",
+      "id": "1772372043910-6127856f428d",
+      "page": "https://unsplash.com/photos/rWhrQU45vLw",
+      "usedFor": "Kitchen Mosaic collection hero and card",
+      "hint": "kitchen with Kitchen Mosaic tiles"
+    },
+    {
+      "name": "photos/room-linea-wall",
+      "id": "1771327811766-5f4149190b3d",
+      "page": "https://unsplash.com/photos/Vn_FGgNfivA",
+      "usedFor": "Linea Wall collection hero and card",
+      "hint": "living room with Linea Wall tiles"
+    },
+    {
+      "name": "photos/room-metallic-bronze",
+      "id": "1684928364966-6f5cd1c249a9",
+      "page": "https://unsplash.com/photos/ItaT_nUcBb8",
+      "usedFor": "Metallic Bronze collection hero and card",
+      "hint": "living room with Metallic Bronze tiles"
+    },
+    {
+      "name": "photos/room-nero-stone",
+      "id": "1696986681436-f5ee12981bc9",
+      "page": "https://unsplash.com/photos/C-FqIffctHI",
+      "usedFor": "Nero Stone collection hero and card",
+      "hint": "living room with Nero Stone tiles"
+    },
+    {
+      "name": "photos/room-oak-plank",
+      "id": "1718717621302-a359be21a111",
+      "page": "https://unsplash.com/photos/r8i3RwrVcRk",
+      "usedFor": "Oak Plank collection hero and card",
+      "hint": "living room with Oak Plank tiles"
+    },
+    {
+      "name": "photos/room-parking-shield",
+      "id": "1762117360928-1548ff7ab5a2",
+      "page": "https://unsplash.com/photos/f-DL8K5SYY0",
+      "usedFor": "Parking Shield collection hero and card",
+      "hint": "parking with Parking Shield tiles"
+    },
+    {
+      "name": "photos/room-slate-matt",
+      "id": "1781249144347-32719b169201",
+      "page": "https://unsplash.com/photos/bbVVw9FgTRY",
+      "usedFor": "Slate Matt collection hero and card",
+      "hint": "bathroom with Slate Matt tiles"
+    },
+    {
+      "name": "photos/room-statuario-white",
+      "id": "1786995879282-26cb50e30ace",
+      "page": "https://unsplash.com/photos/7xO9KdlidDY",
+      "usedFor": "Statuario White collection hero and card",
+      "hint": "living room with Statuario White tiles"
+    },
+    {
+      "name": "photos/room-subway-ivory",
+      "id": "1779366034016-82f308e022df",
+      "page": "https://unsplash.com/photos/El8evy6XLmw",
+      "usedFor": "Subway Ivory collection hero and card",
+      "hint": "kitchen with Subway Ivory tiles"
+    },
+    {
+      "name": "photos/room-terrazzo-sand",
+      "id": "1650894622076-e09ab837c502",
+      "page": "https://unsplash.com/photos/f61KO4nDeJA",
+      "usedFor": "Terrazzo Sand collection hero and card",
+      "hint": "bathroom with Terrazzo Sand tiles"
+    },
+    {
+      "name": "photos/room-travertine-beige",
+      "id": "1784288195989-056788fdae4c",
+      "page": "https://unsplash.com/photos/5pM6fWttKSw",
+      "usedFor": "Travertine Beige collection hero and card",
+      "hint": "living room with Travertine Beige tiles"
+    },
+    {
+      "name": "photos/project-1",
+      "id": "1780427670049-43aa7921e3f0",
+      "page": "https://unsplash.com/photos/p_9w69xML7o",
+      "usedFor": "Gallery project 1 (living room); Home Real homes",
+      "hint": "living room in a finished home / finished living room in a customer's home"
+    },
+    {
+      "name": "photos/project-2",
+      "id": "1785535573676-5dafa00b3c8b",
+      "page": "https://unsplash.com/photos/cr9lw1G90As",
+      "usedFor": "Gallery project 2 (kitchen)",
+      "hint": "kitchen in a finished home"
+    },
+    {
+      "name": "photos/project-3",
+      "id": "1611596188649-7c8e9507bdb4",
+      "page": "https://unsplash.com/photos/8yVQvIeO4t8",
+      "usedFor": "Gallery project 3 (bathroom)",
+      "hint": "bathroom in a finished home"
+    },
+    {
+      "name": "photos/project-4",
+      "id": "1789353527986-8ed7c7e75dc8",
+      "page": "https://unsplash.com/photos/nLTk9N2eg2U",
+      "usedFor": "Gallery project 4 (bedroom)",
+      "hint": "bedroom in a finished home"
+    },
+    {
+      "name": "photos/project-5",
+      "id": "1659536806369-0114c406a20d",
+      "page": "https://unsplash.com/photos/1ot2ImBCZWM",
+      "usedFor": "Gallery project 5 (parking)",
+      "hint": "parking in a finished home"
+    },
+    {
+      "name": "photos/project-6",
+      "id": "1788379093992-3ea6f9d5d534",
+      "page": "https://unsplash.com/photos/KlIFFZT1-S0",
+      "usedFor": "Gallery project 6 (elevation)",
+      "hint": "elevation in a finished home"
+    },
+    {
+      "name": "products/arc-basin-mixer",
+      "id": "1542855368-ca6ea825bca2",
+      "page": "https://unsplash.com/photos/8jQC5RHWuSE",
+      "usedFor": "Arc Basin Mixer product",
+      "hint": "Arc Basin Mixer, product shot"
+    },
+    {
+      "name": "products/aurum-wall-hung-wc",
+      "id": "1563204719-44395a035bb6",
+      "page": "https://unsplash.com/photos/8mMUnl_exqY",
+      "usedFor": "Aurum Wall-hung WC product",
+      "hint": "Aurum Wall-hung WC, product shot"
+    },
+    {
+      "name": "products/terra-floor-mounted-wc",
+      "id": "1587527901949-ab0341697c1e",
+      "page": "https://unsplash.com/photos/48mTwDzizqE",
+      "usedFor": "Terra Floor-mounted WC product",
+      "hint": "Terra Floor-mounted WC, product shot"
+    },
+    {
+      "name": "products/nova-wash-basin",
+      "id": "1747227830516-b9643cc377fb",
+      "page": "https://unsplash.com/photos/a8ExcVRip2M",
+      "usedFor": "Nova Wash Basin product",
+      "hint": "Nova Wash Basin, product shot"
+    },
+    {
+      "name": "products/oval-counter-top-basin",
+      "id": "1596180744691-d19a1b90b53c",
+      "page": "https://unsplash.com/photos/GSl3GJ1aNOU",
+      "usedFor": "Oval Counter-top Basin product",
+      "hint": "Oval Counter-top Basin, product shot"
+    },
+    {
+      "name": "products/rain-overhead-shower",
+      "id": "1576678433413-202829a1ab98",
+      "page": "https://unsplash.com/photos/lJewNo29uf0",
+      "usedFor": "Rain Overhead Shower product",
+      "hint": "Rain Overhead Shower, product shot"
+    },
+    {
+      "name": "products/loop-towel-ring",
+      "id": "1758192496546-dc59dd3baa59",
+      "page": "https://unsplash.com/photos/LYYxBKkVvxc",
+      "usedFor": "Loop Towel Ring product",
+      "hint": "Loop Towel Ring, product shot"
+    },
+    {
+      "name": "products/jsw-tile-adhesive-t1",
+      "id": "1523413307857-ef24c53571ae",
+      "page": "https://unsplash.com/photos/LyQi9DS7AEg",
+      "usedFor": "JSW Tile Adhesive T1 product",
+      "hint": "JSW Tile Adhesive T1, product shot (bag)"
+    },
+    {
+      "name": "products/jsw-stone-adhesive-s2",
+      "id": "1783587616539-39bdab1a608f",
+      "page": "https://unsplash.com/photos/MlXFL3VBOhQ",
+      "usedFor": "JSW Stone Adhesive S2 product",
+      "hint": "JSW Stone Adhesive S2, product shot (bag)"
+    }
+  ]
+}

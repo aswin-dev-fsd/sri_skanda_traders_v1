@@ -11,4 +11,6 @@ specs:
   Operation: "Single lever"
   Cartridge: "Ceramic disc"
 hex: "#C9CCCF"
+images:
+  - "../../assets/_temp/products/arc-basin-mixer.jpg"
 placeholder: true

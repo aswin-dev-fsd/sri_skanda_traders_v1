@@ -3,6 +3,7 @@
 // surface with the product centred, brand, name, code and one key spec; star and Enquire.
 import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
+import { getEntry } from 'astro:content';
 import Button from '@/components/ui/Button.astro';
 import PhotoPlaceholder from '@/components/ui/PhotoPlaceholder.astro';
 import SaveStar from '@/components/ui/SaveStar.astro';
@@ -24,7 +25,9 @@ interface Props {
   swatch?: string;
 }
 
-const { id, href, brand, name, code, spec, image, authorised = false, swatch } = Astro.props;
+const { id, href, brand, name, code, spec, image: imageProp, authorised = false, swatch } = Astro.props;
+// Callers pass only text; the photo comes from the product's own entry when it has one.
+const image = imageProp ?? (await getEntry('products', id))?.data.images[0];
 const item: SelectionItem = { id, kind: 'product', name, brand, code, href, swatch };
 ---
 
@@ -47,7 +50,7 @@ const item: SelectionItem = { id, kind: 'product', name, brand, code, href, swat
     <p class="small muted tabular">{code}</p>
     <p class="small spec tabular">{spec}</p>
     <div class="actions">
-      <Button variant="secondary" size="sm" href={routes.contact} class="raise" data-enquire data-item={JSON.stringify(item)}>
+      <Button variant="primary" size="sm" href={routes.contact} class="raise" data-enquire data-item={JSON.stringify(item)}>
         Enquire
       </Button>
     </div>
@@ -190,10 +193,10 @@ const item: SelectionItem = { id, kind: 'product', name, brand, code, href, swat
     color: var(--charcoal);
   }
 
-  /* Enquire is the only button, so it sits right, where View sits on collection cards. */
+  /* Enquire is the only button, so it is filled and spans the card's width, like the two halves
+     on collection cards. */
   .actions {
-    display: flex;
-    justify-content: flex-end;
+    display: grid;
     margin-top: auto;
     padding-top: 12px;
   }

@@ -6,11 +6,14 @@ categories: ["floor", "wall"]
 spaces: ["living-room", "bathroom", "elevation"]
 looks: ["stone"]
 features: ["anti-skid"]
+heroImage: "../../assets/_temp/photos/room-travertine-beige.jpg"
 colours:
   - name: "Beige"
     code: "TB-701"
     family: "beige"
     hex: "#E3D5BD"
+    tileFace: "../../assets/_temp/tiles/travertine-beige/TB-701-face.webp"
+    texture: "../../assets/_temp/tiles/travertine-beige/TB-701-texture.webp"
     finishes: ["matt", "rustic"]
     sizes: ["600x1200", "300x600"]
     application: "both"
@@ -19,6 +22,8 @@ colours:
     code: "TB-702"
     family: "brown"
     hex: "#B39C79"
+    tileFace: "../../assets/_temp/tiles/travertine-beige/TB-702-face.webp"
+    texture: "../../assets/_temp/tiles/travertine-beige/TB-702-texture.webp"
     finishes: ["matt"]
     sizes: ["600x1200", "300x600"]
     application: "both"
@@ -27,6 +32,8 @@ colours:
     code: "TB-703"
     family: "grey"
     hex: "#CDC8BE"
+    tileFace: "../../assets/_temp/tiles/travertine-beige/TB-703-face.webp"
+    texture: "../../assets/_temp/tiles/travertine-beige/TB-703-texture.webp"
     finishes: ["matt", "rustic"]
     sizes: ["600x1200"]
     application: "both"
@@ -35,6 +42,8 @@ colours:
     code: "TB-704"
     family: "cream"
     hex: "#EEE6D6"
+    tileFace: "../../assets/_temp/tiles/travertine-beige/TB-704-face.webp"
+    texture: "../../assets/_temp/tiles/travertine-beige/TB-704-texture.webp"
     finishes: ["matt"]
     sizes: ["600x1200", "300x600"]
     application: "both"

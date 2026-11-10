@@ -11,4 +11,6 @@ specs:
   Coverage: "[COVERAGE]"
   Use: "Interior floor and wall tiles"
 hex: "#BDB7AC"
+images:
+  - "../../assets/_temp/products/jsw-tile-adhesive-t1.jpg"
 placeholder: true

@@ -630,6 +630,7 @@ import { business, features, routes, spaces } from '@/config/site';
   import { $selection, moveItem, removeItem, restoreItem, updateItem } from '@/stores/selection';
   import { buildEnquiryMessage, buildShortlistMessage, roomName, validateEnquiry, whatsappLink } from '@/lib/enquiry';
   import { showToast } from '@/scripts/toast';
+  import { lockScroll, unlockScroll } from '@/scripts/scroll-lock';
   import { spaces } from '@/config/site';
   import type { SavedItem } from '@/lib/types';
 
@@ -800,7 +801,7 @@ import { business, features, routes, spaces } from '@/config/site';
     send.inert = false;
     backdrop.hidden = false;
     document.documentElement.dataset.overlay = 'drawer';
-    document.documentElement.style.overflow = 'hidden';
+    lockScroll();
     send.querySelector<HTMLInputElement>('#ms-name')?.focus();
   }
   function closeSheet() {
@@ -809,7 +810,7 @@ import { business, features, routes, spaces } from '@/config/site';
     send.inert = sheetMedia.matches;
     backdrop.hidden = true;
     delete document.documentElement.dataset.overlay;
-    document.documentElement.style.overflow = '';
+    unlockScroll();
   }
   const syncSheet = () => {
     send.inert = sheetMedia.matches && !send.hasAttribute('data-open');

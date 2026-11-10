@@ -10,4 +10,6 @@ keySpec: "Polished · 18 mm slab"
 specs:
   Thickness: "18 mm"
 hex: "#E7E3DC"
+images:
+  - "../../assets/_temp/products/kashmir-white-granite.webp"
 placeholder: true

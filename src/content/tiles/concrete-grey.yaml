@@ -6,11 +6,14 @@ categories: ["floor", "vitrified"]
 spaces: ["living-room", "kitchen", "parking"]
 looks: ["concrete"]
 features: ["anti-skid", "scratch-resistant"]
+heroImage: "../../assets/_temp/photos/room-concrete-grey.jpg"
 colours:
   - name: "Light Grey"
     code: "CG-301"
     family: "grey"
     hex: "#C9C7C1"
+    tileFace: "../../assets/_temp/tiles/concrete-grey/CG-301-face.webp"
+    texture: "../../assets/_temp/tiles/concrete-grey/CG-301-texture.webp"
     finishes: ["matt"]
     sizes: ["600x600", "600x1200"]
     application: "floor"
@@ -19,6 +22,8 @@ colours:
     code: "CG-302"
     family: "grey"
     hex: "#A9A7A1"
+    tileFace: "../../assets/_temp/tiles/concrete-grey/CG-302-face.webp"
+    texture: "../../assets/_temp/tiles/concrete-grey/CG-302-texture.webp"
     finishes: ["matt"]
     sizes: ["600x600", "600x1200"]
     application: "floor"
@@ -27,6 +32,8 @@ colours:
     code: "CG-303"
     family: "black"
     hex: "#6F716E"
+    tileFace: "../../assets/_temp/tiles/concrete-grey/CG-303-face.webp"
+    texture: "../../assets/_temp/tiles/concrete-grey/CG-303-texture.webp"
     finishes: ["matt"]
     sizes: ["600x600"]
     application: "floor"
@@ -35,6 +42,8 @@ colours:
     code: "CG-304"
     family: "beige"
     hex: "#B4ADA2"
+    tileFace: "../../assets/_temp/tiles/concrete-grey/CG-304-face.webp"
+    texture: "../../assets/_temp/tiles/concrete-grey/CG-304-texture.webp"
     finishes: ["matt"]
     sizes: ["600x600", "600x1200"]
     application: "floor"

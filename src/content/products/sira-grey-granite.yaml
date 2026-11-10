@@ -10,4 +10,6 @@ keySpec: "Flamed · 18 mm slab"
 specs:
   Thickness: "18 mm"
 hex: "#8E8C88"
+images:
+  - "../../assets/_temp/products/sira-grey-granite.webp"
 placeholder: true

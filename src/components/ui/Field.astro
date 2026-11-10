@@ -86,6 +86,9 @@ const describedBy = [hint && `${id}-hint`, `${id}-error`].filter(Boolean).join('
   input,
   textarea {
     flex: 1;
+    /* A percentage width (not the browser's default ~20-character size) lets the field shrink
+       to its column, so a form never pushes the page wider than a phone screen. */
+    width: 100%;
     min-width: 0;
     min-height: 52px;
     padding: 0 var(--space-2);

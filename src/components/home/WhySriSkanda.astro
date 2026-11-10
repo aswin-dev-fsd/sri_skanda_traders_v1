@@ -43,17 +43,32 @@ import { reasons } from '@/config/home';
     align-items: center;
   }
 
+  /* Stacked (below 1200px): a wide 4:3 photo, so the reasons aren't pushed far down. */
+  .photo {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: var(--radius-image);
+  }
+
+  /* Side by side: the gold frame stretches to the right column's height (eyebrow to the last
+     row's line) and the photo fills it, cropping as needed. */
   @media (min-width: 1200px) {
     .inner {
       grid-template-columns: 1fr 1fr;
       gap: var(--space-12);
+      align-items: stretch;
     }
-  }
 
-  .photo {
-    aspect-ratio: 4 / 5;
-    overflow: hidden;
-    border-radius: var(--radius-image);
+    .visual,
+    .visual :global(.trust-frame),
+    .visual :global(.frame-content) {
+      height: 100%;
+    }
+
+    .photo {
+      aspect-ratio: auto;
+      height: 100%;
+    }
   }
 
   .head {

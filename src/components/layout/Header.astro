@@ -256,7 +256,7 @@ const [tilesGroup, spaceGroup, bathwareGroup, moreGroup] = productMenu;
 <style>
   .site-header {
     position: fixed;
-    inset: 0 0 auto;
+    inset: 0 var(--lock-pad, 0) auto 0; /* --lock-pad: see scripts/scroll-lock.ts */
     z-index: 50;
     background: var(--green);
     color: var(--on-green);
@@ -868,6 +868,8 @@ const [tilesGroup, spaceGroup, bathwareGroup, moreGroup] = productMenu;
 </style>
 
 <script>
+  import { lockScroll, unlockScroll } from '@/scripts/scroll-lock';
+
   const root = document.documentElement;
   const header = document.querySelector<HTMLElement>('[data-header]');
   const megaTrigger = document.querySelector<HTMLButtonElement>('[data-mega-trigger]');
@@ -933,7 +935,8 @@ const [tilesGroup, spaceGroup, bathwareGroup, moreGroup] = productMenu;
     menu.toggleAttribute('data-open', open);
     menu.inert = !open;
     menuOpen?.setAttribute('aria-expanded', String(open));
-    root.style.overflow = open ? 'hidden' : '';
+    if (open) lockScroll();
+    else unlockScroll();
     if (open) {
       root.dataset.overlay = 'menu';
       menu.querySelector<HTMLElement>('[data-menu-close]')?.focus();

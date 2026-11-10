@@ -10,4 +10,6 @@ keySpec: "Polished · 20 mm slab"
 specs:
   Thickness: "20 mm"
 hex: "#1F2022"
+images:
+  - "../../assets/_temp/products/black-galaxy-granite.webp"
 placeholder: true

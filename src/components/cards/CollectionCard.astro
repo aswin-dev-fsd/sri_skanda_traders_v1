@@ -4,6 +4,7 @@
 // sits on the image corner instead. The whole card links to the Collection page.
 import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
+import { getEntry } from 'astro:content';
 import Button from '@/components/ui/Button.astro';
 import PhotoPlaceholder from '@/components/ui/PhotoPlaceholder.astro';
 import SaveStar from '@/components/ui/SaveStar.astro';
@@ -41,13 +42,18 @@ const {
   finishes,
   sizes,
   dots = [],
-  room,
-  tile,
+  room: roomProp,
+  tile: tileProp,
   roomLabel = `room with ${name} tiles`,
   tileFace,
   badge,
   eager = false,
 } = Astro.props;
+
+// Callers pass only text; the photos come from the collection's own entry when it has them.
+const entry = roomProp && tileProp ? undefined : await getEntry('tiles', id);
+const room = roomProp ?? entry?.data.heroImage;
+const tile = tileProp ?? entry?.data.colours[0]?.tileFace;
 
 const count = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 const meta = [count(colours, 'colour', 'colours'), count(finishes, 'finish', 'finishes'), count(sizes, 'size', 'sizes')].join(
@@ -92,7 +98,7 @@ const loading = eager ? 'eager' : 'lazy';
       <Button variant="secondary" size="sm" href={routes.contact} class="raise" data-enquire data-item={JSON.stringify(item)}>
         Enquire
       </Button>
-      <Button variant="primary" size="sm" href={href} arrow class="raise" tabindex="-1" aria-hidden="true">View</Button>
+      <Button variant="primary" size="sm" href={href} class="raise" tabindex="-1" aria-hidden="true">View</Button>
     </div>
   </div>
 </article>
@@ -295,10 +301,10 @@ const loading = eager ? 'eager' : 'lazy';
     border-radius: 50%;
   }
 
+  /* Enquire and View split the row in equal halves, spanning the card's width. */
   .actions {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: var(--space-2);
     margin-top: auto;
     padding-top: 10px;

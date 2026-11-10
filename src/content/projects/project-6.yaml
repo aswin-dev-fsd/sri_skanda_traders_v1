@@ -4,4 +4,6 @@ area: "[Area]"
 space: "elevation"
 note: "[Short note about the project — client to provide]"
 tilesUsed: ["elevation-stack", "cotto-terracotta"]
+photos:
+  - image: "../../assets/_temp/photos/project-6.jpg"
 placeholder: true

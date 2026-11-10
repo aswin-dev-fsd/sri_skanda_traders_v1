@@ -11,4 +11,6 @@ specs:
   Mounting: "Counter-top"
   Material: "Ceramic"
 hex: "#EFEDE8"
+images:
+  - "../../assets/_temp/products/oval-counter-top-basin.jpg"
 placeholder: true

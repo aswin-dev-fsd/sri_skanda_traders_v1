@@ -6,11 +6,14 @@ categories: ["wall"]
 spaces: ["living-room", "kitchen"]
 looks: ["metallic"]
 features: ["stain-resistant"]
+heroImage: "../../assets/_temp/photos/room-metallic-bronze.jpg"
 colours:
   - name: "Bronze"
     code: "MB-1301"
     family: "brown"
     hex: "#8C6A4E"
+    tileFace: "../../assets/_temp/tiles/metallic-bronze/MB-1301-face.webp"
+    texture: "../../assets/_temp/tiles/metallic-bronze/MB-1301-texture.webp"
     finishes: ["satin", "glossy"]
     sizes: ["300x600", "600x1200"]
     application: "wall"
@@ -19,6 +22,8 @@ colours:
     code: "MB-1302"
     family: "special"
     hex: "#A0664A"
+    tileFace: "../../assets/_temp/tiles/metallic-bronze/MB-1302-face.webp"
+    texture: "../../assets/_temp/tiles/metallic-bronze/MB-1302-texture.webp"
     finishes: ["satin"]
     sizes: ["300x600", "600x1200"]
     application: "wall"
@@ -27,6 +32,8 @@ colours:
     code: "MB-1303"
     family: "grey"
     hex: "#8B8C88"
+    tileFace: "../../assets/_temp/tiles/metallic-bronze/MB-1303-face.webp"
+    texture: "../../assets/_temp/tiles/metallic-bronze/MB-1303-texture.webp"
     finishes: ["satin", "glossy"]
     sizes: ["300x600"]
     application: "wall"
@@ -35,6 +42,8 @@ colours:
     code: "MB-1304"
     family: "cream"
     hex: "#CDB894"
+    tileFace: "../../assets/_temp/tiles/metallic-bronze/MB-1304-face.webp"
+    texture: "../../assets/_temp/tiles/metallic-bronze/MB-1304-texture.webp"
     finishes: ["satin"]
     sizes: ["300x600", "600x1200"]
     application: "wall"

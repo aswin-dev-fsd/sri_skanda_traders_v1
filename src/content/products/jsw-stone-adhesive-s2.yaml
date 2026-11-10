@@ -11,4 +11,6 @@ specs:
   Coverage: "[COVERAGE]"
   Use: "Large-format tiles, granite and stone"
 hex: "#A9A39A"
+images:
+  - "../../assets/_temp/products/jsw-stone-adhesive-s2.jpg"
 placeholder: true

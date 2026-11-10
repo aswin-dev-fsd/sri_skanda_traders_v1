@@ -4,4 +4,6 @@ area: "[Area]"
 space: "living-room"
 note: "[Short note about the project — client to provide]"
 tilesUsed: ["ivory-marble", "statuario-white"]
+photos:
+  - image: "../../assets/_temp/photos/project-1.jpg"
 placeholder: true

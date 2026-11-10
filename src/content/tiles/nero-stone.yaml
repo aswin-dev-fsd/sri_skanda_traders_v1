@@ -6,11 +6,14 @@ categories: ["floor", "wall"]
 spaces: ["living-room", "elevation"]
 looks: ["stone"]
 features: ["stain-resistant"]
+heroImage: "../../assets/_temp/photos/room-nero-stone.jpg"
 colours:
   - name: "Nero"
     code: "NS-401"
     family: "black"
     hex: "#2C302E"
+    tileFace: "../../assets/_temp/tiles/nero-stone/NS-401-face.webp"
+    texture: "../../assets/_temp/tiles/nero-stone/NS-401-texture.webp"
     finishes: ["polished", "matt"]
     sizes: ["600x1200", "800x800"]
     application: "both"
@@ -19,6 +22,8 @@ colours:
     code: "NS-402"
     family: "black"
     hex: "#4C514E"
+    tileFace: "../../assets/_temp/tiles/nero-stone/NS-402-face.webp"
+    texture: "../../assets/_temp/tiles/nero-stone/NS-402-texture.webp"
     finishes: ["polished"]
     sizes: ["600x1200", "800x800"]
     application: "both"
@@ -27,6 +32,8 @@ colours:
     code: "NS-403"
     family: "grey"
     hex: "#6B706C"
+    tileFace: "../../assets/_temp/tiles/nero-stone/NS-403-face.webp"
+    texture: "../../assets/_temp/tiles/nero-stone/NS-403-texture.webp"
     finishes: ["polished", "matt"]
     sizes: ["600x1200"]
     application: "both"
@@ -35,6 +42,8 @@ colours:
     code: "NS-404"
     family: "special"
     hex: "#3F3A2E"
+    tileFace: "../../assets/_temp/tiles/nero-stone/NS-404-face.webp"
+    texture: "../../assets/_temp/tiles/nero-stone/NS-404-texture.webp"
     finishes: ["polished"]
     sizes: ["600x1200", "800x800"]
     application: "both"
@@ -43,6 +52,7 @@ decor:
   - name: "Nero Highlighter"
     code: "NS-D1"
     size: "300x600"
+    image: "../../assets/_temp/tiles/nero-stone/NS-D1-decor.webp"
 isNew: true
 isTrending: false
 placeholder: true

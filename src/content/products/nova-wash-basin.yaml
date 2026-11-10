@@ -11,4 +11,6 @@ specs:
   Mounting: "Wall-mounted"
   Material: "Vitreous china"
 hex: "#F4F3EF"
+images:
+  - "../../assets/_temp/products/nova-wash-basin.jpg"
 placeholder: true

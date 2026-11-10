@@ -6,11 +6,14 @@ categories: ["wall"]
 spaces: ["elevation", "outdoor"]
 looks: ["stone", "rustic"]
 features: ["frost-resistant", "heat-resistant"]
+heroImage: "../../assets/_temp/photos/room-elevation-stack.jpg"
 colours:
   - name: "Desert"
     code: "ES-1401"
     family: "beige"
     hex: "#C9B596"
+    tileFace: "../../assets/_temp/tiles/elevation-stack/ES-1401-face.webp"
+    texture: "../../assets/_temp/tiles/elevation-stack/ES-1401-texture.webp"
     finishes: ["rustic"]
     sizes: ["150x600", "300x600"]
     application: "wall"
@@ -19,6 +22,8 @@ colours:
     code: "ES-1402"
     family: "grey"
     hex: "#7F817C"
+    tileFace: "../../assets/_temp/tiles/elevation-stack/ES-1402-face.webp"
+    texture: "../../assets/_temp/tiles/elevation-stack/ES-1402-texture.webp"
     finishes: ["rustic"]
     sizes: ["150x600", "300x600"]
     application: "wall"
@@ -27,6 +32,8 @@ colours:
     code: "ES-1403"
     family: "brown"
     hex: "#93745A"
+    tileFace: "../../assets/_temp/tiles/elevation-stack/ES-1403-face.webp"
+    texture: "../../assets/_temp/tiles/elevation-stack/ES-1403-texture.webp"
     finishes: ["rustic"]
     sizes: ["150x600"]
     application: "wall"
@@ -35,6 +42,8 @@ colours:
     code: "ES-1404"
     family: "cream"
     hex: "#E2D7C3"
+    tileFace: "../../assets/_temp/tiles/elevation-stack/ES-1404-face.webp"
+    texture: "../../assets/_temp/tiles/elevation-stack/ES-1404-texture.webp"
     finishes: ["rustic"]
     sizes: ["150x600", "300x600"]
     application: "wall"

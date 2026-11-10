@@ -13,4 +13,6 @@ specs:
   Flush: "Dual flush, 3/6 litres"
 features: ["Easy-clean glaze"]
 hex: "#F4F3EF"
+images:
+  - "../../assets/_temp/products/terra-floor-mounted-wc.jpg"
 placeholder: true

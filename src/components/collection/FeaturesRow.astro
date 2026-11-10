@@ -97,6 +97,26 @@ const { features } = Astro.props;
     pointer-events: none;
   }
 
+  /* Phones: a tooltip centred under the last feature would run off the screen, so it spans the
+     row instead, opening below it. */
+  @media (max-width: 767px) {
+    .row {
+      position: relative;
+    }
+
+    .feature {
+      position: static;
+    }
+
+    .explain {
+      left: 0;
+      right: 0;
+      width: auto;
+      max-width: none;
+      transform: translateY(4px);
+    }
+  }
+
   .feature:hover .explain,
   .feature-btn:focus-visible + .explain,
   .feature-btn[aria-expanded='true'] + .explain {
@@ -106,6 +126,15 @@ const { features } = Astro.props;
     transition:
       opacity var(--dur-ui) var(--ease),
       transform var(--dur-ui) var(--ease);
+  }
+
+  /* After the open rule above, so the phone position wins. */
+  @media (max-width: 767px) {
+    .feature:hover .explain,
+    .feature-btn:focus-visible + .explain,
+    .feature-btn[aria-expanded='true'] + .explain {
+      transform: translateY(0);
+    }
   }
 </style>
 

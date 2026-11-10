@@ -231,6 +231,10 @@ const tilesTitle = data.category === 'adhesives' ? 'Tiles you can lay with it' :
     margin-top: var(--space-3);
   }
 
+  .cols > * {
+    min-width: 0;
+  }
+
   @media (min-width: 1024px) {
     .cols {
       grid-template-columns: 7fr 5fr;
@@ -281,11 +285,17 @@ const tilesTitle = data.category === 'adhesives' ? 'Tiles you can lay with it' :
     list-style: none;
   }
 
+  /* 72px each, shrinking on the narrowest phones so four always fit. */
+  .thumbs li {
+    flex: 0 1 72px;
+    min-width: 0;
+  }
+
   .thumb {
     display: grid;
     place-items: center;
-    width: 72px;
-    height: 72px;
+    width: 100%;
+    aspect-ratio: 1;
     overflow: hidden;
     padding: 0;
     border: 2px solid var(--beige);

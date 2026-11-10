@@ -11,4 +11,6 @@ specs:
   Mounting: "Wall arm"
   Spray: "Rain"
 hex: "#C9CCCF"
+images:
+  - "../../assets/_temp/products/rain-overhead-shower.jpg"
 placeholder: true

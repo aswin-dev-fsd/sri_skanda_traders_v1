@@ -6,11 +6,14 @@ categories: ["wall", "vitrified"]
 spaces: ["living-room", "bathroom"]
 looks: ["marble"]
 features: ["stain-resistant"]
+heroImage: "../../assets/_temp/photos/room-calacatta-gold.jpg"
 colours:
   - name: "Gold Vein"
     code: "CA-901"
     family: "white"
     hex: "#F1EDE4"
+    tileFace: "../../assets/_temp/tiles/calacatta-gold/CA-901-face.webp"
+    texture: "../../assets/_temp/tiles/calacatta-gold/CA-901-texture.webp"
     finishes: ["polished"]
     sizes: ["800x1600", "1200x2400"]
     application: "both"
@@ -19,6 +22,8 @@ colours:
     code: "CA-902"
     family: "white"
     hex: "#ECEAE5"
+    tileFace: "../../assets/_temp/tiles/calacatta-gold/CA-902-face.webp"
+    texture: "../../assets/_temp/tiles/calacatta-gold/CA-902-texture.webp"
     finishes: ["polished"]
     sizes: ["800x1600", "1200x2400"]
     application: "both"
@@ -27,6 +32,8 @@ colours:
     code: "CA-903"
     family: "special"
     hex: "#E7DDDB"
+    tileFace: "../../assets/_temp/tiles/calacatta-gold/CA-903-face.webp"
+    texture: "../../assets/_temp/tiles/calacatta-gold/CA-903-texture.webp"
     finishes: ["polished"]
     sizes: ["800x1600"]
     application: "both"
@@ -35,6 +42,8 @@ colours:
     code: "CA-904"
     family: "cream"
     hex: "#EFE6D5"
+    tileFace: "../../assets/_temp/tiles/calacatta-gold/CA-904-face.webp"
+    texture: "../../assets/_temp/tiles/calacatta-gold/CA-904-texture.webp"
     finishes: ["polished"]
     sizes: ["800x1600", "1200x2400"]
     application: "both"
@@ -43,6 +52,7 @@ decor:
   - name: "Calacatta Strip"
     code: "CA-D1"
     size: "100x1200"
+    image: "../../assets/_temp/tiles/calacatta-gold/CA-D1-decor.webp"
 isNew: false
 isTrending: true
 placeholder: true

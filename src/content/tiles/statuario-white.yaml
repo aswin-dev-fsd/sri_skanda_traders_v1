@@ -6,11 +6,14 @@ categories: ["floor", "vitrified"]
 spaces: ["living-room", "bedroom", "bathroom"]
 looks: ["marble"]
 features: ["stain-resistant", "scratch-resistant"]
+heroImage: "../../assets/_temp/photos/room-statuario-white.jpg"
 colours:
   - name: "Statuario"
     code: "ST-1601"
     family: "white"
     hex: "#F5F4F0"
+    tileFace: "../../assets/_temp/tiles/statuario-white/ST-1601-face.webp"
+    texture: "../../assets/_temp/tiles/statuario-white/ST-1601-texture.webp"
     finishes: ["polished", "glossy"]
     sizes: ["800x800", "800x1600", "1200x2400"]
     application: "floor"
@@ -19,6 +22,8 @@ colours:
     code: "ST-1602"
     family: "white"
     hex: "#EEEDEA"
+    tileFace: "../../assets/_temp/tiles/statuario-white/ST-1602-face.webp"
+    texture: "../../assets/_temp/tiles/statuario-white/ST-1602-texture.webp"
     finishes: ["polished"]
     sizes: ["800x800", "800x1600", "1200x2400"]
     application: "floor"
@@ -27,6 +32,8 @@ colours:
     code: "ST-1603"
     family: "grey"
     hex: "#DAD8D3"
+    tileFace: "../../assets/_temp/tiles/statuario-white/ST-1603-face.webp"
+    texture: "../../assets/_temp/tiles/statuario-white/ST-1603-texture.webp"
     finishes: ["polished", "glossy"]
     sizes: ["800x800"]
     application: "floor"
@@ -35,6 +42,8 @@ colours:
     code: "ST-1604"
     family: "cream"
     hex: "#F1ECE2"
+    tileFace: "../../assets/_temp/tiles/statuario-white/ST-1604-face.webp"
+    texture: "../../assets/_temp/tiles/statuario-white/ST-1604-texture.webp"
     finishes: ["polished"]
     sizes: ["800x800", "800x1600", "1200x2400"]
     application: "floor"
@@ -43,6 +52,8 @@ colours:
     code: "ST-1605"
     family: "white"
     hex: "#F0EEE8"
+    tileFace: "../../assets/_temp/tiles/statuario-white/ST-1605-face.webp"
+    texture: "../../assets/_temp/tiles/statuario-white/ST-1605-texture.webp"
     finishes: ["polished", "glossy"]
     sizes: ["800x800", "800x1600", "1200x2400"]
     application: "floor"

@@ -6,11 +6,14 @@ categories: ["floor", "vitrified"]
 spaces: ["living-room", "bedroom"]
 looks: ["marble"]
 features: ["stain-resistant", "easy-to-clean"]
+heroImage: "../../assets/_temp/photos/room-ivory-marble.jpg"
 colours:
   - name: "Ivory"
     code: "IM-101"
     family: "white"
     hex: "#F2EEE6"
+    tileFace: "../../assets/_temp/tiles/ivory-marble/IM-101-face.webp"
+    texture: "../../assets/_temp/tiles/ivory-marble/IM-101-texture.webp"
     finishes: ["glossy", "matt"]
     sizes: ["600x1200", "800x1600", "1200x2400"]
     application: "floor"
@@ -19,6 +22,8 @@ colours:
     code: "IM-102"
     family: "cream"
     hex: "#E9DFC9"
+    tileFace: "../../assets/_temp/tiles/ivory-marble/IM-102-face.webp"
+    texture: "../../assets/_temp/tiles/ivory-marble/IM-102-texture.webp"
     finishes: ["glossy"]
     sizes: ["600x1200", "800x1600", "1200x2400"]
     application: "floor"
@@ -27,6 +32,8 @@ colours:
     code: "IM-103"
     family: "beige"
     hex: "#D9CCB4"
+    tileFace: "../../assets/_temp/tiles/ivory-marble/IM-103-face.webp"
+    texture: "../../assets/_temp/tiles/ivory-marble/IM-103-texture.webp"
     finishes: ["glossy", "matt"]
     sizes: ["600x1200"]
     application: "floor"
@@ -35,6 +42,8 @@ colours:
     code: "IM-104"
     family: "grey"
     hex: "#CFCBC3"
+    tileFace: "../../assets/_temp/tiles/ivory-marble/IM-104-face.webp"
+    texture: "../../assets/_temp/tiles/ivory-marble/IM-104-texture.webp"
     finishes: ["glossy"]
     sizes: ["600x1200", "800x1600", "1200x2400"]
     application: "floor"
@@ -43,6 +52,8 @@ colours:
     code: "IM-105"
     family: "special"
     hex: "#E3D3AE"
+    tileFace: "../../assets/_temp/tiles/ivory-marble/IM-105-face.webp"
+    texture: "../../assets/_temp/tiles/ivory-marble/IM-105-texture.webp"
     finishes: ["glossy", "matt"]
     sizes: ["600x1200", "800x1600", "1200x2400"]
     application: "floor"
@@ -51,6 +62,8 @@ colours:
     code: "IM-106"
     family: "grey"
     hex: "#B8B4AC"
+    tileFace: "../../assets/_temp/tiles/ivory-marble/IM-106-face.webp"
+    texture: "../../assets/_temp/tiles/ivory-marble/IM-106-texture.webp"
     finishes: ["glossy"]
     sizes: ["600x1200"]
     application: "floor"
@@ -59,6 +72,7 @@ decor:
   - name: "Ivory Marble Border"
     code: "IM-D1"
     size: "300x600"
+    image: "../../assets/_temp/tiles/ivory-marble/IM-D1-decor.webp"
 isNew: true
 isTrending: true
 placeholder: true

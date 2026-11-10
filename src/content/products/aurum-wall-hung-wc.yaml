@@ -14,4 +14,6 @@ specs:
   Warranty: "[WARRANTY]"
 features: ["Rimless bowl", "Soft-close seat"]
 hex: "#F4F3EF"
+images:
+  - "../../assets/_temp/products/aurum-wall-hung-wc.jpg"
 placeholder: true

@@ -107,7 +107,7 @@ const slides =
                   <p class="small muted tabular">
                     {d.code} · {formatSize(d.size)}
                   </p>
-                  <Button variant="secondary" size="sm" href={routes.contact} class="decor-enquire" data-enquire data-item={JSON.stringify(item)}>
+                  <Button variant="primary" size="sm" href={routes.contact} class="decor-enquire" data-enquire data-item={JSON.stringify(item)}>
                     Enquire
                   </Button>
                 </li>
@@ -203,7 +203,7 @@ const slides =
     font-weight: 600;
   }
 
-  /* The only button on the tile, so it sits right, matching the product cards. */
+  /* The only button on the tile, so it is filled and sits right. */
   .decor :global(.decor-enquire) {
     justify-self: end;
   }

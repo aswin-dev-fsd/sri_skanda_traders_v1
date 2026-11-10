@@ -6,11 +6,14 @@ categories: ["wall"]
 spaces: ["kitchen", "bathroom"]
 looks: ["decor"]
 features: ["stain-resistant", "easy-to-clean", "heat-resistant"]
+heroImage: "../../assets/_temp/photos/room-kitchen-mosaic.jpg"
 colours:
   - name: "White Hex"
     code: "KM-1501"
     family: "white"
     hex: "#F3F1EC"
+    tileFace: "../../assets/_temp/tiles/kitchen-mosaic/KM-1501-face.webp"
+    texture: "../../assets/_temp/tiles/kitchen-mosaic/KM-1501-texture.webp"
     finishes: ["glossy", "matt"]
     sizes: ["300x300"]
     application: "wall"
@@ -19,6 +22,8 @@ colours:
     code: "KM-1502"
     family: "grey"
     hex: "#B7B6B1"
+    tileFace: "../../assets/_temp/tiles/kitchen-mosaic/KM-1502-face.webp"
+    texture: "../../assets/_temp/tiles/kitchen-mosaic/KM-1502-texture.webp"
     finishes: ["glossy"]
     sizes: ["300x300"]
     application: "wall"
@@ -27,6 +32,8 @@ colours:
     code: "KM-1503"
     family: "special"
     hex: "#2F5A4C"
+    tileFace: "../../assets/_temp/tiles/kitchen-mosaic/KM-1503-face.webp"
+    texture: "../../assets/_temp/tiles/kitchen-mosaic/KM-1503-texture.webp"
     finishes: ["glossy", "matt"]
     sizes: ["300x300"]
     application: "wall"
@@ -35,6 +42,8 @@ colours:
     code: "KM-1504"
     family: "beige"
     hex: "#D8C8AC"
+    tileFace: "../../assets/_temp/tiles/kitchen-mosaic/KM-1504-face.webp"
+    texture: "../../assets/_temp/tiles/kitchen-mosaic/KM-1504-texture.webp"
     finishes: ["glossy"]
     sizes: ["300x300"]
     application: "wall"

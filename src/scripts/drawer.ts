@@ -3,6 +3,8 @@
  * focus moves in and is kept inside, Esc / backdrop / close button close it, the page
  * behind stops scrolling, and `data-overlay` on <html> hides the floating WhatsApp button.
  */
+import { lockScroll, unlockScroll } from './scroll-lock';
+
 const root = document.documentElement;
 let active: HTMLElement | null = null;
 let returnFocus: HTMLElement | null = null;
@@ -28,7 +30,7 @@ export function openDrawer(id: string, opener?: HTMLElement | null): HTMLElement
   drawer.inert = false;
   drawer.setAttribute('data-open', '');
   root.dataset.overlay = 'drawer';
-  root.style.overflow = 'hidden';
+  lockScroll();
   drawer.dispatchEvent(new CustomEvent('drawer:open'));
   requestAnimationFrame(() => (drawer.querySelector<HTMLElement>('[data-autofocus]') ?? focusables(drawer)[0])?.focus());
   return drawer;
@@ -46,7 +48,7 @@ export function closeDrawer({ restoreFocus = true } = {}): void {
   drawer.removeAttribute('data-open');
   drawer.inert = true;
   delete root.dataset.overlay;
-  root.style.overflow = '';
+  unlockScroll();
   drawer.dispatchEvent(new CustomEvent('drawer:close'));
   if (restoreFocus) returnFocus?.focus();
 }

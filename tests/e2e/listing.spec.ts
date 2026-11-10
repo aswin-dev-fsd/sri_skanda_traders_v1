@@ -41,6 +41,13 @@ test('Load more shows the rest', async ({ page }) => {
   await page.getByRole('button', { name: 'Load more' }).click();
   await expect(page.locator(visibleCards)).toHaveCount(16);
   await expect(page.locator('[data-showing]')).toHaveText('Showing 16 of 16');
+  await expect(page.getByRole('button', { name: 'Load more' })).toBeHidden();
+});
+
+test('Load more is hidden when every product fits', async ({ page }) => {
+  await page.goto('/adhesives');
+  await expect(page.locator('[data-showing]')).toHaveText('Showing 2 of 2');
+  await expect(page.getByRole('button', { name: 'Load more' })).toBeHidden();
 });
 
 test('/products?brand=johnson goes to bathware', async ({ page }) => {

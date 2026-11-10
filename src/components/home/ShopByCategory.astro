@@ -1,7 +1,7 @@
 ---
 // Home 02 — Shop by category: a 4-column bento "laid like tiles", with 8px Stone Beige grout gaps.
 import Icon from '@/components/ui/Icon.astro';
-import PhotoPlaceholder from '@/components/ui/PhotoPlaceholder.astro';
+import TempPhoto from '@/components/ui/TempPhoto.astro';
 import { routes } from '@/config/site';
 
 const cards = [
@@ -9,6 +9,7 @@ const cards = [
     title: 'Tiles',
     href: routes.tiles,
     size: 'large',
+    image: 'photos/category-tiles',
     photo: 'living room with large-format floor tiles',
     face: '#DCD2C0',
     links: [
@@ -22,14 +23,16 @@ const cards = [
     href: routes.bathware,
     size: 'wide',
     sub: 'Sanitary ware, faucets, accessories',
+    image: 'photos/category-bathware',
     photo: 'bathroom with wall-hung WC and basin',
     face: '#D7DCDB',
   },
-  { title: 'Granite', href: routes.granite, size: 'small', photo: 'granite kitchen top', face: '#6E6A64' },
+  { title: 'Granite', href: routes.granite, size: 'small', image: 'photos/category-granite', photo: 'granite kitchen top', face: '#6E6A64' },
   {
     title: 'Adhesives',
     href: routes.adhesives,
     size: 'small',
+    image: 'photos/category-adhesives',
     photo: 'tile adhesive being applied',
     face: '#BDB7AC',
     tag: 'JSW Authorised Dealer',
@@ -49,7 +52,7 @@ const cards = [
         cards.map((card, i) => (
           <article class:list={['cell', card.size]} data-reveal style={`--i: ${i}`}>
             <div class="photo">
-              <PhotoPlaceholder label={card.photo} face={card.face} />
+              <TempPhoto name={card.image} label={card.photo} face={card.face} sizes="(min-width: 1024px) 50vw, 100vw" />
             </div>
             {card.tag && <span class="tag">{card.tag}</span>}
             <div class="text">

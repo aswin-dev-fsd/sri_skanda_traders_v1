@@ -4,4 +4,6 @@ area: "[Area]"
 space: "parking"
 note: "[Short note about the project — client to provide]"
 tilesUsed: ["parking-shield"]
+photos:
+  - image: "../../assets/_temp/photos/project-5.jpg"
 placeholder: true

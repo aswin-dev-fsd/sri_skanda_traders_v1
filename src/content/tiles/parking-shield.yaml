@@ -6,11 +6,14 @@ categories: ["floor", "vitrified"]
 spaces: ["parking", "outdoor"]
 looks: ["concrete", "plain"]
 features: ["anti-skid", "scratch-resistant", "frost-resistant"]
+heroImage: "../../assets/_temp/photos/room-parking-shield.jpg"
 colours:
   - name: "Grey"
     code: "PS-1101"
     family: "grey"
     hex: "#9A9893"
+    tileFace: "../../assets/_temp/tiles/parking-shield/PS-1101-face.webp"
+    texture: "../../assets/_temp/tiles/parking-shield/PS-1101-texture.webp"
     finishes: ["matt", "rustic"]
     sizes: ["300x300", "400x400", "600x600"]
     application: "floor"
@@ -19,6 +22,8 @@ colours:
     code: "PS-1102"
     family: "black"
     hex: "#55585A"
+    tileFace: "../../assets/_temp/tiles/parking-shield/PS-1102-face.webp"
+    texture: "../../assets/_temp/tiles/parking-shield/PS-1102-texture.webp"
     finishes: ["matt"]
     sizes: ["300x300", "400x400", "600x600"]
     application: "floor"
@@ -27,6 +32,8 @@ colours:
     code: "PS-1103"
     family: "special"
     hex: "#8C4A3B"
+    tileFace: "../../assets/_temp/tiles/parking-shield/PS-1103-face.webp"
+    texture: "../../assets/_temp/tiles/parking-shield/PS-1103-texture.webp"
     finishes: ["matt", "rustic"]
     sizes: ["300x300"]
     application: "floor"
@@ -35,6 +42,8 @@ colours:
     code: "PS-1104"
     family: "beige"
     hex: "#C8B79B"
+    tileFace: "../../assets/_temp/tiles/parking-shield/PS-1104-face.webp"
+    texture: "../../assets/_temp/tiles/parking-shield/PS-1104-texture.webp"
     finishes: ["matt"]
     sizes: ["300x300", "400x400", "600x600"]
     application: "floor"

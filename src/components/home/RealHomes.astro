@@ -3,7 +3,7 @@
 // cards with arrows. Only real reviews: placeholders stay until the client supplies them.
 import Button from '@/components/ui/Button.astro';
 import Icon from '@/components/ui/Icon.astro';
-import PhotoPlaceholder from '@/components/ui/PhotoPlaceholder.astro';
+import TempPhoto from '@/components/ui/TempPhoto.astro';
 import { featuredProject, reviews } from '@/config/home';
 import { routes } from '@/config/site';
 import { collectionHref } from '@/lib/catalogue';
@@ -21,7 +21,7 @@ const pageSize = 2;
 
     <div class="inner">
       <figure class="project" data-reveal>
-        <div class="photo"><PhotoPlaceholder label="finished living room in a customer's home" /></div>
+        <div class="photo"><TempPhoto name="photos/project-1" label="finished living room in a customer's home" sizes="(min-width: 1024px) 60vw, 100vw" /></div>
         <figcaption class="caption">
           <span class="muted">{featuredProject.title}, {featuredProject.area} · Tiles: {featuredProject.collection}</span>
           <Button variant="text" href={shopHref} arrow>Shop this look</Button>

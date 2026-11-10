@@ -1,7 +1,9 @@
 ---
 // The Trust Frame (brief signature touch 1): a 1.5px gold rounded frame, offset from its content,
 // open at the bottom where a small label sits in the gap. On first view the line draws itself
-// (900ms) from both sides of the gap, meeting at the top. Use at most 1–2 per screen.
+// (900ms) from top-centre down both sides, arriving at the label, which fades in as the lines
+// meet it (see DECISIONS.md). The draw is chained after the rise/reveal of the content around it,
+// so the content settles first and the line follows. Use at most 1–2 per screen.
 //
 // Without JavaScript it falls back to a plain CSS border behind the label.
 
@@ -120,9 +122,15 @@ const { label, tone = 'ivory', class: className } = Astro.props;
     color: var(--gold);
   }
 
-  /* Once JS has measured the label, it leaves the gap open, so no mask is needed. */
+  /* Once JS has measured the label, it leaves the gap open, so no mask is needed.
+     The label waits hidden until the lines arrive at it (JS fades it in). */
   .trust-frame[data-ready] .frame-label {
     background: transparent;
+    opacity: 0;
+  }
+
+  .trust-frame[data-drawn] .frame-label {
+    opacity: 1;
   }
 </style>
 
@@ -148,45 +156,103 @@ const { label, tone = 'ivory', class: className } = Astro.props;
     const gapHalf = Math.min((label?.offsetWidth ?? 0) / 2 + GAP_PAD, w / 2 - r);
     frame.querySelectorAll<SVGPathElement>('.frame-line').forEach((path) => {
       path.setAttribute('d', halfPath(w, h, r, gapHalf, path.dataset.side as 'left' | 'right'));
+      // After the draw, a resize changes the path length: drop the dash so the line stays whole.
+      if (frame.hasAttribute('data-drawn')) path.style.strokeDasharray = 'none';
     });
   }
 
-  function draw(frame: HTMLElement) {
+  const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+  const LABEL_MS = 300;
+  // Chain after the surrounding content's entrance: start once it is ~60% through.
+  const RISE_MS = 800; // global `.rise` (page load), staggered 80ms by --i
+  const RISE_STEP = 80;
+  const REVEAL_MS = 600; // global `[data-reveal]` (scroll), staggered 60ms by --i
+  const REVEAL_STEP = 60;
+  const LEAD_IN = 0.6;
+
+  // Paths run from the gap up to top-centre; a negative dash offset reveals them from their END,
+  // so the line draws from top-centre down both sides and arrives at the label.
+  function hideLines(frame: HTMLElement) {
     frame.querySelectorAll<SVGPathElement>('.frame-line').forEach((path) => {
       const length = path.getTotalLength();
       path.style.strokeDasharray = `${length}`;
-      path.animate([{ strokeDashoffset: length }, { strokeDashoffset: 0 }], {
-        duration: reduceMotion.matches ? 0 : DRAW_MS,
-        easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+      path.style.strokeDashoffset = `${-length}`;
+    });
+  }
+
+  function draw(frame: HTMLElement, delay = 0) {
+    if (frame.hasAttribute('data-drawing')) return;
+    frame.setAttribute('data-drawing', '');
+    const still = reduceMotion.matches;
+    frame.querySelectorAll<SVGPathElement>('.frame-line').forEach((path) => {
+      const length = path.getTotalLength();
+      path.style.strokeDasharray = `${length}`;
+      path.animate([{ strokeDashoffset: -length }, { strokeDashoffset: 0 }], {
+        duration: still ? 0 : DRAW_MS,
+        delay: still ? 0 : delay,
+        easing: EASE,
         fill: 'both',
       });
     });
+    // The label fades in as the two lines reach it.
+    const label = frame.querySelector<HTMLElement>('.frame-label');
+    label
+      ?.animate([{ opacity: 0 }, { opacity: 1 }], {
+        duration: still ? 0 : LABEL_MS,
+        delay: still ? 0 : delay + DRAW_MS - LABEL_MS,
+        easing: EASE,
+        fill: 'both',
+      })
+      .finished.then(() => frame.setAttribute('data-drawn', ''))
+      .catch(() => frame.setAttribute('data-drawn', ''));
+  }
+
+  const stagger = (el: Element) => parseFloat(getComputedStyle(el).getPropertyValue('--i')) || 0;
+
+  /** Draws once the frame is in view; `delayFor` is read at that moment. */
+  function whenVisible(frame: HTMLElement, delayFor: () => number) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        draw(frame, delayFor());
+      },
+      { threshold: 0.3 },
+    );
+    io.observe(frame);
   }
 
   const frames = [...document.querySelectorAll<HTMLElement>('[data-trust-frame]')];
   const resizer = new ResizeObserver((entries) => entries.forEach((e) => layout(e.target as HTMLElement)));
 
-  const viewer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        draw(entry.target as HTMLElement);
-        viewer.unobserve(entry.target);
-      });
-    },
-    { threshold: 0.3 },
-  );
-
   frames.forEach((frame) => {
     layout(frame);
-    // Hide the lines until they draw, so nothing flashes before the animation.
-    frame.querySelectorAll<SVGPathElement>('.frame-line').forEach((path) => {
-      const length = path.getTotalLength();
-      path.style.strokeDasharray = `${length}`;
-      path.style.strokeDashoffset = `${length}`;
-    });
+    hideLines(frame); // nothing flashes before the draw
     frame.setAttribute('data-ready', '');
     resizer.observe(frame);
-    viewer.observe(frame);
+
+    const revealHost = frame.closest<HTMLElement>('[data-reveal]');
+    const riseHost = frame.closest<HTMLElement>('.rise');
+
+    if (revealHost) {
+      // Scroll reveal: start when the host is revealed, ~60% into its fade-up.
+      const go = () => draw(frame, REVEAL_MS * LEAD_IN + stagger(revealHost) * REVEAL_STEP);
+      if (revealHost.hasAttribute('data-revealed')) go();
+      else {
+        const mo = new MutationObserver(() => {
+          if (!revealHost.hasAttribute('data-revealed')) return;
+          mo.disconnect();
+          go();
+        });
+        mo.observe(revealHost, { attributes: true, attributeFilter: ['data-revealed'] });
+      }
+    } else if (riseHost) {
+      // Page-load rise: wait out whatever is left of its first ~60% (0 if already past).
+      const riseAt = RISE_MS * LEAD_IN + stagger(riseHost) * RISE_STEP;
+      whenVisible(frame, () => Math.max(0, riseAt - performance.now()));
+    } else {
+      // No entrance around it (e.g. inside a dialog): draw on first view.
+      whenVisible(frame, () => 0);
+    }
   });
 </script>

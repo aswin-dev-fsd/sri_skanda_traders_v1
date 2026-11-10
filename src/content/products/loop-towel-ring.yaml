@@ -10,4 +10,6 @@ specs:
   Size: "200 mm"
   Material: "Brass"
 hex: "#BFC2C4"
+images:
+  - "../../assets/_temp/products/loop-towel-ring.jpg"
 placeholder: true

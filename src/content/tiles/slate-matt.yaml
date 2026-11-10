@@ -6,11 +6,14 @@ categories: ["floor", "wall"]
 spaces: ["bathroom", "outdoor", "parking"]
 looks: ["stone", "rustic"]
 features: ["anti-skid", "frost-resistant"]
+heroImage: "../../assets/_temp/photos/room-slate-matt.jpg"
 colours:
   - name: "Slate Grey"
     code: "SM-801"
     family: "grey"
     hex: "#7D827F"
+    tileFace: "../../assets/_temp/tiles/slate-matt/SM-801-face.webp"
+    texture: "../../assets/_temp/tiles/slate-matt/SM-801-texture.webp"
     finishes: ["matt", "rustic"]
     sizes: ["300x600", "600x600"]
     application: "both"
@@ -19,6 +22,8 @@ colours:
     code: "SM-802"
     family: "black"
     hex: "#5E6360"
+    tileFace: "../../assets/_temp/tiles/slate-matt/SM-802-face.webp"
+    texture: "../../assets/_temp/tiles/slate-matt/SM-802-texture.webp"
     finishes: ["matt"]
     sizes: ["300x600", "600x600"]
     application: "both"
@@ -27,6 +32,8 @@ colours:
     code: "SM-803"
     family: "brown"
     hex: "#8D6A55"
+    tileFace: "../../assets/_temp/tiles/slate-matt/SM-803-face.webp"
+    texture: "../../assets/_temp/tiles/slate-matt/SM-803-texture.webp"
     finishes: ["matt", "rustic"]
     sizes: ["300x600"]
     application: "both"
@@ -35,6 +42,8 @@ colours:
     code: "SM-804"
     family: "special"
     hex: "#6E7A6F"
+    tileFace: "../../assets/_temp/tiles/slate-matt/SM-804-face.webp"
+    texture: "../../assets/_temp/tiles/slate-matt/SM-804-texture.webp"
     finishes: ["matt"]
     sizes: ["300x600", "600x600"]
     application: "both"

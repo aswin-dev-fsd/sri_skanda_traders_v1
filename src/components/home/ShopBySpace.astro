@@ -2,7 +2,7 @@
 // Home 03 — Shop by space: horizontal scroller of 7 portrait cards on the grout-line grid, with
 // prev/next buttons and a thin gold progress line. Each card opens tiles for that space.
 import Icon from '@/components/ui/Icon.astro';
-import PhotoPlaceholder from '@/components/ui/PhotoPlaceholder.astro';
+import TempPhoto from '@/components/ui/TempPhoto.astro';
 import { routes, spaces } from '@/config/site';
 import { countBySpace } from '@/lib/catalogue';
 
@@ -44,7 +44,7 @@ const faces: Record<string, string> = {
           <li class="space-card">
             <a href={`${routes.tiles}/${space.slug}`} class="space-link">
               <span class="photo">
-                <PhotoPlaceholder label={`${space.name.toLowerCase()} with tiles`} face={faces[space.slug]} />
+                <TempPhoto name={`photos/space-${space.slug}`} label={`${space.name.toLowerCase()} with tiles`} face={faces[space.slug]} widths={[320, 480, 640]} sizes="(min-width: 1024px) 360px, 70vw" />
               </span>
               <span class="text">
                 <span class="name">{space.name}</span>

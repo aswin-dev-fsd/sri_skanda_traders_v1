@@ -6,11 +6,14 @@ categories: ["floor"]
 spaces: ["living-room", "bedroom"]
 looks: ["wood"]
 features: ["scratch-resistant", "easy-to-clean"]
+heroImage: "../../assets/_temp/photos/room-oak-plank.jpg"
 colours:
   - name: "Natural Oak"
     code: "OP-201"
     family: "beige"
     hex: "#C9A27A"
+    tileFace: "../../assets/_temp/tiles/oak-plank/OP-201-face.webp"
+    texture: "../../assets/_temp/tiles/oak-plank/OP-201-texture.webp"
     finishes: ["matt"]
     sizes: ["200x1200", "200x1000"]
     application: "floor"
@@ -19,6 +22,8 @@ colours:
     code: "OP-202"
     family: "brown"
     hex: "#B98F66"
+    tileFace: "../../assets/_temp/tiles/oak-plank/OP-202-face.webp"
+    texture: "../../assets/_temp/tiles/oak-plank/OP-202-texture.webp"
     finishes: ["matt"]
     sizes: ["200x1200", "200x1000"]
     application: "floor"
@@ -27,6 +32,8 @@ colours:
     code: "OP-203"
     family: "brown"
     hex: "#7A5A3D"
+    tileFace: "../../assets/_temp/tiles/oak-plank/OP-203-face.webp"
+    texture: "../../assets/_temp/tiles/oak-plank/OP-203-texture.webp"
     finishes: ["matt"]
     sizes: ["200x1200"]
     application: "floor"
@@ -35,6 +42,8 @@ colours:
     code: "OP-204"
     family: "grey"
     hex: "#8E847A"
+    tileFace: "../../assets/_temp/tiles/oak-plank/OP-204-face.webp"
+    texture: "../../assets/_temp/tiles/oak-plank/OP-204-texture.webp"
     finishes: ["matt"]
     sizes: ["200x1200", "200x1000"]
     application: "floor"
@@ -43,6 +52,8 @@ colours:
     code: "OP-205"
     family: "cream"
     hex: "#DCCBB3"
+    tileFace: "../../assets/_temp/tiles/oak-plank/OP-205-face.webp"
+    texture: "../../assets/_temp/tiles/oak-plank/OP-205-texture.webp"
     finishes: ["matt"]
     sizes: ["200x1200", "200x1000"]
     application: "floor"

@@ -1,0 +1,41 @@
+---
+// A temporary photo from src/assets/_temp/ (see docs/IMAGE-PROMPTS.md), or the labelled
+// "[PHOTO: …]" placeholder when that file does not exist. The label stays as the photo's alt
+// text, so the hint for the real photo is kept either way.
+import { Image } from 'astro:assets';
+import PhotoPlaceholder from '@/components/ui/PhotoPlaceholder.astro';
+import { tempImage } from '@/lib/temp-images';
+
+interface Props {
+  /** Path inside src/assets/_temp/ without extension, e.g. "photos/space-kitchen". */
+  name: string;
+  /** What the real photo should show; alt text and placeholder label. */
+  label: string;
+  /** Placeholder background when there is no file. */
+  face?: string;
+  widths?: number[];
+  sizes?: string;
+  loading?: 'lazy' | 'eager';
+  class?: string;
+}
+
+const { name, label, face, widths = [400, 640, 960, 1280], sizes = '100vw', loading = 'lazy', class: className } = Astro.props;
+const src = tempImage(name);
+---
+
+{
+  src ? (
+    <Image src={src} alt={label} widths={widths} sizes={sizes} loading={loading} class:list={['temp-photo', className]} />
+  ) : (
+    <PhotoPlaceholder label={label} face={face} class={className} />
+  )
+}
+
+<style>
+  .temp-photo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+</style>

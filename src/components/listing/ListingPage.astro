@@ -581,6 +581,11 @@ const roomName = (slug: string) => slug.replace('-', ' ');
     display: none;
   }
 
+  /* The button's own display: inline-flex would otherwise beat the hidden attribute. */
+  .pager :global([data-load-more][hidden]) {
+    display: none;
+  }
+
   /* Guide text, collapsed to three lines. */
   .guide {
     border-top: var(--border);

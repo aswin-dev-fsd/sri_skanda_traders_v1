@@ -6,11 +6,14 @@ categories: ["floor"]
 spaces: ["outdoor", "elevation"]
 looks: ["rustic"]
 features: ["anti-skid", "frost-resistant", "heat-resistant"]
+heroImage: "../../assets/_temp/photos/room-cotto-terracotta.jpg"
 colours:
   - name: "Cotto"
     code: "CT-1001"
     family: "special"
     hex: "#B5694B"
+    tileFace: "../../assets/_temp/tiles/cotto-terracotta/CT-1001-face.webp"
+    texture: "../../assets/_temp/tiles/cotto-terracotta/CT-1001-texture.webp"
     finishes: ["rustic", "matt"]
     sizes: ["300x300", "400x400"]
     application: "floor"
@@ -19,6 +22,8 @@ colours:
     code: "CT-1002"
     family: "brown"
     hex: "#9E5B43"
+    tileFace: "../../assets/_temp/tiles/cotto-terracotta/CT-1002-face.webp"
+    texture: "../../assets/_temp/tiles/cotto-terracotta/CT-1002-texture.webp"
     finishes: ["rustic"]
     sizes: ["300x300", "400x400"]
     application: "floor"
@@ -27,6 +32,8 @@ colours:
     code: "CT-1003"
     family: "beige"
     hex: "#D2B28F"
+    tileFace: "../../assets/_temp/tiles/cotto-terracotta/CT-1003-face.webp"
+    texture: "../../assets/_temp/tiles/cotto-terracotta/CT-1003-texture.webp"
     finishes: ["rustic", "matt"]
     sizes: ["300x300"]
     application: "floor"
@@ -35,6 +42,8 @@ colours:
     code: "CT-1004"
     family: "brown"
     hex: "#8A4B36"
+    tileFace: "../../assets/_temp/tiles/cotto-terracotta/CT-1004-face.webp"
+    texture: "../../assets/_temp/tiles/cotto-terracotta/CT-1004-texture.webp"
     finishes: ["rustic"]
     sizes: ["300x300", "400x400"]
     application: "floor"
