@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Temporary demo visualizer, embedded on /visualizer. Copied from docs/tessera_360_3d_home_interior_tile_visualizer_temporary.html with branding text changed only (DECISIONS.md). -->
+<!-- Temporary demo visualizer, embedded on /visualizer. Copied from docs/tessera_360_3d_home_interior_tile_visualizer_temporary.html with branding, plain-word labels and a bottom action bar changed (DECISIONS.md → 3D Visualizer page). -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -109,7 +109,8 @@
     body.photo-mode .studio-topbar,
     body.photo-mode .dock-panel,
     body.photo-mode .camera-dock,
-    body.photo-mode .compass-hud {
+    body.photo-mode .compass-hud,
+    body.photo-mode .action-bar {
       opacity: 0;
       pointer-events: none;
       transform: translateY(-8px);
@@ -341,7 +342,7 @@
     .dock-panel {
       position: fixed;
       top: 74px;
-      bottom: 68px;
+      bottom: 136px;
       background: var(--bg-glass);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
@@ -710,7 +711,7 @@
     /* Bottom Inside-360° Standing Points & Rotation Bar */
     .camera-dock {
       position: fixed;
-      bottom: 12px;
+      bottom: 80px;
       left: 50%;
       transform: translateX(-50%);
       background: var(--bg-glass);
@@ -734,6 +735,91 @@
       height: 18px;
       background: var(--border-subtle);
       margin: 0 4px;
+    }
+
+    /* Bottom action bar (Sri Skanda). Buttons are 44px tall for touch. Only opacity and
+       transform animate, with the site's easing; reduced motion turns that off. */
+    .action-bar {
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      min-height: 56px;
+      padding: 6px 8px;
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-studio);
+      z-index: 19;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      transition: opacity 0.3s cubic-bezier(.22, 1, .36, 1), transform 0.3s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .action-group,
+    .site-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .site-actions[hidden],
+    .act-btn[hidden] {
+      display: none;
+    }
+
+    .act-btn {
+      min-height: 44px;
+      min-width: 44px;
+      padding: 0 14px;
+      justify-content: center;
+      gap: 8px;
+      font-size: 13px;
+      text-decoration: none;
+      transition: opacity 0.16s cubic-bezier(.22, 1, .36, 1), transform 0.16s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .act-btn:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
+    .act-btn svg {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+      flex-shrink: 0;
+    }
+
+    .act-save[aria-pressed="true"] svg {
+      fill: currentColor;
+    }
+
+    .act-primary {
+      background: #123B32;
+      border-color: rgba(212, 175, 55, 0.55);
+      color: #F8F6EF;
+      padding: 0 22px;
+    }
+
+    .act-primary:hover:not(:disabled) {
+      background: #184a3f;
+      border-color: #D4AF37;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .action-bar,
+      .act-btn {
+        transition: none;
+      }
+      .act-btn:active:not(:disabled) {
+        transform: none;
+      }
     }
 
     /* Status Toast Pill */
@@ -844,18 +930,41 @@
       .compass-hud { display: none; }
       .left-dock {
         top: auto;
-        bottom: 64px;
+        bottom: 128px;
         left: 10px;
         right: 10px;
         width: auto;
-        height: 195px;
+        height: 160px;
       }
       .right-dock {
         top: 68px;
         right: 10px;
         width: 270px;
-        bottom: 266px;
+        bottom: 298px;
       }
+      .action-bar {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+      }
+      .camera-dock { bottom: 74px; }
+      /* Icons only for the room actions; our actions keep their words. */
+      .action-group:first-child .act-label,
+      #btn-capture .act-label { display: none; }
+      .act-btn { padding: 0 12px; }
+    }
+
+    @media (max-width: 600px) {
+      .action-bar { gap: 4px; padding: 4px 6px; }
+      .action-group, .site-actions { gap: 4px; }
+      .act-redo { display: none; }
+      #btn-save-label { display: none; }
+      .act-primary { padding: 0 16px; }
+    }
+
+    /* Small phones: Save picture makes way so Save, WhatsApp and Enquire fit. */
+    @media (max-width: 440px) {
+      #btn-capture { display: none; }
     }
   </style>
 </head>
@@ -868,25 +977,25 @@
   <div class="vignette-overlay"></div>
 
   <!-- Exit Fullscreen Photo Mode Button -->
-  <button class="exit-photo-btn" id="btn-exit-photo">&#10005; Exit Photo Mode (Esc)</button>
+  <button class="exit-photo-btn" id="btn-exit-photo">&#10005; Show controls (Esc)</button>
 
   <!-- Live 360° Compass & Optical Lens HUD -->
   <div class="compass-hud">
     <div class="compass-pill">
-      <span>360° INSIDE VIEW</span>
-      <span class="compass-dir" id="compass-readout">NORTH • 0°</span>
+      <span>LOOK AROUND</span>
+      <span class="compass-dir" id="compass-readout">Facing north</span>
     </div>
     <div class="dock-sep"></div>
     <div class="fov-badge">
-      <span>Lens FOV (Scroll to Zoom):</span>
-      <strong id="hud-fov-label">62° Wide</strong>
+      <span>Zoom (scroll):</span>
+      <strong id="hud-fov-label">Wide</strong>
     </div>
   </div>
 
   <!-- Status Toast -->
   <div class="toast-pill" id="toast-pill">
     <span class="toast-dot"></span>
-    <span id="toast-text">Standing Inside Center (360° Look-Around Ready)</span>
+    <span id="toast-text">Drag to look around the room.</span>
   </div>
 
   <!-- Top Studio Bar -->
@@ -901,59 +1010,56 @@
 
     <!-- Lighting Mood Switcher -->
     <div class="toolbar-group">
-      <span class="toolbar-label">Lighting</span>
-      <button class="seg-btn active" data-mood="golden">&#9728; Golden Hour Sunbeams</button>
-      <button class="seg-btn" data-mood="daylight">&#9729; High-Noon Daylight</button>
-      <button class="seg-btn" data-mood="midnight">&#9790; Candlelit Evening Spa</button>
+      <span class="toolbar-label">Light</span>
+      <button class="seg-btn" data-mood="daylight">&#9729; Day</button>
+      <button class="seg-btn active" data-mood="golden">&#9728; Evening</button>
+      <button class="seg-btn" data-mood="midnight">&#9790; Night</button>
     </div>
 
     <!-- Global Metal Hardware Switcher -->
     <div class="toolbar-group">
-      <span class="toolbar-label">Hardware</span>
+      <span class="toolbar-label">Taps &amp; fittings</span>
       <button class="seg-btn active" data-metal="brass">
-        <span class="metal-dot" style="background:#d8a95c;"></span>Brushed Brass
+        <span class="metal-dot" style="background:#d8a95c;"></span>Brass
       </button>
       <button class="seg-btn" data-metal="black">
-        <span class="metal-dot" style="background:#1c1e22;"></span>Matte Black
+        <span class="metal-dot" style="background:#1c1e22;"></span>Black
       </button>
       <button class="seg-btn" data-metal="chrome">
-        <span class="metal-dot" style="background:#eef2f6;"></span>Mirror Chrome
+        <span class="metal-dot" style="background:#eef2f6;"></span>Chrome
       </button>
     </div>
 
     <!-- Render Pass / Diagnostic Mode -->
     <div class="toolbar-group">
-      <span class="toolbar-label">Pass</span>
-      <button class="seg-btn active" data-pass="pbr">Photoreal PBR</button>
-      <button class="seg-btn" data-pass="normal">Normal Map</button>
-      <button class="seg-btn" data-pass="roughness">Roughness</button>
-      <button class="seg-btn" data-pass="clay">Clay</button>
+      <span class="toolbar-label">Show</span>
+      <button class="seg-btn active" data-pass="pbr">Real look</button>
+      <button class="seg-btn" data-pass="normal">Bumps</button>
+      <button class="seg-btn" data-pass="roughness">Shine</button>
+      <button class="seg-btn" data-pass="clay">Plain</button>
     </div>
 
     <!-- Top Right Studio Actions -->
     <div class="top-actions">
-      <button class="btn" id="btn-undo" title="Undo (Ctrl+Z)" disabled>&#8630;</button>
-      <button class="btn" id="btn-redo" title="Redo (Ctrl+Y)" disabled>&#8631;</button>
-      <button class="btn active" id="btn-quality" title="Toggle GTAO + Bloom + Planar Mirror">GTAO HQ</button>
-      <button class="btn" id="btn-spec" title="Architectural Schedule">&#9776; Schedule</button>
-      <button class="btn" id="btn-photo-mode" title="Hide UI for Clean 360° View">&#128065; Hide UI</button>
-      <button class="btn btn-gold" id="btn-capture" title="Render High-Res PNG">&#128247; Snapshot</button>
+      <button class="btn active" id="btn-quality" title="Turn shadows, glow and mirror reflections on or off">Best quality</button>
+      <button class="btn" id="btn-spec" title="Tiles and quantities for this room">&#9776; Tile list</button>
+      <button class="btn" id="btn-photo-mode" title="Hide the controls to see the whole room">&#128065; Hide controls</button>
     </div>
   </header>
 
   <!-- Left Dock: 7 Surface Zones & 8 Hero Materials -->
   <aside class="dock-panel left-dock">
     <div class="dock-header">
-      <span>1. 360° Room Zones (7)</span>
-      <span class="dock-badge">Click Any Surface</span>
+      <span>1. Choose a surface</span>
+      <span class="dock-badge">Or tap it in the room</span>
     </div>
     <div class="dock-scroll">
       <div class="zone-grid" id="zone-list"></div>
 
       <div>
         <div class="sec-title">
-          <span>2. Curated Hero Tiles (8)</span>
-          <span style="color:var(--accent); font-size:9px;">Sobel Normal + Bevels</span>
+          <span>2. Choose a tile</span>
+          <span style="color:var(--accent); font-size:9px;">8 sample tiles</span>
         </div>
         <div class="swatch-grid" id="swatch-grid"></div>
       </div>
@@ -963,21 +1069,21 @@
   <!-- Right Dock: Surface PBR & Optical Lens Inspector -->
   <aside class="dock-panel right-dock">
     <div class="dock-header">
-      <span>3. Surface PBR Inspector</span>
-      <span class="dock-badge" id="active-zone-badge">North Shower Wall</span>
+      <span>3. Adjust the look</span>
+      <span class="dock-badge" id="active-zone-badge">Shower and bath wall</span>
     </div>
     <div class="dock-scroll">
       <!-- Tile vs Matte Wall Paint Toggle for Walls -->
       <div id="wall-mode-wrap" style="display:none;">
         <div class="mode-tabs">
-          <button class="mode-tab active" id="tab-mode-tile">Architectural Tile / Slab</button>
-          <button class="mode-tab" id="tab-mode-paint">Matte Wall Paint (6)</button>
+          <button class="mode-tab active" id="tab-mode-tile">Tiles</button>
+          <button class="mode-tab" id="tab-mode-paint">Paint</button>
         </div>
       </div>
 
       <!-- Matte Wall Paint Selector -->
       <div id="plaster-wrap" class="control-box" style="display:none;">
-        <div class="sec-title"><span>Select Architectural Matte Paint</span></div>
+        <div class="sec-title"><span>Choose a paint colour</span></div>
         <div class="swatch-dots" id="plaster-dots"></div>
       </div>
 
@@ -985,28 +1091,28 @@
       <div id="tile-controls-wrap" class="control-box">
         <div class="ctrl-row">
           <div class="ctrl-head">
-            <span>Physical Tile Format (mm)</span>
-            <strong id="lbl-size">600×1200 mm</strong>
+            <span>Tile size (mm)</span>
+            <strong id="lbl-size">600 × 1200 mm</strong>
           </div>
           <div class="opt-grid" id="size-grid"></div>
         </div>
 
         <div class="ctrl-row">
           <div class="ctrl-head">
-            <span>Bond / Installation Pattern</span>
-            <strong id="lbl-pattern">GRID</strong>
+            <span>Laying pattern</span>
+            <strong id="lbl-pattern">Straight</strong>
           </div>
           <div class="opt-grid" id="pattern-grid" style="grid-template-columns: repeat(4, 1fr);">
-            <button class="opt-pill active" data-pattern="grid">Grid</button>
-            <button class="opt-pill" data-pattern="brick">1/2 Brick</button>
-            <button class="opt-pill" data-pattern="third">1/3 Offset</button>
-            <button class="opt-pill" data-pattern="herringbone">Herring</button>
+            <button class="opt-pill active" data-pattern="grid">Straight</button>
+            <button class="opt-pill" data-pattern="brick">&frac12; offset</button>
+            <button class="opt-pill" data-pattern="third">&#8531; offset</button>
+            <button class="opt-pill" data-pattern="herringbone">Herringbone</button>
           </div>
         </div>
 
         <div class="ctrl-row">
           <div class="ctrl-head">
-            <span>Rotation &amp; Surface Finish</span>
+            <span>Turn the tiles, and finish</span>
           </div>
           <div style="display:grid; grid-template-columns: 1fr 1.55fr; gap:6px;">
             <div class="opt-grid" id="rot-grid" style="grid-template-columns: repeat(3, 1fr);">
@@ -1015,17 +1121,17 @@
               <button class="opt-pill" data-rot="90">90°</button>
             </div>
             <div class="opt-grid" id="finish-grid" style="grid-template-columns: repeat(2, 1fr);">
-              <button class="opt-pill active" data-finish="polished">Polished Mirror</button>
-              <button class="opt-pill" data-finish="honed">Satin Honed</button>
-              <button class="opt-pill" data-finish="matte">Natural Matte</button>
-              <button class="opt-pill" data-finish="relief">Brushed Relief</button>
+              <button class="opt-pill active" data-finish="polished">Glossy</button>
+              <button class="opt-pill" data-finish="honed">Satin</button>
+              <button class="opt-pill" data-finish="matte">Matt</button>
+              <button class="opt-pill" data-finish="relief">Textured</button>
             </div>
           </div>
         </div>
 
         <div class="ctrl-row">
           <div class="ctrl-head">
-            <span>Grout Joint Width (0–10 mm)</span>
+            <span>Gap between tiles</span>
             <strong id="lbl-grout-mm">2.0 mm</strong>
           </div>
           <input type="range" id="slider-grout" min="0.0" max="10.0" step="0.5" value="2.0" />
@@ -1033,15 +1139,15 @@
 
         <div class="ctrl-row">
           <div class="ctrl-head">
-            <span>Mortar / Grout Color (6)</span>
-            <strong id="lbl-grout-name">Warm Limestone</strong>
+            <span>Gap colour</span>
+            <strong id="lbl-grout-name">Beige</strong>
           </div>
           <div class="swatch-dots" id="grout-dots"></div>
         </div>
 
         <div class="ctrl-row">
           <div class="ctrl-head">
-            <span>3D Bevel &amp; Lippage Depth</span>
+            <span>Edge depth</span>
             <strong id="lbl-bump">1.25×</strong>
           </div>
           <input type="range" id="slider-bump" min="0.2" max="3.0" step="0.05" value="1.25" />
@@ -1049,7 +1155,7 @@
 
         <div class="ctrl-row">
           <div class="ctrl-head">
-            <span>Specular Clearcoat Gloss</span>
+            <span>Shine</span>
             <strong id="lbl-clearcoat">85%</strong>
           </div>
           <input type="range" id="slider-clearcoat" min="0" max="100" step="5" value="85" />
@@ -1059,25 +1165,24 @@
       <!-- Optical Lens Zoom (FOV) & Exposure Controls -->
       <div class="control-box">
         <div class="sec-title" style="margin-bottom:0;">
-          <span>Inside 360° Optical Lens &amp; Exposure</span>
+          <span>Camera</span>
         </div>
         <div class="ctrl-row">
           <div class="ctrl-head">
-            <span>Optical Lens Zoom (FOV 32°–85°)</span>
-            <strong id="lbl-fov">62°</strong>
+            <span>Zoom</span>
+            <strong id="lbl-fov">Wide</strong>
           </div>
           <input type="range" id="slider-fov" min="32" max="85" step="1" value="62" />
         </div>
         <div class="ctrl-row">
           <div class="ctrl-head">
-            <span>ACES Filmic Exposure</span>
-            <strong id="lbl-exposure">1.10 EV</strong>
+            <span>Brightness</span>
+            <strong id="lbl-exposure">110%</strong>
           </div>
           <input type="range" id="slider-exposure" min="0.55" max="1.75" step="0.05" value="1.10" />
         </div>
         <div style="display:flex; gap:6px; margin-top:2px;">
-          <button class="btn" id="btn-reset-zone" style="flex:1; justify-content:center;">Reset Zone</button>
-          <button class="btn" id="btn-reset-all" style="flex:1; justify-content:center;">Reset Room</button>
+          <button class="btn" id="btn-reset-zone" style="flex:1; justify-content:center;">Reset this surface</button>
         </div>
       </div>
     </div>
@@ -1085,27 +1190,50 @@
 
   <!-- Bottom HUD: Strictly Inside Standing Spots & 360° Quick Turn Controls -->
   <nav class="camera-dock">
-    <span class="toolbar-label">Inside Standing Spot</span>
-    <button class="seg-btn active" data-spot="center">&#9673; Room Center (360°)</button>
-    <button class="seg-btn" data-spot="vanity">Vanity Station</button>
-    <button class="seg-btn" data-spot="shower">Inside Shower</button>
-    <button class="seg-btn" data-spot="tub">Bathtub Side</button>
-    <button class="seg-btn" data-spot="door">Entrance Door</button>
+    <span class="toolbar-label">Stand at</span>
+    <button class="seg-btn active" data-spot="center">&#9673; Middle</button>
+    <button class="seg-btn" data-spot="vanity">Basin</button>
+    <button class="seg-btn" data-spot="shower">Shower</button>
+    <button class="seg-btn" data-spot="tub">Bath</button>
+    <button class="seg-btn" data-spot="door">Door</button>
     <div class="dock-sep"></div>
-    <span class="toolbar-label">360° Turn</span>
-    <button class="seg-btn" id="btn-turn-left" title="Look Left 45°">&#8634; Left 45°</button>
-    <button class="seg-btn" id="btn-turn-right" title="Look Right 45°">Right 45° &#8635;</button>
-    <button class="seg-btn" id="btn-turn-180" title="Flip View 180°">&#8644; Flip 180°</button>
-    <button class="seg-btn" id="btn-autopan" title="Toggle Gentle 360° Panorama Rotation">&#10227; Auto-360°</button>
+    <span class="toolbar-label">Turn</span>
+    <button class="seg-btn" id="btn-turn-left" title="Look left">&#8634; Left</button>
+    <button class="seg-btn" id="btn-turn-right" title="Look right">Right &#8635;</button>
+    <button class="seg-btn" id="btn-turn-180" title="Look behind you">&#8644; Turn around</button>
+    <button class="seg-btn" id="btn-autopan" title="Turn slowly on the spot">&#10227; Slow spin</button>
   </nav>
+
+  <!-- Bottom action bar (Sri Skanda): room actions left, our actions right. Save, WhatsApp and
+       Enquire only appear when the website page around this embed answers (see VisualizerEmbed.astro). -->
+  <div class="action-bar" id="action-bar">
+    <div class="action-group">
+      <button class="btn act-btn" id="btn-undo" title="Undo (Ctrl+Z)" aria-label="Undo" disabled>&#8630;<span class="act-label">Undo</span></button>
+      <button class="btn act-btn act-redo" id="btn-redo" title="Redo (Ctrl+Y)" aria-label="Redo" disabled>&#8631;<span class="act-label">Redo</span></button>
+      <button class="btn act-btn" id="btn-reset-all" title="Put every surface back how it started" aria-label="Start again">&#10226;<span class="act-label">Start again</span></button>
+    </div>
+    <div class="action-group">
+      <button class="btn act-btn" id="btn-capture" title="Download a picture of this view" aria-label="Save picture">&#128247;<span class="act-label">Save picture</span></button>
+      <div class="site-actions" id="site-actions" hidden>
+        <button class="btn act-btn act-save" id="btn-save" aria-pressed="false">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>
+          <span class="act-label" id="btn-save-label">Save to My Selection</span>
+        </button>
+        <a class="btn act-btn act-wa" id="btn-whatsapp" href="#" target="_blank" rel="noopener" aria-label="Ask about this tile on WhatsApp" title="Ask on WhatsApp" hidden>
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3z"/><path d="M9.2 8.2c-.4 0-.9.4-.9 1.2 0 2.6 3.7 6.3 6.3 6.3.8 0 1.2-.5 1.2-.9v-.9l-1.9-.9-.8.9c-1-.4-2.1-1.5-2.5-2.5l.9-.8-.9-1.9z"/></svg>
+        </a>
+        <button class="btn act-btn act-primary" id="btn-enquire">Enquire</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Architectural Schedule Modal -->
   <div class="modal-backdrop" id="spec-modal">
     <div class="modal-card">
       <div class="modal-header">
         <div>
-          <div style="font-size:14px; font-weight:700; color:#fff;">360° ARCHITECTURAL TILE &amp; FINISH SCHEDULE</div>
-          <div style="font-size:11px; color:var(--text-secondary);">Enclosed 4-Wall Luxury Spa Sanctuary (5.6m × 4.6m × 3.0m) — Includes 10% Wastage</div>
+          <div style="font-size:14px; font-weight:700; color:#fff;">Tile list for this room</div>
+          <div style="font-size:11px; color:var(--text-secondary);">Sample bathroom, 5.6 × 4.6 m and 3 m high. Quantities include 10% extra for cutting.</div>
         </div>
         <button class="btn" id="btn-close-spec">&#10005; Close</button>
       </div>
@@ -1202,7 +1330,7 @@
         id: 'calacatta_viola',
         sku: 'TS-MBL-01',
         name: 'Calacatta Viola Breccia',
-        subtitle: 'Cabernet & Gold Brecciated Marble',
+        subtitle: 'Purple marble with gold veins',
         sizes: ['600x1200', '1200x1200', '600x600', '300x600'],
         defaultSize: '600x1200',
         defaultFinish: 'polished',
@@ -1213,7 +1341,7 @@
         id: 'statuario_extra',
         sku: 'TS-MBL-02',
         name: 'Statuario Venato Extra',
-        subtitle: 'Carrara White Structural Marble',
+        subtitle: 'White marble with grey veins',
         sizes: ['600x1200', '1200x1200', '600x600', '300x600'],
         defaultSize: '600x1200',
         defaultFinish: 'polished',
@@ -1224,7 +1352,7 @@
         id: 'nero_dorado',
         sku: 'TS-MBL-03',
         name: 'Nero Marquina Dorado',
-        subtitle: 'Obsidian Black & Bronze Vein Marble',
+        subtitle: 'Black marble with gold veins',
         sizes: ['600x1200', '1200x1200', '600x600', '300x600'],
         defaultSize: '600x1200',
         defaultFinish: 'polished',
@@ -1235,7 +1363,7 @@
         id: 'emerald_zellige',
         sku: 'TS-ZEL-04',
         name: 'Artisanal Emerald Zellige',
-        subtitle: 'Hand-Cut Moroccan Glazed Clay',
+        subtitle: 'Handmade green glazed tile',
         sizes: ['100x100', '75x300', '300x600'],
         defaultSize: '100x100',
         defaultFinish: 'polished',
@@ -1246,7 +1374,7 @@
         id: 'travertino_silver',
         sku: 'TS-STN-05',
         name: 'Travertino Romano Silver',
-        subtitle: 'Vein-Cut Porous Sedimentary Stone',
+        subtitle: 'Silver-grey natural stone',
         sizes: ['600x1200', '1200x1200', '600x600', '300x600', '75x300'],
         defaultSize: '600x1200',
         defaultFinish: 'honed',
@@ -1257,7 +1385,7 @@
         id: 'ceppo_terrazzo',
         sku: 'TS-TRZ-06',
         name: 'Ceppo di Gré Terrazzo',
-        subtitle: 'Milanese Mineral Clast Conglomerate',
+        subtitle: 'Stone chips set in cement',
         sizes: ['600x600', '600x1200', '1200x1200', '300x600'],
         defaultSize: '600x600',
         defaultFinish: 'honed',
@@ -1268,7 +1396,7 @@
         id: 'smoked_oak',
         sku: 'TS-WOD-07',
         name: 'Nordic Smoked Oak Plank',
-        subtitle: 'Brushed Cathedral Timber Plank',
+        subtitle: 'Wood-look plank',
         sizes: ['200x1200', '75x300', '300x600'],
         defaultSize: '200x1200',
         defaultFinish: 'honed',
@@ -1279,7 +1407,7 @@
         id: 'basaltina_fluted',
         sku: 'TS-FLT-08',
         name: 'Basaltina 3D Fluted Stone',
-        subtitle: 'Carved Volcanic Ribbed Relief',
+        subtitle: 'Stone with raised ribs',
         sizes: ['600x1200', '600x600', '300x600'],
         defaultSize: '600x1200',
         defaultFinish: 'relief',
@@ -1288,27 +1416,32 @@
       }
     ];
 
+    // Plain labels for what the code stores as ids, e.g. '600x1200' → '600 × 1200'.
+    const FINISH_LABELS = { polished: 'Glossy', honed: 'Satin', matte: 'Matt', relief: 'Textured' };
+    const PATTERN_LABELS = { grid: 'Straight', brick: 'Half offset', third: 'Third offset', herringbone: 'Herringbone' };
+    const sizeLabel = (size) => size.replace('x', ' × ');
+
     const ALL_FORMATS = [
       '600x1200', '1200x1200', '600x600', '300x600',
       '200x1200', '100x100', '75x300'
     ];
 
     const GROUT_PALETTE = [
-      { id: 'alabaster', name: 'Alabaster White', hex: '#f1efe9' },
-      { id: 'limestone', name: 'Warm Limestone', hex: '#d8cfc0' },
-      { id: 'silver', name: 'Silver Grey', hex: '#a6acb3' },
-      { id: 'anthracite', name: 'Anthracite', hex: '#383c42' },
-      { id: 'espresso', name: 'Deep Espresso', hex: '#241d19' },
-      { id: 'terracotta', name: 'Terracotta Clay', hex: '#9e5b43' }
+      { id: 'alabaster', name: 'White', hex: '#f1efe9' },
+      { id: 'limestone', name: 'Beige', hex: '#d8cfc0' },
+      { id: 'silver', name: 'Light grey', hex: '#a6acb3' },
+      { id: 'anthracite', name: 'Dark grey', hex: '#383c42' },
+      { id: 'espresso', name: 'Dark brown', hex: '#241d19' },
+      { id: 'terracotta', name: 'Terracotta', hex: '#9e5b43' }
     ];
 
     const PLASTER_PALETTE = [
-      { id: 'plaster_travertine', sku: 'MP-01', name: 'Chalk Travertine', hex: '#ece7df' },
-      { id: 'plaster_oat', sku: 'MP-02', name: 'Warm Tuscan Oat', hex: '#d7cbb8' },
-      { id: 'plaster_sage', sku: 'MP-03', name: 'Olive Mist Matte', hex: '#aeb8ad' },
-      { id: 'plaster_greige', sku: 'MP-04', name: 'Milanese Greige', hex: '#948d84' },
-      { id: 'plaster_clay', sku: 'MP-05', name: 'Sienna Earth', hex: '#b67d67' },
-      { id: 'plaster_obsidian', sku: 'MP-06', name: 'Charcoal Tadelakt', hex: '#2b2e33' }
+      { id: 'plaster_travertine', sku: 'MP-01', name: 'Chalk white', hex: '#ece7df' },
+      { id: 'plaster_oat', sku: 'MP-02', name: 'Oat', hex: '#d7cbb8' },
+      { id: 'plaster_sage', sku: 'MP-03', name: 'Sage green', hex: '#aeb8ad' },
+      { id: 'plaster_greige', sku: 'MP-04', name: 'Greige', hex: '#948d84' },
+      { id: 'plaster_clay', sku: 'MP-05', name: 'Clay', hex: '#b67d67' },
+      { id: 'plaster_obsidian', sku: 'MP-06', name: 'Charcoal', hex: '#2b2e33' }
     ];
 
     /* ============================================================================
@@ -1754,7 +1887,7 @@
     function createInitialZones() {
       return {
         MAIN_FLOOR: {
-          name: 'Main Sanctuary Floor',
+          name: 'Main floor',
           type: 'floor',
           area: 21.8,
           mode: 'tile',
@@ -1770,7 +1903,7 @@
           plasterId: 'plaster_travertine'
         },
         SHOWER_FLOOR: {
-          name: 'Wet-Room Shower Pan',
+          name: 'Shower floor',
           type: 'floor',
           area: 3.9,
           mode: 'tile',
@@ -1786,7 +1919,7 @@
           plasterId: 'plaster_travertine'
         },
         WALL_NORTH: {
-          name: 'North Wall (Shower & Tub)',
+          name: 'Shower and bath wall',
           type: 'wall',
           area: 16.8,
           mode: 'tile',
@@ -1802,7 +1935,7 @@
           plasterId: 'plaster_obsidian'
         },
         WALL_WEST: {
-          name: 'West Wall (Fluted Vanity)',
+          name: 'Basin wall',
           type: 'wall',
           area: 13.8,
           mode: 'tile',
@@ -1818,7 +1951,7 @@
           plasterId: 'plaster_travertine'
         },
         WALL_EAST: {
-          name: 'East Wall (Louver Window)',
+          name: 'Window wall',
           type: 'wall',
           area: 11.2,
           mode: 'tile',
@@ -1834,7 +1967,7 @@
           plasterId: 'plaster_oat'
         },
         WALL_SOUTH: {
-          name: 'South Wall (Entrance & Niche)',
+          name: 'Door wall',
           type: 'wall',
           area: 14.5,
           mode: 'tile',
@@ -1850,7 +1983,7 @@
           plasterId: 'plaster_travertine'
         },
         NICHE_INSET: {
-          name: 'Backlit Shower Niche',
+          name: 'Shower shelf',
           type: 'wall',
           area: 1.5,
           mode: 'tile',
@@ -1945,11 +2078,11 @@
 
     // Internal Standing Positions (All strictly inside the 5.6m x 4.6m room)
     const STANDING_SPOTS = {
-      center: { name: 'Room Center (360°)', x: 0.0,  z: 0.0,   lookYaw: 0 },
-      vanity: { name: 'Vanity Station',     x: -1.15, z: -0.15, lookYaw: Math.PI / 2 },
-      shower: { name: 'Inside Shower',      x: -1.15, z: -1.15, lookYaw: 0 },
-      tub:    { name: 'Bathtub Side',       x: 0.72,  z: -0.35, lookYaw: -Math.PI / 3 },
-      door:   { name: 'Entrance Door',      x: 0.0,   z: 1.25,  lookYaw: Math.PI }
+      center: { name: 'the middle of the room', x: 0.0,  z: 0.0,   lookYaw: 0 },
+      vanity: { name: 'the basin',          x: -1.15, z: -0.15, lookYaw: Math.PI / 2 },
+      shower: { name: 'the shower',         x: -1.15, z: -1.15, lookYaw: 0 },
+      tub:    { name: 'the bath',           x: 0.72,  z: -0.35, lookYaw: -Math.PI / 3 },
+      door:   { name: 'the door',           x: 0.0,   z: 1.25,  lookYaw: Math.PI }
     };
 
     const spotAnim = {
@@ -1993,7 +2126,7 @@
         btn.classList.toggle('active', btn.dataset.spot === spotKey);
       });
       updateHotspotVisibility();
-      showToast(`Standing Spot: ${spot.name} — Drag 360° to Look Around`);
+      showToast(`Standing at ${spot.name}. Drag to look around.`);
     }
 
     function rotateLookByAngle(deltaRad) {
@@ -2021,12 +2154,12 @@
 
     function updateFovLabels(fovVal) {
       const rounded = Math.round(fovVal);
-      let desc = 'Standard';
-      if (rounded <= 42) desc = 'Telephoto Macro';
-      else if (rounded >= 70) desc = 'Ultra-Wide';
-      else if (rounded >= 58) desc = 'Wide Angle';
-      document.getElementById('lbl-fov').textContent = `${rounded}°`;
-      document.getElementById('hud-fov-label').textContent = `${rounded}° ${desc}`;
+      let desc = 'Normal';
+      if (rounded <= 42) desc = 'Close up';
+      else if (rounded >= 70) desc = 'Very wide';
+      else if (rounded >= 58) desc = 'Wide';
+      document.getElementById('lbl-fov').textContent = desc;
+      document.getElementById('hud-fov-label').textContent = desc;
     }
 
     // Live 360° Compass Readout
@@ -2038,9 +2171,9 @@
       if (deg < 0) deg += 360;
       const rounded = Math.round(deg) % 360;
 
-      const dirs = ['NORTH', 'NE', 'EAST', 'SE', 'SOUTH', 'SW', 'WEST', 'NW'];
+      const dirs = ['north', 'north-east', 'east', 'south-east', 'south', 'south-west', 'west', 'north-west'];
       const idx = Math.round(rounded / 45) % 8;
-      document.getElementById('compass-readout').textContent = `${dirs[idx]} • ${rounded}°`;
+      document.getElementById('compass-readout').textContent = `Facing ${dirs[idx]}`;
     }
 
     // PMREM Environment + Live Room 512x512 CubeCamera Probe at Room Center
@@ -3169,7 +3302,7 @@
     function selectZone(zoneKey) {
       studioState.selectedZone = zoneKey;
       const z = studioState.zones[zoneKey];
-      showToast(`Selected Surface: ${z.name}`);
+      showToast(`Now changing: ${z.name}`);
       pulseZoneHighlight(zoneKey);
       syncStudioUI();
     }
@@ -3177,7 +3310,13 @@
     /* ============================================================================
      * 10. UI SYNCHRONIZATION & EVENT HANDLERS
      * ============================================================================ */
+    // Every change redraws the panels, then tells the website page which tile is in view.
     function syncStudioUI() {
+      renderStudioUI();
+      reportLook();
+    }
+
+    function renderStudioUI() {
       const activeKey = studioState.selectedZone;
       const activeZ = studioState.zones[activeKey];
       document.getElementById('active-zone-badge').textContent = activeZ.name;
@@ -3194,12 +3333,12 @@
         if (zCfg.mode === 'paint') {
           const pl = PLASTER_PALETTE.find(p => p.id === zCfg.plasterId) || PLASTER_PALETTE[0];
           thumbStyle = `background-color:${pl.hex};`;
-          desc = `Matte Paint • ${pl.name}`;
+          desc = `Paint · ${pl.name}`;
         } else {
           const t = HERO_TILES.find(x => x.id === zCfg.tileId) || HERO_TILES[0];
           const url = pbrSynth.getThumbnailDataURL(t.id);
           thumbStyle = `background-image:url('${url}');`;
-          desc = `${t.name} • ${zCfg.size}mm`;
+          desc = `${t.name} · ${sizeLabel(zCfg.size)} mm`;
         }
 
         row.innerHTML = `
@@ -3210,7 +3349,7 @@
               <div class="zone-desc">${desc}</div>
             </div>
           </div>
-          <span style="font-size:9.5px; color:var(--text-muted);">${zCfg.area}m²</span>
+          <span style="font-size:9.5px; color:var(--text-muted); white-space:nowrap; flex-shrink:0;">${zCfg.area} m²</span>
         `;
         row.addEventListener('click', () => selectZone(zKey));
         zList.appendChild(row);
@@ -3227,7 +3366,7 @@
         card.innerHTML = `
           <div class="swatch-preview" style="background-image:url('${url}');">
             <span class="sku-pill">${tile.sku}</span>
-            <span class="finish-pill">${tile.defaultFinish}</span>
+            <span class="finish-pill">${FINISH_LABELS[tile.defaultFinish]}</span>
           </div>
           <div class="swatch-info">
             <div class="swatch-name">${tile.name}</div>
@@ -3244,7 +3383,7 @@
           activeZ.clearcoat = tile.defaultClearcoat;
           updateZoneMaterial(activeKey);
           scheduleProbeBake();
-          showToast(`Applied ${tile.name} to ${activeZ.name}`);
+          showToast(`${tile.name} on the ${activeZ.name.toLowerCase()}`);
           syncStudioUI();
         });
         sGrid.appendChild(card);
@@ -3293,7 +3432,7 @@
       const curTile = HERO_TILES.find(t => t.id === activeZ.tileId) || HERO_TILES[0];
 
       // Format Sizes
-      document.getElementById('lbl-size').textContent = `${activeZ.size} mm`;
+      document.getElementById('lbl-size').textContent = `${sizeLabel(activeZ.size)} mm`;
       const sizeGrid = document.getElementById('size-grid');
       sizeGrid.innerHTML = '';
       ALL_FORMATS.forEach(sz => {
@@ -3301,7 +3440,7 @@
         const allowed = curTile.sizes.includes(sz);
         btn.className = `opt-pill ${activeZ.size === sz ? 'active' : ''}`;
         btn.disabled = !allowed;
-        btn.textContent = sz;
+        btn.textContent = sizeLabel(sz);
         btn.addEventListener('click', () => {
           saveUndoSnapshot();
           activeZ.size = sz;
@@ -3312,7 +3451,7 @@
       });
 
       // Bond Pattern
-      document.getElementById('lbl-pattern').textContent = activeZ.pattern.toUpperCase();
+      document.getElementById('lbl-pattern').textContent = PATTERN_LABELS[activeZ.pattern];
       document.querySelectorAll('#pattern-grid .opt-pill').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.pattern === activeZ.pattern);
       });
@@ -3361,7 +3500,7 @@
         document.querySelectorAll('[data-mood]').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         applyLightingMood(btn.dataset.mood);
-        showToast(`Lighting Preset: ${btn.textContent.trim()}`);
+        showToast(`Light: ${btn.textContent.replace(/^\W+/, '').trim()}`);
       });
     });
 
@@ -3375,7 +3514,7 @@
         const mat = hardwareMaterials[studioState.hardware];
         hardwareMeshes.forEach(m => { m.material = mat; });
         scheduleProbeBake();
-        showToast(`Hardware Finish: ${btn.textContent.trim()}`);
+        showToast(`Taps and fittings: ${btn.textContent.trim()}`);
       });
     });
 
@@ -3386,7 +3525,7 @@
         document.querySelectorAll('[data-pass]').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         Object.keys(studioState.zones).forEach(zKey => applyCurrentRenderPassToZone(zKey));
-        showToast(`Diagnostic Pass: ${btn.textContent.trim()}`);
+        showToast(`Showing: ${btn.textContent.trim()}`);
       });
     });
 
@@ -3408,7 +3547,7 @@
     btnAutoPan.addEventListener('click', () => {
       studioState.autoPan = !studioState.autoPan;
       btnAutoPan.classList.toggle('active', studioState.autoPan);
-      showToast(studioState.autoPan ? '360° Auto-Rotation Enabled' : '360° Auto-Rotation Paused');
+      showToast(studioState.autoPan ? 'Turning slowly' : 'Stopped turning');
     });
 
     // Wall Tile vs Matte Paint Tabs
@@ -3510,7 +3649,7 @@
       const val = parseFloat(e.target.value);
       studioState.exposure = val;
       renderer.toneMappingExposure = val;
-      document.getElementById('lbl-exposure').textContent = `${val.toFixed(2)} EV`;
+      document.getElementById('lbl-exposure').textContent = `${Math.round(val * 100)}%`;
     });
 
     // Undo / Redo / Reset
@@ -3525,7 +3664,7 @@
       updateUndoUI();
       applyAllZones();
       syncStudioUI();
-      showToast('Undid last change');
+      showToast('Change undone');
     });
 
     document.getElementById('btn-redo').addEventListener('click', () => {
@@ -3539,7 +3678,7 @@
       updateUndoUI();
       applyAllZones();
       syncStudioUI();
-      showToast('Redid change');
+      showToast('Change redone');
     });
 
     document.getElementById('btn-reset-zone').addEventListener('click', () => {
@@ -3549,7 +3688,7 @@
       updateZoneMaterial(k);
       scheduleProbeBake();
       syncStudioUI();
-      showToast('Zone reset to default');
+      showToast('This surface is back to how it started');
     });
 
     document.getElementById('btn-reset-all').addEventListener('click', () => {
@@ -3557,20 +3696,20 @@
       studioState.zones = JSON.parse(JSON.stringify(studioState.defaultZones));
       applyAllZones();
       syncStudioUI();
-      showToast('Entire 360° Sanctuary reset');
+      showToast('The room is back to how it started');
     });
 
     // GTAO Ultra Quality Toggle
     const btnQuality = document.getElementById('btn-quality');
     btnQuality.addEventListener('click', () => {
       studioState.ultraQuality = !studioState.ultraQuality;
-      btnQuality.textContent = studioState.ultraQuality ? 'GTAO HQ' : '60FPS Perf';
+      btnQuality.textContent = studioState.ultraQuality ? 'Best quality' : 'Faster';
       btnQuality.classList.toggle('active', studioState.ultraQuality);
       if (gtaoPass) gtaoPass.enabled = studioState.ultraQuality;
       bloomPass.enabled = studioState.ultraQuality;
       if (planarMirrorMesh) planarMirrorMesh.visible = studioState.ultraQuality;
       scheduleProbeBake();
-      showToast(studioState.ultraQuality ? 'GTAO + Bloom + Planar Mirror Active' : 'Fast Performance Mode Active');
+      showToast(studioState.ultraQuality ? 'Best quality on' : 'Faster mode on: fewer shadows and reflections');
     });
 
     // Fullscreen Photo Mode
@@ -3589,7 +3728,7 @@
       link.download = `SriSkanda_3D_View_${Date.now()}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
-      showToast('360° Interior Snapshot Saved');
+      showToast('Picture saved');
     });
 
     // Architectural Schedule Modal
@@ -3603,11 +3742,11 @@
             <tr>
               <td><strong>${z.name}</strong></td>
               <td>${pl.sku}</td>
-              <td>${pl.name} (Matte Wall Paint)</td>
-              <td>Seamless Roller/Trowel</td>
-              <td>Matte Mineral</td>
+              <td>${pl.name} (paint)</td>
+              <td>Painted</td>
+              <td>Matt</td>
               <td>${z.area.toFixed(1)} m²</td>
-              <td>${(z.area / 8).toFixed(1)} L</td>
+              <td>${(z.area / 8).toFixed(1)} litres</td>
             </tr>
           `;
         } else {
@@ -3620,10 +3759,10 @@
               <td><strong>${z.name}</strong></td>
               <td><span style="color:var(--accent); font-weight:700;">${t.sku}</span></td>
               <td>${t.name}</td>
-              <td>${z.size} mm (${z.pattern.toUpperCase()})</td>
-              <td>${z.finish.toUpperCase()} • ${z.groutWidth}mm ${g.name}</td>
+              <td>${sizeLabel(z.size)} mm, ${PATTERN_LABELS[z.pattern].toLowerCase()}</td>
+              <td>${FINISH_LABELS[z.finish]}, ${z.groutWidth} mm ${g.name.toLowerCase()} gap</td>
               <td>${z.area.toFixed(1)} m²</td>
-              <td><strong>${pcs} pcs</strong></td>
+              <td><strong>${pcs} tiles</strong></td>
             </tr>
           `;
         }
@@ -3633,13 +3772,13 @@
         <table class="spec-table">
           <thead>
             <tr>
-              <th>360° Sanctuary Zone</th>
-              <th>SKU</th>
-              <th>Material Specification</th>
-              <th>Format &amp; Bond</th>
-              <th>Surface &amp; Joint</th>
-              <th>Net Area</th>
-              <th>Order Qty (+10%)</th>
+              <th>Surface</th>
+              <th>Code</th>
+              <th>Tile or paint</th>
+              <th>Size and pattern</th>
+              <th>Finish and gap</th>
+              <th>Area</th>
+              <th>To order (+10%)</th>
             </tr>
           </thead>
           <tbody>${rows}</tbody>
@@ -3732,13 +3871,104 @@
       }
     }
 
+    /* ============================================================================
+     * 12. SRI SKANDA SITE ACTIONS (Save to My Selection, WhatsApp, Enquire)
+     * The website page around this embed (same origin) owns My Selection, the enquiry
+     * drawer and the WhatsApp number, so this file only sends it the tile in view.
+     *   embed → page: { source: 'ss-viz', type: 'look' | 'save' | 'enquire', item }
+     *   page → embed: { source: 'ss-site', type: 'look-state', id, saved, whatsapp?, notice? }
+     * Opened on its own (no page around it), the three buttons stay hidden.
+     * ============================================================================ */
+    const sitePage = window.parent !== window ? window.parent : null;
+    const siteActions = document.getElementById('site-actions');
+    const btnSave = document.getElementById('btn-save');
+    const btnSaveLabel = document.getElementById('btn-save-label');
+    const btnWhatsApp = document.getElementById('btn-whatsapp');
+    let currentLook = null;
+
+    // Small JPEG of the tile for My Selection and the enquiry (the panel thumbnails are larger PNGs).
+    const smallThumbCache = new Map();
+    function smallThumb(tileId) {
+      if (smallThumbCache.has(tileId)) return smallThumbCache.get(tileId);
+      const size = 48;
+      const c = document.createElement('canvas');
+      c.width = size; c.height = size;
+      const ctx = c.getContext('2d');
+      const img = ctx.createImageData(size, size);
+      for (let py = 0; py < size; py++) {
+        for (let px = 0; px < size; px++) {
+          const p = pbrSynth.evaluateMaterialPixel(tileId, px / size, py / size, 0.5, 1.7);
+          const i = (py * size + px) * 4;
+          img.data[i] = Math.max(0, Math.min(255, p.r));
+          img.data[i + 1] = Math.max(0, Math.min(255, p.g));
+          img.data[i + 2] = Math.max(0, Math.min(255, p.b));
+          img.data[i + 3] = 255;
+        }
+      }
+      ctx.putImageData(img, 0, 0);
+      const url = c.toDataURL('image/jpeg', 0.8);
+      smallThumbCache.set(tileId, url);
+      return url;
+    }
+
+    // The tile on the surface being changed, or null when that surface is painted.
+    function lookItem() {
+      const z = studioState.zones[studioState.selectedZone];
+      if (!z || z.mode !== 'tile') return null;
+      const t = HERO_TILES.find(x => x.id === z.tileId);
+      if (!t) return null;
+      return {
+        id: `viz-${t.id}-${z.size}`,
+        name: t.name,
+        code: t.sku,
+        size: `${sizeLabel(z.size)} mm`,
+        finish: FINISH_LABELS[z.finish],
+        thumb: smallThumb(t.id)
+      };
+    }
+
+    function tellSite(type) {
+      sitePage?.postMessage({ source: 'ss-viz', type, item: currentLook }, location.origin);
+    }
+
+    function setSaved(saved) {
+      const label = saved ? 'Saved to My Selection' : 'Save to My Selection';
+      btnSave.setAttribute('aria-pressed', String(saved));
+      btnSave.setAttribute('aria-label', label);
+      btnSaveLabel.textContent = label;
+    }
+
+    function reportLook() {
+      const next = lookItem();
+      if (next?.id !== currentLook?.id) setSaved(false);
+      currentLook = next;
+      btnSave.disabled = !currentLook;
+      btnSave.title = currentLook ? `Save ${currentLook.name}, ${currentLook.size}` : 'Choose a tile for this surface first';
+      tellSite('look');
+    }
+
+    window.addEventListener('message', (e) => {
+      if (!sitePage || e.source !== sitePage || e.origin !== location.origin) return;
+      const msg = e.data;
+      if (!msg || msg.source !== 'ss-site' || msg.type !== 'look-state') return;
+      siteActions.hidden = false;
+      if (msg.id === (currentLook?.id ?? null)) setSaved(!!msg.saved);
+      const wa = typeof msg.whatsapp === 'string' && msg.whatsapp.startsWith('https://wa.me/') ? msg.whatsapp : '';
+      btnWhatsApp.hidden = !wa;
+      btnWhatsApp.href = wa || '#';
+      if (typeof msg.notice === 'string' && msg.notice) showToast(msg.notice);
+    });
+
+    btnSave.addEventListener('click', () => currentLook && tellSite('save'));
+    document.getElementById('btn-enquire').addEventListener('click', () => tellSite('enquire'));
+
     window.onload = function () {
       buildSpaSanctuaryRoom();
       applyAllZones();
       applyLightingMood('golden');
       setInitialInsideView();
       syncStudioUI();
-      showToast('Standing Inside Room Center — Drag 360° in Any Direction');
+      showToast('You are in the middle of the room. Drag to look around.');
       animate();
     };
   </script>

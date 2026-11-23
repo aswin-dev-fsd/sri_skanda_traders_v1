@@ -325,7 +325,44 @@ const { src } = Astro.props;
 </style>
 
 <script>
+  import { routes } from '@/config/site';
+  import { whatsappUrl } from '@/lib/links';
+  import type { SelectionItem } from '@/lib/types';
+  import { $selection, addItem, isSaved, removeItem, restoreItem } from '@/stores/selection';
+  import { showToast } from '@/scripts/toast';
+
   const READY_TIMEOUT_MS = 20000;
+
+  /** A trimmed string field from the embed's message, or undefined. */
+  const field = (value: unknown, max = 120) =>
+    typeof value === 'string' && value.trim() && value.length <= max ? value.trim() : undefined;
+
+  /**
+   * Rebuilds the tile the embed sent as a My Selection item, keeping only known fields.
+   * @param raw The `item` from an embed message.
+   * @returns The item, or null when it is missing or not a visualizer tile.
+   */
+  const toLook = (raw: unknown): SelectionItem | null => {
+    if (!raw || typeof raw !== 'object') return null;
+    const r = raw as Record<string, unknown>;
+    const id = field(r.id);
+    const name = field(r.name);
+    if (!id?.startsWith('viz-') || !name) return null;
+    const thumb =
+      typeof r.thumb === 'string' && r.thumb.startsWith('data:image/jpeg;base64,') && r.thumb.length < 16000
+        ? r.thumb
+        : undefined;
+    return {
+      id,
+      kind: 'collection',
+      name,
+      code: field(r.code),
+      size: field(r.size),
+      finish: field(r.finish),
+      href: routes.visualizer,
+      thumb,
+    };
+  };
 
   const STORE_KEY = 'ss-viz-3d';
 
@@ -431,8 +468,68 @@ const { src } = Astro.props;
       frame.prepend(iframe);
       watchReady();
     };
+    // The embed's Save, WhatsApp and Enquire buttons (bottom bar) message this page, which owns
+    // My Selection, the enquiry drawer and the WhatsApp number. The embed shows them only once
+    // this page has answered. In full screen the site toast is hidden, so the embed shows it.
+    let look: SelectionItem | null = null;
+    const isFull = () => document.fullscreenElement === frame;
+    const tellEmbed = (notice?: string) => {
+      const showroom = document.documentElement.dataset.mode === 'showroom';
+      const topic = look ? `${[look.name, look.size].filter(Boolean).join(', ')} from the 3D Visualizer` : 'the 3D Visualizer';
+      iframe?.contentWindow?.postMessage(
+        {
+          source: 'ss-site',
+          type: 'look-state',
+          id: look?.id ?? null,
+          saved: !!look && isSaved(look.id),
+          whatsapp: showroom ? undefined : whatsappUrl(topic),
+          notice,
+        },
+        location.origin,
+      );
+    };
+    const notify = (message: string, action?: Parameters<typeof showToast>[1]) => {
+      if (isFull()) tellEmbed(message);
+      else showToast(message, action);
+    };
+
+    window.addEventListener('message', (event) => {
+      if (!iframe || event.source !== iframe.contentWindow || event.origin !== location.origin) return;
+      const msg = event.data as { source?: string; type?: string; item?: unknown } | null;
+      if (msg?.source !== 'ss-viz') return;
+      look = toLook(msg.item);
+
+      if (msg.type === 'look') return tellEmbed();
+
+      if (msg.type === 'save' && look) {
+        const item = look;
+        if (isSaved(item.id)) {
+          const removed = removeItem(item.id);
+          notify(`Removed ${item.name}`, removed && { label: 'Undo', onClick: () => restoreItem(removed) });
+        } else {
+          addItem(item);
+          notify('Saved to My Selection', { label: 'View', href: routes.mySelection });
+        }
+        return;
+      }
+
+      if (msg.type === 'enquire') {
+        const open = () =>
+          document.dispatchEvent(new CustomEvent('enquiry:open', { detail: { about: look ?? undefined, opener: iframe } }));
+        // The drawer lives outside the frame, so leave full screen first.
+        if (isFull() && document.exitFullscreen) document.exitFullscreen().then(open, open);
+        else open();
+      }
+    });
+
+    // Keep the embed's star right when the list changes elsewhere (the drawer, another tab).
+    $selection.listen(() => {
+      if (iframe) tellEmbed();
+    });
+
     const turnOff = () => {
       if (document.fullscreenElement === frame) document.exitFullscreen?.();
+      look = null;
       iframe?.remove();
       iframe = null;
       queued = [];
