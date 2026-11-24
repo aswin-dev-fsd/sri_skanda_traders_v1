@@ -467,7 +467,12 @@ const { src } = Astro.props;
       iframe.src = src;
       frame.prepend(iframe);
       watchReady();
+      syncFloat();
     };
+    // The site's floating WhatsApp button steps aside while the 3D view is on screen: the embed
+    // has its own WhatsApp button, and on phones the floating one covered its Enquire button.
+    const syncFloat = () => document.documentElement.toggleAttribute('data-viz-live', !!iframe && onScreen);
+
     // The embed's Save, WhatsApp and Enquire buttons (bottom bar) message this page, which owns
     // My Selection, the enquiry drawer and the WhatsApp number. The embed shows them only once
     // this page has answered. In full screen the site toast is hidden, so the embed shows it.
@@ -532,6 +537,7 @@ const { src } = Astro.props;
       look = null;
       iframe?.remove();
       iframe = null;
+      syncFloat();
       queued = [];
       paused = false;
       setState('off');
@@ -550,6 +556,7 @@ const { src } = Astro.props;
 
     new IntersectionObserver(([entry]) => {
       onScreen = entry.isIntersecting;
+      syncFloat();
       if (frame.dataset.state === 'ready' && document.fullscreenElement !== frame) setPaused(!onScreen);
     }).observe(frame);
 

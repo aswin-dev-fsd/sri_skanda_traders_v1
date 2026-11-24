@@ -21,8 +21,12 @@ test('3D view switched On fills the visualizer frame', async ({ page }) => {
   expect(Math.abs(iframeBox.width - (frameBox.width - 2))).toBeLessThanOrEqual(1);
   expect(Math.abs(iframeBox.height - (frameBox.height - 2))).toBeLessThanOrEqual(1);
 
+  // The site's floating WhatsApp button steps aside while the 3D view is on screen.
+  await expect(page.locator('html')).toHaveAttribute('data-viz-live', '');
+
   await toggle.click();
   await expect(iframe).toHaveCount(0);
+  await expect(page.locator('html')).not.toHaveAttribute('data-viz-live');
 });
 
 // The embed's Save and Enquire buttons message the page (postMessage, same origin). A stub embed

@@ -9,6 +9,7 @@
 | [`TESTING.md`](TESTING.md) | Running the tests, what they cover, Lighthouse results |
 | [`DEPLOYMENT.md`](DEPLOYMENT.md) | Vercel setup, the launch check, connecting the domain, pre-launch checklist |
 | [`changelogs/`](changelogs/) | One changelog per day, `YYYY-MM-DD.md` |
+| [`backups/`](backups/) | Copies of the 3D visualizer embed and `VisualizerEmbed.astro` from before the 2026-11-24 restyle (also git tag `backup/visualizer-2026-11-24`) |
 | [`Website prompts/Full website Prompt..txt`](Website%20prompts/Full%20website%20Prompt..txt) | Full design brief: design system, shared components, all 8 pages, handoff notes |
 | [`Website prompts/Sri Skanda Home Mockup – Home page ( reference ).html`](Website%20prompts/Sri%20Skanda%20Home%20Mockup%20–%20Home%20page%20(%20reference%20).html) | Home page mockup. Open in a browser. Visual reference only. |
 | [`tessera_360_3d_home_interior_tile_visualizer_temporary.html`](tessera_360_3d_home_interior_tile_visualizer_temporary.html) | Temporary 3D visualizer (original). The embedded, rebranded copy is `public/embed/visualizer.html` |

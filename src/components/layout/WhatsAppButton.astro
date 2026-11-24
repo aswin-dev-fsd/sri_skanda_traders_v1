@@ -1,6 +1,7 @@
 ---
 // Floating WhatsApp button (brief Prompt 00-C). Hidden while a drawer or the menu is open
-// (`data-overlay` on <html>) and in showroom mode (`data-mode="showroom"`).
+// (`data-overlay` on <html>), in showroom mode (`data-mode="showroom"`), and while the 3D
+// visualizer is on screen (`data-viz-live`, set by VisualizerEmbed.astro).
 import Icon from '@/components/ui/Icon.astro';
 import { whatsappUrl } from '@/lib/links';
 
@@ -46,7 +47,10 @@ const { topic } = Astro.props;
     outline-color: var(--gold);
   }
 
-  :global(:root[data-overlay]) .wa-float {
+  /* The 3D visualizer has its own WhatsApp button, and on phones this one sat over its Enquire
+     button, so it steps aside while the 3D view is on screen (`data-viz-live`). */
+  :global(:root[data-overlay]) .wa-float,
+  :global(:root[data-viz-live]) .wa-float {
     opacity: 0;
     pointer-events: none;
     transform: translateY(8px);

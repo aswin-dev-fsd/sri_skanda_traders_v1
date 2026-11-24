@@ -1,0 +1,575 @@
+---
+// Visualizer 01 — the embed gets the most space: title row (72px), then the visualizer at
+// viewport height minus header and title row (min 560, max 860px). We design only the frame
+// around it; the visualizer is the temporary demo in public/embed/ (see DECISIONS.md).
+// The 3D view is heavy, so it starts Off: the iframe only exists while the "3D view" switch is On
+// (choice remembered per browser), and its render loop pauses while the frame is off-screen.
+import Button from '@/components/ui/Button.astro';
+import Icon from '@/components/ui/Icon.astro';
+import Logo from '@/components/layout/Logo.astro';
+import { routes } from '@/config/site';
+
+interface Props {
+  src: string;
+}
+
+const { src } = Astro.props;
+---
+
+<section class="viz" aria-labelledby="viz-title">
+  <div class="container">
+    <div class="title-row">
+      <div class="title-text">
+        <h1 id="viz-title">3D Visualizer</h1>
+        <p class="muted">Try any tile in a real room.</p>
+      </div>
+      <div class="title-actions">
+        <button type="button" class="viz-switch" role="switch" aria-checked="false" data-viz-switch>
+          <span class="switch-label">3D view</span>
+          <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
+          <span class="switch-state" data-viz-switch-state>Off</span>
+        </button>
+        <Button variant="secondary" size="sm" icon="expand" data-viz-fullscreen disabled>Full screen</Button>
+        <Button variant="text" href="#how-it-works">How it works</Button>
+      </div>
+    </div>
+
+    <p class="rotate-hint small">Rotate your phone for a wider view</p>
+
+    <div class="frame" data-viz-frame data-state="off" data-src={src}>
+      <div class="state off" data-viz-off>
+        <Logo height={120} decorative class="mark" loading="eager" />
+        <p>The 3D view is off to keep the page light.</p>
+        <Button icon="cube" data-viz-start>Turn on 3D view</Button>
+      </div>
+
+      <div class="state loading" data-viz-loading aria-live="polite">
+        <Logo height={120} decorative class="mark" loading="eager" />
+        <p>Setting up the room…</p>
+        <span class="progress" aria-hidden="true"><span></span></span>
+      </div>
+
+      <div class="state error" data-viz-error role="alert" hidden>
+        <p class="error-text">The visualizer couldn't load. Check your connection or try again.</p>
+        <div class="error-actions">
+          <Button data-viz-reload icon="arrow-right">Reload</Button>
+          <Button variant="secondary" href={routes.products}>Browse products instead</Button>
+        </div>
+      </div>
+
+      <button type="button" class="exit-full" data-viz-exit aria-label="Exit full screen" hidden>
+        <Icon name="close" size={24} />
+      </button>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* 96px, matched by How it works below, so the divider line between them sits evenly. */
+  .viz {
+    padding-bottom: var(--space-12);
+  }
+
+  .title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px var(--space-3);
+    min-height: 72px;
+    padding-block: 12px;
+  }
+
+  .title-text {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px var(--space-2);
+  }
+
+  h1 {
+    font-size: 32px;
+  }
+
+  .title-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  /* 3D view switch: green track when On, beige when Off. */
+  .viz-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 0 4px;
+    border: 0;
+    background: transparent;
+    color: var(--green);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .switch-track {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    border-radius: 12px;
+    background: var(--beige);
+    transition: background var(--dur-ui) var(--ease);
+  }
+
+  .switch-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(18, 59, 50, 0.3);
+    transition: transform var(--dur-ui) var(--ease);
+  }
+
+  .viz-switch[aria-checked='true'] .switch-track {
+    background: var(--green);
+  }
+
+  .viz-switch[aria-checked='true'] .switch-thumb {
+    transform: translateX(20px);
+  }
+
+  .switch-state {
+    min-width: 2.2em;
+    font-weight: 500;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .switch-track,
+    .switch-thumb {
+      transition: none;
+    }
+  }
+
+  .rotate-hint {
+    display: none;
+    width: max-content;
+    margin-bottom: 12px;
+    padding: 6px 14px;
+    border-radius: var(--radius-chip);
+    background: var(--beige);
+    color: var(--green);
+  }
+
+  @media (max-width: 767px) and (orientation: portrait) {
+    .rotate-hint {
+      display: block;
+    }
+  }
+
+  .frame {
+    position: relative;
+    height: clamp(560px, calc(100dvh - var(--header-h) - 72px - 24px), 860px);
+    overflow: hidden;
+    border: var(--border);
+    border-radius: var(--radius-card);
+    background: var(--ivory);
+  }
+
+  @media (max-width: 767px) {
+    .frame {
+      height: 75vh;
+      min-height: 0;
+    }
+  }
+
+  .frame:fullscreen {
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+  }
+
+  /* :global because the script creates the iframe, so it never gets Astro's scoping attribute.
+     Without it the iframe falls back to the browser's 300 × 150 default. */
+  .frame :global(.embed) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    opacity: 0;
+    transition: opacity var(--dur-reveal) var(--ease);
+  }
+
+  .frame[data-state='ready'] :global(.embed) {
+    opacity: 1;
+  }
+
+  .state {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    text-align: center;
+    color: var(--green);
+    transition: opacity var(--dur-ui-slow) var(--ease);
+  }
+
+  .state[hidden] {
+    display: none;
+  }
+
+  /* Loading: ivory with the grout-line grid, the logo mark at 20%, a thin gold progress line. */
+  .loading {
+    background-color: var(--ivory);
+    background-image:
+      linear-gradient(rgba(231, 226, 214, 0.6) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(231, 226, 214, 0.6) 1px, transparent 1px);
+    background-size: 96px 96px;
+    font-weight: 500;
+  }
+
+  .off {
+    z-index: 2;
+    background-color: var(--ivory);
+    background-image:
+      linear-gradient(rgba(231, 226, 214, 0.6) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(231, 226, 214, 0.6) 1px, transparent 1px);
+    background-size: 96px 96px;
+    font-weight: 500;
+  }
+
+  /* The logo file is ivory/gold for green backgrounds, so its ivory "SKANDA" vanishes on ivory.
+     Flatten it to one dark silhouette so the whole mark reads as a watermark. */
+  .off :global(.mark),
+  .loading :global(.mark) {
+    width: auto;
+    height: 120px;
+    filter: brightness(0);
+    opacity: 0.12;
+  }
+
+  [data-state='off'] .loading,
+  [data-state='ready'] .loading,
+  [data-state='error'] .loading {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+
+  .progress {
+    position: relative;
+    width: 180px;
+    height: 2px;
+    overflow: hidden;
+    background: var(--beige);
+  }
+
+  .progress span {
+    position: absolute;
+    inset: 0;
+    background: var(--gold);
+    transform-origin: left;
+    animation: load 1.6s var(--ease) infinite;
+  }
+
+  @keyframes load {
+    0% {
+      transform: translateX(-100%) scaleX(0.4);
+    }
+    100% {
+      transform: translateX(100%) scaleX(0.4);
+    }
+  }
+
+  .error {
+    background: var(--ivory);
+  }
+
+  .error-text {
+    max-width: 40ch;
+    font-size: var(--fs-body-lg);
+    font-weight: 500;
+  }
+
+  .error-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .exit-full {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--green);
+    color: var(--on-green);
+  }
+
+  .exit-full[hidden] {
+    display: none;
+  }
+</style>
+
+<script>
+  import { routes } from '@/config/site';
+  import { whatsappUrl } from '@/lib/links';
+  import type { SelectionItem } from '@/lib/types';
+  import { $selection, addItem, isSaved, removeItem, restoreItem } from '@/stores/selection';
+  import { showToast } from '@/scripts/toast';
+
+  const READY_TIMEOUT_MS = 20000;
+
+  /** A trimmed string field from the embed's message, or undefined. */
+  const field = (value: unknown, max = 120) =>
+    typeof value === 'string' && value.trim() && value.length <= max ? value.trim() : undefined;
+
+  /**
+   * Rebuilds the tile the embed sent as a My Selection item, keeping only known fields.
+   * @param raw The `item` from an embed message.
+   * @returns The item, or null when it is missing or not a visualizer tile.
+   */
+  const toLook = (raw: unknown): SelectionItem | null => {
+    if (!raw || typeof raw !== 'object') return null;
+    const r = raw as Record<string, unknown>;
+    const id = field(r.id);
+    const name = field(r.name);
+    if (!id?.startsWith('viz-') || !name) return null;
+    const thumb =
+      typeof r.thumb === 'string' && r.thumb.startsWith('data:image/jpeg;base64,') && r.thumb.length < 16000
+        ? r.thumb
+        : undefined;
+    return {
+      id,
+      kind: 'collection',
+      name,
+      code: field(r.code),
+      size: field(r.size),
+      finish: field(r.finish),
+      href: routes.visualizer,
+      thumb,
+    };
+  };
+
+  const STORE_KEY = 'ss-viz-3d';
+
+  const readChoice = () => {
+    try {
+      return localStorage.getItem(STORE_KEY) === 'on';
+    } catch {
+      return false;
+    }
+  };
+  const saveChoice = (on: boolean) => {
+    try {
+      localStorage.setItem(STORE_KEY, on ? 'on' : 'off');
+    } catch {
+      /* storage blocked: the switch still works for this visit */
+    }
+  };
+
+  document.querySelectorAll<HTMLElement>('[data-viz-frame]').forEach((frame) => {
+    const section = frame.closest('section')!;
+    const src = frame.dataset.src!;
+    const offBox = frame.querySelector<HTMLElement>('[data-viz-off]')!;
+    const errorBox = frame.querySelector<HTMLElement>('[data-viz-error]')!;
+    const exit = frame.querySelector<HTMLButtonElement>('[data-viz-exit]')!;
+    const toggle = section.querySelector<HTMLButtonElement>('[data-viz-switch]')!;
+    const toggleState = section.querySelector<HTMLElement>('[data-viz-switch-state]')!;
+    const fullBtn = section.querySelector<HTMLButtonElement>('[data-viz-fullscreen]');
+    let iframe: HTMLIFrameElement | null = null;
+    let timer = 0;
+    let poll = 0;
+    let onScreen = true;
+    let paused = false;
+    let queued: FrameRequestCallback[] = [];
+
+    const setState = (state: 'off' | 'loading' | 'ready' | 'error') => {
+      frame.dataset.state = state;
+      offBox.hidden = state !== 'off';
+      errorBox.hidden = state !== 'error';
+      if (state !== 'loading') {
+        window.clearTimeout(timer);
+        window.clearInterval(poll);
+      }
+    };
+
+    const webgl = (() => {
+      try {
+        const canvas = document.createElement('canvas');
+        return !!(canvas.getContext('webgl2') || canvas.getContext('webgl'));
+      } catch {
+        return false;
+      }
+    })();
+
+    // Pause the embed's render loop off-screen by holding its requestAnimationFrame callbacks
+    // (same origin, so we can wrap it). The room and the visitor's choices stay as they were.
+    const gateFrames = () => {
+      const win = iframe?.contentWindow as (Window & { __vizGated?: boolean }) | null;
+      if (!win || win.__vizGated) return;
+      const raf = win.requestAnimationFrame.bind(win);
+      win.requestAnimationFrame = (cb: FrameRequestCallback) => {
+        if (!paused) return raf(cb);
+        queued.push(cb);
+        return 0;
+      };
+      win.__vizGated = true;
+    };
+    const setPaused = (value: boolean) => {
+      paused = value;
+      if (iframe) iframe.style.visibility = value ? 'hidden' : '';
+      const win = iframe?.contentWindow;
+      if (!value && win) {
+        const waiting = queued;
+        queued = [];
+        waiting.forEach((cb) => win.requestAnimationFrame(cb));
+      }
+    };
+
+    // Ready once the visualizer has drawn its 3D canvas (same origin, so we can look inside).
+    const watchReady = () => {
+      setState('loading');
+      if (!webgl) return setState('error');
+      timer = window.setTimeout(() => setState('error'), READY_TIMEOUT_MS);
+      poll = window.setInterval(() => {
+        if (iframe?.contentDocument?.querySelector('canvas')) {
+          gateFrames();
+          setState('ready');
+          setPaused(!onScreen);
+        }
+      }, 250);
+    };
+
+    // The iframe only exists while the switch is On, so Off frees CPU, GPU and memory entirely.
+    const turnOn = () => {
+      if (iframe) return;
+      iframe = document.createElement('iframe');
+      iframe.className = 'embed';
+      iframe.title = 'Sri Skanda 3D Visualizer';
+      iframe.allow = 'fullscreen; xr-spatial-tracking';
+      iframe.allowFullscreen = true;
+      iframe.dataset.vizIframe = '';
+      iframe.addEventListener('error', () => setState('error'));
+      iframe.src = src;
+      frame.prepend(iframe);
+      watchReady();
+    };
+    // The embed's Save, WhatsApp and Enquire buttons (bottom bar) message this page, which owns
+    // My Selection, the enquiry drawer and the WhatsApp number. The embed shows them only once
+    // this page has answered. In full screen the site toast is hidden, so the embed shows it.
+    let look: SelectionItem | null = null;
+    const isFull = () => document.fullscreenElement === frame;
+    const tellEmbed = (notice?: string) => {
+      const showroom = document.documentElement.dataset.mode === 'showroom';
+      const topic = look ? `${[look.name, look.size].filter(Boolean).join(', ')} from the 3D Visualizer` : 'the 3D Visualizer';
+      iframe?.contentWindow?.postMessage(
+        {
+          source: 'ss-site',
+          type: 'look-state',
+          id: look?.id ?? null,
+          saved: !!look && isSaved(look.id),
+          whatsapp: showroom ? undefined : whatsappUrl(topic),
+          notice,
+        },
+        location.origin,
+      );
+    };
+    const notify = (message: string, action?: Parameters<typeof showToast>[1]) => {
+      if (isFull()) tellEmbed(message);
+      else showToast(message, action);
+    };
+
+    window.addEventListener('message', (event) => {
+      if (!iframe || event.source !== iframe.contentWindow || event.origin !== location.origin) return;
+      const msg = event.data as { source?: string; type?: string; item?: unknown } | null;
+      if (msg?.source !== 'ss-viz') return;
+      look = toLook(msg.item);
+
+      if (msg.type === 'look') return tellEmbed();
+
+      if (msg.type === 'save' && look) {
+        const item = look;
+        if (isSaved(item.id)) {
+          const removed = removeItem(item.id);
+          notify(`Removed ${item.name}`, removed && { label: 'Undo', onClick: () => restoreItem(removed) });
+        } else {
+          addItem(item);
+          notify('Saved to My Selection', { label: 'View', href: routes.mySelection });
+        }
+        return;
+      }
+
+      if (msg.type === 'enquire') {
+        const open = () =>
+          document.dispatchEvent(new CustomEvent('enquiry:open', { detail: { about: look ?? undefined, opener: iframe } }));
+        // The drawer lives outside the frame, so leave full screen first.
+        if (isFull() && document.exitFullscreen) document.exitFullscreen().then(open, open);
+        else open();
+      }
+    });
+
+    // Keep the embed's star right when the list changes elsewhere (the drawer, another tab).
+    $selection.listen(() => {
+      if (iframe) tellEmbed();
+    });
+
+    const turnOff = () => {
+      if (document.fullscreenElement === frame) document.exitFullscreen?.();
+      look = null;
+      iframe?.remove();
+      iframe = null;
+      queued = [];
+      paused = false;
+      setState('off');
+    };
+    const setOn = (on: boolean, remember = true) => {
+      toggle.setAttribute('aria-checked', String(on));
+      toggleState.textContent = on ? 'On' : 'Off';
+      if (fullBtn) fullBtn.disabled = !on;
+      if (remember) saveChoice(on);
+      if (on) turnOn();
+      else turnOff();
+    };
+
+    toggle.addEventListener('click', () => setOn(toggle.getAttribute('aria-checked') !== 'true'));
+    frame.querySelector('[data-viz-start]')?.addEventListener('click', () => setOn(true));
+
+    new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+      if (frame.dataset.state === 'ready' && document.fullscreenElement !== frame) setPaused(!onScreen);
+    }).observe(frame);
+
+    fullBtn?.addEventListener('click', () => {
+      if (!iframe) return;
+      if (frame.requestFullscreen) frame.requestFullscreen().catch(() => window.open(src, '_blank'));
+      else window.open(src, '_blank');
+    });
+    exit.addEventListener('click', () => document.exitFullscreen?.());
+    document.addEventListener('fullscreenchange', () => {
+      exit.hidden = document.fullscreenElement !== frame;
+      if (document.fullscreenElement === frame) setPaused(false);
+    });
+
+    frame.querySelector('[data-viz-reload]')?.addEventListener('click', () => {
+      iframe?.remove();
+      iframe = null;
+      turnOn();
+    });
+
+    setOn(readChoice(), false);
+  });
+</script>
